@@ -10,7 +10,7 @@ The objective of this project is to explore the depths of two-dimensional mathem
 
 
 ## Install & Run
-### Linux, python3
+### Ubuntu, python3
 Run the following to install dependencies :
 ``` 
 sudo apt-get install python3-tk
