@@ -1,0 +1,9 @@
+formula 256*np.exp(np.cos( (i**2+j**2-100)**2 )/100 ) -1
+alpha 100
+beta 100
+offx 0
+offy 0
+sigma 0
+resolution 0
+colorMode HSV
+randomModulation 0

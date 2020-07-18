@@ -5,15 +5,22 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
-
-- fix error message in console (can't invoke "destroy")
+- investigate under-sampling behavior, it used to be different.
+    * e.g. Preset 2 + low resolution slider, this should be only squares
+    * when you save the picture you still get the normal result somehow
+    * I suspect Dongrui's modification of image format may be linked to this
+    * It's beautiful though, would be nice to able to turn this on/off
+- load_parameters function (see syntax defined upon saving, couples tag+value)
+- make background color consistent
 - protect against problematic functions (div by 0, ...)
-- fix flickering
-- make it so the default function (i.e. the one returned in func(...)) is shown in the entry when starting
-- save/open that stores functions and parameters
+- improve formula buttons, make the writing "|" change with button call
+- improve saving window
+    * stills says "saved !" when cancelling
+    * add to save params
+    * check file name doesn't already exist before saving (image / parameters)
 - improve looks (if possible without using ttk)
-- remove the 3 global functions (sliderUpdate, ...) and replace them in the main class
 - put the sliders/buttons in a loop to make the code more readable
+- add label that shows maximum/minimum reached by current formula on frame
 
 TODO (Corentin):
 - make image independant of sizex sizey
@@ -22,7 +29,7 @@ TODO (Corentin):
     - RGB: scale
     - BW: threshold
 - write "help & tips"
-- do something more clever from hole1 and hole2
+- do something clever from hole1 and hole2
 - normalization option
 
 """
@@ -41,8 +48,11 @@ import colorsys
 import matplotlib
 from time import sleep
 
+mainColor = "#ccebe4"
+secondaryColor = "#daede9"
 hole1 = (0.5,0.5)
 hole2 = (-0.1,-0.2)
+
 
 
 def func(xx,yy, p1, p2, offx, offy, f=""):
@@ -59,83 +69,9 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     n,m = xx.shape
     nb,mb = yy.shape
 
-
-    if f != "":
-        f = f.replace("α",str(p1))
-        f = f.replace("β",str(p2))
-        return eval(f)
-
-    return 10000*np.cos( ((i+j)**2)*100/p1 )*np.sin(((i-j)**2)*100/p1) #quadrillage
-    return 255*np.sin( ((dh1)**2 +(dh1b)**2)*p1/1 ) #vinyl
-    return scale*np.cos(p1*xx)*np.exp(np.sin(p2*xx*yy)) #lines with dots
-    return scale*( (1-np.exp(-(dh1**2+dh1b**2)/p1)) ) #other sparkling sun
-    return 255*np.sin((i+j)*p1/20+np.cos((i-j)*p2/20)*5) #wavies
-    #return scale*np.sin(dh1*dh1b)**2
-    return 255*255*np.deg2rad(i*j**2)
-    return np.power(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int))
-    return np.bitwise_xor(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #kilts
-    return np.bitwise_or(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #cardigan
-
-    return np.bitwise_and((i*j*10*p1).astype(int),((dh1*dh1b)*10*p2).astype(int))
-
-    return ( 255*np.sin(i*j*100/p1)*np.sin((i**3-j**2)*100/p2))
-
-    return 255*np.sin((i+j*1.8)**2*p1/50+np.cos((i-j*1.8)**2*p2/100)*5)
-    return np.bitwise_and(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #red minecraft
-
-    return p1*np.cos(np.sin(i*10/p2))+p1*np.cos(np.sin(j*10/p2)) #grandma's wallpaper
-    return (i-j*p2/50)*(i+j*p2/50)*i*(j*p2/50)*np.exp(p1/100)/10 #starry star
-
-    # return 255*np.sin((i+j)*p1/20+np.cos((i-j)*p2/20)*5) #wavies
-    # #return scale*np.sin(dh1*dh1b)**2
-    # return 255*255*np.deg2rad(i*j**2)
-    # return np.power(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int))
-    # return np.bitwise_xor(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #kilts
-    # return np.bitwise_or(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #cardigan
-
-    # return np.bitwise_and((i*j*10*p1).astype(int),((dh1*dh1b)*10*p2).astype(int))
-    #
-    # return ( 255*np.sin(i*j*100/p1)*np.sin((i**3-j**2)*100/p2))
-    #
-    # return scale*( (1-np.exp(-(dh1**2+dh1b**2)/p1)) ) #other sparkling sun
-    # return 255*np.sin((i+j*1.8)**2*p1/50+np.cos((i-j*1.8)**2*p2/100)*5)
-    # return np.bitwise_and(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #red minecraft
-    # return 10000*np.cos( ((i+j)**2)*100/p1 )*np.sin(((i-j)**2)*100/p1) #quadrillage
-    # return p1*np.cos(np.sin(i*10/p2))+p1*np.cos(np.sin(j*10/p2)) #grandma's wallpaper
-    # return (i-j*p2/50)*(i+j*p2/50)*i*(j*p2/50)*np.exp(p1/100)/10 #starry star
-
-
-    # return (scale*np.sin( (i*22+np.cos(j*4)*5)/10)*(scale*np.sin( (i*22+np.cos(j*4)*5)/10) > 0)   *np.exp((-(((i+45/100)*3)**10))/1000)*np.exp((-(((j-23/100)*4)**10))/1000)  + scale*np.sin( ((-i+p1/100)*22+np.cos(j*4)*5)/10)*(scale*np.sin( ((-i+p1/100)*22+np.cos(j*4)*5)/10) > 0)*np.exp((-((((-i+p1/100)+45/100)*3)**10))/1000)*np.exp((-(((j-23/100)*4)**10))/1000))/(p2/1)
-    # above: heart
-    # return scale*np.sin(xx*10+np.cos(yy*10)*5) #waves
-    # return scale*(np.exp(-(i**2)*p1) + np.exp(-((i-1)**2)*p1) + np.exp(-(j**2)*p1) + np.exp(-((j-1)**2)*p1)) #squares
-    return scale*np.log( p1*i**2 + p1*j**2 +1+p2 ) #dongdong's log
-
-    return scale*(np.sin(dh1)+np.cos(dh1b)*p2)**p1 #surf, high beta
-    return scale*np.exp(-p1*xx/(0.1+np.cos(yy*p2))) #fangs
-
-    return (dh1*100*p1)**2 + (dh1b *100*p2)**2 #blobs
-    return scale*np.exp(-dh1*dh1b*p1-dh1*dh1*p2) #cross
-    return scale*(np.sin(dh1)+np.cos(dh1b)*p2)**p1 #eye?
-    return (i**2 + j**2)*1000 #sparkling sun
-    return ((np.sin((dh1+dh1b)**2*p1)*200+np.cos(dh1b*p2)*200)) #boutons disco
-    return scale*i*p1/1000+p2*scale*np.cos(j) #wavy
-    return scale*np.sin(p1*i**2 + j**2)*np.cos(p2*i*j) #damier
-    return 1 #pear of illusions (see image)
-
-    # return scale*(np.sin(dh1)+np.cos(dh1b)*p2)**p1 #surf, high beta
-    # return scale*np.exp(-p1*xx/(0.1+np.cos(yy*p2))) #fangs
-    # return scale*np.cos(p1*xx)*np.exp(np.sin(p2*xx*yy)) #lines with dots
-    # return (dh1*100*p1)**2 + (dh1b *100*p2)**2 #blobs
-    # return scale*np.exp(-dh1*dh1b*p1-dh1*dh1*p2) #cross
-    # return scale*(np.sin(dh1)+np.cos(dh1b)*p2)**p1 #eye?
-    # return (i**2 + j**2)*1000 #sparkling sun
-    # return ((np.sin((dh1+dh1b)**2*p1)*200+np.cos(dh1b*p2)*200)) #boutons disco
-    # return scale*i*p1/1000+p2*scale*np.cos(j) #wavy
-    # return scale*np.sin(p1*i**2 + j**2)*np.cos(p2*i*j) #damier
-    # return 1 #pear of illusions (see image)
-
-
+    f = f.replace("α",str(p1))
+    f = f.replace("β",str(p2))
+    return eval(f)
 
 class GUI():
 
@@ -143,44 +79,44 @@ class GUI():
         self.root = tk.Tk()
         self.root.title('ColorExplorer')
         self.root.grid()
-        self.root.sizex = 640  #Size of image on tk window
-        self.root.sizey = 360
-
+        self.root.configure(background=mainColor)
+        self.root.sizex = 640*2  #Size of image on tk window
+        self.root.sizey = 360*2
 
         ## -- SLIDERFRAME -- ##
 
-        self.sliderFrame = tk.Frame(self.root, bg="#efefef")
+        self.sliderFrame = tk.Frame(self.root, bg= secondaryColor, pady=10)
 
-        self.sl1 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200)
+        self.sl1 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl1.set(100)
         self.sl1.grid(row=1,column=0)
-        tk.Label(self.sliderFrame, text="α",padx=5).grid(row=0,column=0,sticky="E")
+        tk.Label(self.sliderFrame, text="α",padx=5, pady=5, bg= secondaryColor).grid(row=0,column=0,sticky="E")
 
-        self.sl2 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200)
+        self.sl2 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl2.set(100)
         self.sl2.grid(row=1,column=1)
-        tk.Label(self.sliderFrame, text="β",padx=5).grid(row=0,column=1,sticky="E")
+        tk.Label(self.sliderFrame, text="β",padx=5, bg= secondaryColor).grid(row=0,column=1,sticky="E")
 
-        self.sl3 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200)
+        self.sl3 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl3.set(0)
         self.sl3.grid(row=1,column=2)
-        tk.Label(self.sliderFrame, text="off_x").grid(row=0,column=2,sticky="E")
+        tk.Label(self.sliderFrame, text="off_x", bg= secondaryColor).grid(row=0,column=2,sticky="E")
 
-        self.sl4 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200)
+        self.sl4 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl4.set(0)
         self.sl4.grid(row=1,column=3)
-        tk.Label(self.sliderFrame, text="off_y").grid(row=0,column=3,sticky="E")
+        tk.Label(self.sliderFrame, text="off_y", bg= secondaryColor).grid(row=0,column=3,sticky="E")
 
 
-        self.sl5 = tk.Scale(self.sliderFrame,from_=500, to=0, orient=tk.VERTICAL, command=self.genImg, length=200)
+        self.sl5 = tk.Scale(self.sliderFrame,from_=500, to=0, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl5.set(0)
         self.sl5.grid(row=1,column=4)
-        tk.Label(self.sliderFrame, text="σ",padx=5).grid(row=0,column=4,sticky="E")
+        tk.Label(self.sliderFrame, text="σ",padx=5, bg= secondaryColor).grid(row=0,column=4,sticky="E")
 
-        self.sl6 = tk.Scale(self.sliderFrame,from_=100, to=1, orient=tk.VERTICAL, command=self.genImg, length=200)
+        self.sl6 = tk.Scale(self.sliderFrame,from_=100, to=1, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl6.set(30)
         self.sl6.grid(row=1,column=5)
-        tk.Label(self.sliderFrame, text="res").grid(row=0,column=5,sticky="E")
+        tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=5,sticky="E")
 
         self.sliderFrame.grid(row=1,column=1)
 
@@ -207,7 +143,6 @@ class GUI():
 
         self.play = tk.Button(self.root, text='Play', command=self.play)
         self.play.grid(row=3,column=1)
-
 
 
         ## -- FORMULAFRAME -- ##
@@ -245,8 +180,12 @@ class GUI():
 
         self.bClear = tk.Button(self.formulaFrame, text='Clear', command=self.clearFunction)
         self.bClear.grid(row=2, column=7)
-        self.bSave = tk.Button(self.formulaFrame, text='Save', command=self.saveImg)
-        self.bSave.grid(row=3, column=1)
+
+        self.bSaveIm = tk.Button(self.formulaFrame, text='Save Image', command=self.saveImg)
+        self.bSaveIm.grid(row=3, column=1)
+
+        self.bSaveParams = tk.Button(self.formulaFrame, text='Save Parameters', command=self.saveParams)
+        self.bSaveParams.grid(row=3, column=2)
 
         self.formulaFrame.grid(row=2,column=2)
 
@@ -263,6 +202,8 @@ class GUI():
 
         self.presetFrame.grid(row=3,column=2)
 
+        self.label = tk.Label(self.root)
+
         self.genImg()
 
         self.root.mainloop()
@@ -274,13 +215,13 @@ class GUI():
 
         resx = self.sl6.get()*1600//100
         resy = self.sl6.get()*900//100
-        offx = 640*(self.sl3.get())/10000
-        offy = 360*(self.sl4.get())/10000
+        offx = 640*2*(self.sl3.get())/10000
+        offy = 360*2*(self.sl4.get())/10000
 
-        minx = (-640/2)/100
-        maxx = (+640/2)/100
-        miny = (-360/2)/100
-        maxy = (+360/2)/100
+        minx = (-640*2/2)/100
+        maxx = (+640*2/2)/100
+        miny = (-360*2/2)/100
+        maxy = (+360*2/2)/100
         stepx = (maxx-minx)/resx
         stepy = (maxy-miny)/resy
 
@@ -355,7 +296,8 @@ class GUI():
 
         img = ImageTk.PhotoImage(img0)
         self.image = img
-        self.label = tk.Label(self.root,image=self.image)
+        #self.label = tk.Label(self.root,image=self.image)
+        self.label.configure(image = self.image)
         self.label.grid(row=1,column=2,pady=10,padx=10)
 
 
@@ -388,8 +330,23 @@ class GUI():
     def saveImg(self):
         img = ImageTk.PhotoImage(self.fullImage)
         name = simpledialog.askstring("", "Name of this image?")
-        messagebox.showinfo("", "{}.png saved!".format(name))
         img._PhotoImage__photo.write("Images/{}.png".format(name))
+        messagebox.showinfo("", "{}.png saved!".format(name))
+
+    def saveParams(self):
+        name = simpledialog.askstring("", "Name of this set of parameters?")
+        file = open("Parameters/"+name+".txt","a")
+        params = "formula "+ self.activeFunction + "\n"
+        params += "alpha "+ str(self.sl1.get())+"\n"
+        params += "beta "+ str(self.sl2.get())+"\n"
+        params += "offx "+ str(self.sl3.get())+"\n"
+        params += "offy "+ str(self.sl4.get())+"\n"
+        params += "sigma "+ str(self.sl5.get())+"\n"
+        params += "resolution "+ str(self.sl5.get())+"\n"
+        params += "colorMode "+ self.colorMode.get() +"\n"
+        params += "randomModulation "+ str(self.randomModulation.get())+"\n"
+        file.write(params)
+        file.close()
 
     def preset(self, n):
         functions = []
