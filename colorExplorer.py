@@ -62,8 +62,14 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     
     
     if f != "":
+        f = f.replace("α",str(p1))
+        f = f.replace("β",str(p2))
         return eval(f)
 
+    return 10000*np.cos( ((i+j)**2)*100/p1 )*np.sin(((i-j)**2)*100/p1) #quadrillage
+    return 255*np.sin( ((dh1)**2 +(dh1b)**2)*p1/1 ) #vinyl
+    return scale*np.cos(p1*xx)*np.exp(np.sin(p2*xx*yy)) #lines with dots
+    return scale*( (1-np.exp(-(dh1**2+dh1b**2)/p1)) ) #other sparkling sun
     return 255*np.sin((i+j)*p1/20+np.cos((i-j)*p2/20)*5) #wavies
     #return scale*np.sin(dh1*dh1b)**2
     return 255*255*np.deg2rad(i*j**2)
@@ -75,10 +81,9 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     
     return ( 255*np.sin(i*j*100/p1)*np.sin((i**3-j**2)*100/p2))
     
-    return scale*( (1-np.exp(-(dh1**2+dh1b**2)/p1)) ) #other sparkling sun
     return 255*np.sin((i+j*1.8)**2*p1/50+np.cos((i-j*1.8)**2*p2/100)*5)
     return np.bitwise_and(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int)) #red minecraft
-    return 10000*np.cos( ((i+j)**2)*100/p1 )*np.sin(((i-j)**2)*100/p1) #quadrillage
+    
     return p1*np.cos(np.sin(i*10/p2))+p1*np.cos(np.sin(j*10/p2)) #grandma's wallpaper
     return (i-j*p2/50)*(i+j*p2/50)*i*(j*p2/50)*np.exp(p1/100)/10 #starry star
     
@@ -89,7 +94,7 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     return scale*np.log( p1*i**2 + p1*j**2 +1+p2 ) #dongdong's log
     return scale*(np.sin(dh1)+np.cos(dh1b)*p2)**p1 #surf, high beta
     return scale*np.exp(-p1*xx/(0.1+np.cos(yy*p2))) #fangs
-    return scale*np.cos(p1*xx)*np.exp(np.sin(p2*xx*yy)) #lines with dots
+    
     return (dh1*100*p1)**2 + (dh1b *100*p2)**2 #blobs
     return scale*np.exp(-dh1*dh1b*p1-dh1*dh1*p2) #cross
     return scale*(np.sin(dh1)+np.cos(dh1b)*p2)**p1 #eye?
@@ -207,14 +212,20 @@ class GUI(Frame):
         self.bfj = Button(self.formulaFrame, text='j', command= lambda: self.addFormula("j"))
         self.bfj.grid(row=1, column = 2)
         
+        self.bfalpha = Button(self.formulaFrame, text='α', command= lambda: self.addFormula("α"))
+        self.bfalpha.grid(row=1, column = 3)
+        
+        self.bfbeta = Button(self.formulaFrame, text='β', command= lambda: self.addFormula("β"))
+        self.bfbeta.grid(row=1, column = 4)
+        
         self.bf1 = Button(self.formulaFrame, text='exp', command= lambda: self.addFormula("exp"))
-        self.bf1.grid(row=1, column = 4)
+        self.bf1.grid(row=1, column = 5)
         
         self.bf2 = Button(self.formulaFrame, text='cos', command= lambda: self.addFormula("cos"))
-        self.bf2.grid(row=1, column = 5)
+        self.bf2.grid(row=1, column = 6)
         
         self.bf3 = Button(self.formulaFrame, text='sin', command= lambda: self.addFormula("sin"))
-        self.bf3.grid(row=1, column = 6)
+        self.bf3.grid(row=1, column = 7)
         
         self.formulaEntry = Entry(self.formulaFrame, textvariable=self.formula, width=60)
         self.formulaEntry.grid(row=2, column = 1,columnspan=5)
@@ -351,7 +362,7 @@ class GUI(Frame):
         pos = self.formulaEntry.index(INSERT)
         if string in ["exp","cos","sin"]:
             txt = txt[:pos] + "np."+string+"()" + txt[pos:]
-        if string in ["i","j"]:
+        if string in ["i","j","α","β"]:
             txt += string
         self.formula.set( txt )
         print(self.formula.get())
@@ -402,4 +413,4 @@ app = GUI(master=root)
 # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 app.mainloop()
 
-root.destroy()
+root.quit()
