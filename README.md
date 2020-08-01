@@ -5,12 +5,11 @@ Work in Progress.
 
 The objective of this project is to explore the depths of two-dimensional mathematics. To put it simply, it is about visualizing a function in 2D, but with fancy colors and some extra options. It is not very useful, but I like it. If you're interested, I'd be delighted to see your creations and exchange tips !
 
-
-Some examples             | <!-- This is commented out. -->
-:-------------------------:|:-------------------------:
-![ex1](Images/wavies.png) |  ![ex1](Images/the%20pear%20of%20illusions.png)
-![ex1](Images/vinyl.png) | ![ex1](Images/sparkling%20sun.png)
-![ex1](Images/red%20perspective.png) | ![ex1](Images/circle%20chess.png)
+Examples | Examples |
+:-------------------------:|:-----------------------:
+![ex1](Images/wavies.png) |  ![ex1](Images/the%20pear%20of%20illusions.png) |
+![ex1](Images/vinyl.png) | ![ex1](Images/sparkling%20sun.png) |
+![ex1](Images/red%20perspective.png) | ![ex1](Images/circle%20chess.png) |
 
 ## Tutorial
 
