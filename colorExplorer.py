@@ -10,18 +10,19 @@ TODO (anyone):
     * when you save the picture you still get the normal result somehow
     * I suspect Dongrui's modification of image format may be linked to this
     * It's beautiful though, would be nice to able to turn this on/off
+--- change saveImg() and it disappears on Dongdong's PC, to be checked again on Coco's    
 - load_parameters function (see syntax defined upon saving, couples tag+value)
 - make background color consistent
+--- done 
 - protect against problematic functions (div by 0, ...)
 - improve formula buttons, make the writing "|" change with button call
 - improve saving window
-    * stills says "saved !" when cancelling
-    * add to save params
+    * stills says "saved !" when cancelling  --- fixed
+    * add to save params  --- done
     * check file name doesn't already exist before saving (image / parameters)
 - improve looks (if possible without using ttk)
 - put the sliders/buttons in a loop to make the code more readable
 - add label that shows maximum/minimum reached by current formula on frame
-
 TODO (Corentin):
 - make image independant of sizex sizey
 - add submenus for color modes
@@ -31,7 +32,6 @@ TODO (Corentin):
 - write "help & tips"
 - do something clever from hole1 and hole2
 - normalization option
-
 """
 
 # list of available functions:
@@ -80,8 +80,8 @@ class GUI():
         self.root.title('ColorExplorer')
         self.root.grid()
         self.root.configure(background=mainColor)
-        self.root.sizex = 640*2  #Size of image on tk window
-        self.root.sizey = 360*2
+        self.root.sizex = 640  #Size of image on tk window
+        self.root.sizey = 360
 
         ## -- SLIDERFRAME -- ##
 
@@ -126,65 +126,65 @@ class GUI():
         self.checkFrame = tk.Frame(self.root, bg="#efefef")
 
         self.randomModulation = tk.IntVar(value=0)
-        self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",var=self.randomModulation, command=self.genImg)
+        self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",var=self.randomModulation, bg=secondaryColor, command=self.genImg)
         self.check1.grid(row=0,column=1,columnspan=3)
 
         self.colorMode = tk.StringVar(value="RGB")
-        self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="RGB", value="RGB", command=self.genImg)
+        self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="RGB", value="RGB", bg=secondaryColor, command=self.genImg)
         self.rad1.grid(row=1,column=1,sticky="W")
 
-        self.rad2 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="BW", value="BW", command=self.genImg)
+        self.rad2 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="BW", value="BW", bg=secondaryColor, command=self.genImg)
         self.rad2.grid(row=1,column=2,sticky="W")
 
-        self.rad3 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="HSV", value="HSV", command=self.genImg)
+        self.rad3 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="HSV", value="HSV", bg=secondaryColor, command=self.genImg)
         self.rad3.grid(row=1,column=3,sticky="W")
 
         self.checkFrame.grid(row=2, column=1, padx=20, pady=20)
 
-        self.play = tk.Button(self.root, text='Play', command=self.play)
+        self.play = tk.Button(self.root, text='Play', bg=secondaryColor, command=self.play)
         self.play.grid(row=3,column=1)
 
 
         ## -- FORMULAFRAME -- ##
 
-        self.formulaFrame = tk.Frame(self.root, bg="#efefef")
+        self.formulaFrame = tk.Frame(self.root, bg=mainColor)
         self.activeFunction = f"256*256*256/1000*np.log( p1*i**2 + p1*j**2 +1+p2 )"
         self.formula = tk.StringVar(value=self.activeFunction)
 
-        self.bfi = tk.Button(self.formulaFrame, text='i', command= lambda: self.addFormula("i"), padx=5)
+        self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, command= lambda: self.addFormula("i"), padx=5)
         self.bfi.grid(row=1, column=1)
 
-        self.bfj = tk.Button(self.formulaFrame, text='j', command= lambda: self.addFormula("j"), padx=5)
+        self.bfj = tk.Button(self.formulaFrame, text='j', bg=secondaryColor, command= lambda: self.addFormula("j"), padx=5)
         self.bfj.grid(row=1, column=2)
 
-        self.bfalpha = tk.Button(self.formulaFrame, text='α', command= lambda: self.addFormula("α"))
+        self.bfalpha = tk.Button(self.formulaFrame, text='α', bg=secondaryColor, command= lambda: self.addFormula("α"))
         self.bfalpha.grid(row=1, column = 3)
 
-        self.bfbeta = tk.Button(self.formulaFrame, text='β', command= lambda: self.addFormula("β"))
+        self.bfbeta = tk.Button(self.formulaFrame, text='β', bg=secondaryColor, command= lambda: self.addFormula("β"))
         self.bfbeta.grid(row=1, column = 4)
 
-        self.bf1 = tk.Button(self.formulaFrame, text='exp', command= lambda: self.addFormula("exp"))
+        self.bf1 = tk.Button(self.formulaFrame, text='exp', bg=secondaryColor, command= lambda: self.addFormula("exp"))
         self.bf1.grid(row=1, column = 5)
 
-        self.bf2 = tk.Button(self.formulaFrame, text='cos', command= lambda: self.addFormula("cos"))
+        self.bf2 = tk.Button(self.formulaFrame, text='cos', bg=secondaryColor, command= lambda: self.addFormula("cos"))
         self.bf2.grid(row=1, column = 6)
 
-        self.bf3 = tk.Button(self.formulaFrame, text='sin', command= lambda: self.addFormula("sin"))
+        self.bf3 = tk.Button(self.formulaFrame, text='sin', bg=secondaryColor, command= lambda: self.addFormula("sin"))
         self.bf3.grid(row=1, column = 7)
 
         self.formulaEntry = tk.Entry(self.formulaFrame, textvariable=self.formula, width=60)
         self.formulaEntry.grid(row=2, column=1, columnspan=5)
 
-        self.bApply = tk.Button(self.formulaFrame, text='Apply', command=self.applyFunction)
+        self.bApply = tk.Button(self.formulaFrame, text='Apply', bg=secondaryColor, command=self.applyFunction)
         self.bApply.grid(row=2, column=6)
 
-        self.bClear = tk.Button(self.formulaFrame, text='Clear', command=self.clearFunction)
+        self.bClear = tk.Button(self.formulaFrame, text='Clear', bg=secondaryColor, command=self.clearFunction)
         self.bClear.grid(row=2, column=7)
 
-        self.bSaveIm = tk.Button(self.formulaFrame, text='Save Image', command=self.saveImg)
+        self.bSaveIm = tk.Button(self.formulaFrame, text='Save Image', bg=secondaryColor, command=self.saveImg)
         self.bSaveIm.grid(row=3, column=1)
 
-        self.bSaveParams = tk.Button(self.formulaFrame, text='Save Parameters', command=self.saveParams)
+        self.bSaveParams = tk.Button(self.formulaFrame, text='Save Parameters', bg=secondaryColor, command=self.saveParams)
         self.bSaveParams.grid(row=3, column=2)
 
         self.formulaFrame.grid(row=2,column=2)
@@ -192,12 +192,12 @@ class GUI():
 
         ## -- PRESETFRAME -- ##
 
-        self.presetFrame = tk.Frame(self.root, bg="#efefef")
-        self.bPreset1 = tk.Button(self.presetFrame, text='Preset 1', command= lambda: self.preset(0))
+        self.presetFrame = tk.Frame(self.root, bg=mainColor)
+        self.bPreset1 = tk.Button(self.presetFrame, text='Preset 1', bg=secondaryColor, command= lambda: self.preset(0))
         self.bPreset1.grid(row=1, column = 1, padx=10, pady=15)
-        self.bPreset2 = tk.Button(self.presetFrame, text='Preset 2', command= lambda: self.preset(1))
+        self.bPreset2 = tk.Button(self.presetFrame, text='Preset 2', bg=secondaryColor, command= lambda: self.preset(1))
         self.bPreset2.grid(row=1, column = 2, padx=10, pady=15)
-        self.bPreset3 = tk.Button(self.presetFrame, text='Preset 3', command= lambda: self.preset(2))
+        self.bPreset3 = tk.Button(self.presetFrame, text='Preset 3', bg=secondaryColor, command= lambda: self.preset(2))
         self.bPreset3.grid(row=1, column = 3, padx=10, pady=15)
 
         self.presetFrame.grid(row=3,column=2)
@@ -296,7 +296,7 @@ class GUI():
 
         img = ImageTk.PhotoImage(img0)
         self.image = img
-        #self.label = tk.Label(self.root,image=self.image)
+       # self.label = tk.Label(self.root,image=self.image)
         self.label.configure(image = self.image)
         self.label.grid(row=1,column=2,pady=10,padx=10)
 
@@ -314,7 +314,7 @@ class GUI():
         if string in ["exp","cos","sin"]:
             txt = txt[:pos] + "np."+string+"()" + txt[pos:]
         if string in ["i","j","α","β"]:
-            txt += string
+            txt = txt[:pos]+ string + txt[pos:]
         self.formula.set( txt )
         print(self.formula.get())
 
@@ -328,10 +328,25 @@ class GUI():
        # self.genImg()
 
     def saveImg(self):
-        img = ImageTk.PhotoImage(self.fullImage)
         name = simpledialog.askstring("", "Name of this image?")
-        img._PhotoImage__photo.write("Images/{}.png".format(name))
-        messagebox.showinfo("", "{}.png saved!".format(name))
+        if name: # not None
+            # save image
+            self.fullImage.convert('RGB').save("Images/{}.png".format(name))
+            messagebox.showinfo("", "{}.png saved!".format(name))
+            # save parameters
+            with open("Parameters/" + name + ".txt", "w+") as file:
+                params = "formula " + self.activeFunction + "\n"
+                params += "alpha " + str(self.sl1.get()) + "\n"
+                params += "beta " + str(self.sl2.get()) + "\n"
+                params += "offx " + str(self.sl3.get()) + "\n"
+                params += "offy " + str(self.sl4.get()) + "\n"
+                params += "sigma " + str(self.sl5.get()) + "\n"
+                params += "resolution " + str(self.sl5.get()) + "\n"
+                params += "colorMode " + self.colorMode.get() + "\n"
+                params += "randomModulation " + str(self.randomModulation.get()) + "\n"
+                file.write(params)
+        else:
+            messagebox.showinfo("", "Saving cancelled!")
 
     def saveParams(self):
         name = simpledialog.askstring("", "Name of this set of parameters?")
