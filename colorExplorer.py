@@ -10,10 +10,10 @@ TODO (anyone):
     * when you save the picture you still get the normal result somehow
     * I suspect Dongrui's modification of image format may be linked to this
     * It's beautiful though, would be nice to able to turn this on/off
---- change saveImg() and it disappears on Dongdong's PC, to be checked again on Coco's    
+--- change saveImg() and it disappears on Dongdong's PC, to be checked again on Coco's
 - load_parameters function (see syntax defined upon saving, couples tag+value)
 - make background color consistent
---- done 
+--- done
 - protect against problematic functions (div by 0, ...)
 - improve formula buttons, make the writing "|" change with button call
 - improve saving window
@@ -23,6 +23,7 @@ TODO (anyone):
 - improve looks (if possible without using ttk)
 - put the sliders/buttons in a loop to make the code more readable
 - add label that shows maximum/minimum reached by current formula on frame
+- if the input function is constant, it should still be shown
 TODO (Corentin):
 - make image independant of sizex sizey
 - add submenus for color modes
