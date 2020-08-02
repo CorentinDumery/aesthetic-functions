@@ -1,0 +1,9 @@
+formula 1000+α*np.bitwise_and(  ((i)**2+(j)**2).astype(int), (i**3+j**3).astype(int))*1.1
+alpha 200
+beta 0
+offx 0
+offy 0
+sigma 0
+resolution 0
+colorMode BW
+randomModulation 0

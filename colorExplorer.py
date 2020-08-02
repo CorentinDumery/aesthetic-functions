@@ -81,8 +81,8 @@ class GUI():
         self.root.title('ColorExplorer')
         self.root.grid()
         self.root.configure(background=mainColor)
-        self.root.sizex = 640  #Size of image on tk window
-        self.root.sizey = 360
+        self.root.sizex = 960  #Size of image on tk window
+        self.root.sizey = 540
 
         ## -- SLIDERFRAME -- ##
 
@@ -124,21 +124,51 @@ class GUI():
 
         ## -- CHECKFRAME -- ##
 
-        self.checkFrame = tk.Frame(self.root, bg="#efefef")
+        self.checkFrame = tk.Frame(self.root, bg=secondaryColor)
 
         self.randomModulation = tk.IntVar(value=0)
         self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",var=self.randomModulation, bg=secondaryColor, command=self.genImg)
         self.check1.grid(row=0,column=1,columnspan=3)
 
         self.colorMode = tk.StringVar(value="RGB")
-        self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="RGB", value="RGB", bg=secondaryColor, command=self.genImg)
+        self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="RGB", value="RGB", bg=secondaryColor, command=self.changeColorMode)
         self.rad1.grid(row=1,column=1,sticky="W")
 
-        self.rad2 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="BW", value="BW", bg=secondaryColor, command=self.genImg)
+        self.rad2 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="BW", value="BW", bg=secondaryColor, command=self.changeColorMode)
         self.rad2.grid(row=1,column=2,sticky="W")
 
-        self.rad3 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="HSV", value="HSV", bg=secondaryColor, command=self.genImg)
+        self.rad3 = tk.Radiobutton(self.checkFrame, variable=self.colorMode, text="HSV", value="HSV", bg=secondaryColor, command=self.changeColorMode)
         self.rad3.grid(row=1,column=3,sticky="W")
+
+        self.RGBModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor)
+        self.RGBModeMenu.grid_columnconfigure(0, weight=1, uniform="RGB_uniform")
+        self.RGBModeMenu.grid_columnconfigure(1, weight=1, uniform="RGB_uniform")
+        self.sl_rgb_scale = tk.Scale(self.RGBModeMenu, from_=0, to=256, orient=tk.HORIZONTAL, command=self.genImg, length=200, bg= secondaryColor)
+        self.sl_rgb_scale.set(256)
+        self.sl_rgb_scale.grid(row=1, column=0, columnspan=2)
+        self.RGBModeMenu.grid(row=2, column=1, columnspan=3) #RGB menu used as default
+
+        self.HSVModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor)
+        self.HSVModeMenu.grid_columnconfigure(0, weight=1, uniform="HSV_uniform")
+        self.HSVModeMenu.grid_columnconfigure(1, weight=1, uniform="HSV_uniform")
+        self.sl_s_value = tk.Scale(self.HSVModeMenu, from_=0, to=255, orient=tk.HORIZONTAL, command=self.genImg, length=200, bg= secondaryColor)
+        self.sl_s_value.set(102)
+        self.sl_s_value.grid(row=1, column=0, columnspan=2)
+        self.sl_v_value = tk.Scale(self.HSVModeMenu, from_=0, to=255, orient=tk.HORIZONTAL, command=self.genImg, length=200, bg= secondaryColor)
+        self.sl_v_value.set(230)
+        self.sl_v_value.grid(row=2, column=0, columnspan=2)
+
+        self.BWModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor)
+        self.BWModeMenu.grid_columnconfigure(0, weight=1, uniform="BW_uniform")
+        self.BWModeMenu.grid_columnconfigure(1, weight=1, uniform="BW_uniform")
+        self.sl_bw_scale = tk.Scale(self.BWModeMenu, from_=0, to=200, orient=tk.HORIZONTAL, command=self.genImg, length=200, bg= secondaryColor)
+        self.sl_bw_scale.set(100)
+        self.sl_bw_scale.grid(row=1, column=0, columnspan=2)
+
+        #testLabel = tk.Label(HSVModeMenu, text="Test", bg=secondaryColor)
+        #testLabel.grid(row=0, column=0)
+        #testEntry = tk.Entry(HSVModeMenu) #, textvariable=self.formula, width=10);
+        #testEntry.grid(row=0, column=1)
 
         self.checkFrame.grid(row=2, column=1, padx=20, pady=20)
 
@@ -149,7 +179,7 @@ class GUI():
         ## -- FORMULAFRAME -- ##
 
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
-        self.activeFunction = f"256*256*256/1000*np.log( p1*i**2 + p1*j**2 +1+p2 )"
+        self.activeFunction = f"α*(i**2+j**2)"
         self.formula = tk.StringVar(value=self.activeFunction)
 
         self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, command= lambda: self.addFormula("i"), padx=5)
@@ -251,19 +281,20 @@ class GUI():
 
         if self.colorMode.get()=="HSV":
 
-            scale = 256*256*256
-
             type0 = "uint8"
             array = np.zeros((3,resx,resy),type0)
-            array[0,:,:] = res % scale
-            array[1,:,:] = np.full((res.shape[0],res.shape[1]), 102, type0)
-            array[2,:,:] = np.full((res.shape[0],res.shape[1]), 230, type0)
+            array[0,:,:] = res % (256*256*256)
+            array[1,:,:] = np.full((res.shape[0],res.shape[1]), self.sl_s_value.get(), type0)
+            array[2,:,:] = np.full((res.shape[0],res.shape[1]), self.sl_v_value.get(), type0)
 
         elif self.colorMode.get()=="RGB":
+            scale = self.sl_rgb_scale.get()
+            max_value = min(scale, 256)
+
             array = np.zeros((3,resx,resy),'uint8')
-            array[0,:,:] = res %256
-            array[1,:,:] = (res/256) %256
-            array[2,:,:] = (res/(256*256)) %256
+            array[0,:,:] = res % max_value
+            array[1,:,:] = (res/max_value) %max_value
+            array[2,:,:] = (res/(max_value*max_value)) %max_value
 
         else:
             array = res
@@ -284,7 +315,8 @@ class GUI():
         elif self.colorMode.get()=="RGB":
             array = np.ascontiguousarray(array.transpose(2,1,0))
             img0 = Image.fromarray(array, 'RGB')
-        else:
+        else: #mode == "BW"
+            array *= float(self.sl_bw_scale.get()/100)
             img0 = Image.fromarray(array.transpose())
         #img0 = Image.fromarray(array)
         self.fullImage = img0 #saving full res picture to output it
@@ -301,6 +333,18 @@ class GUI():
         self.label.configure(image = self.image)
         self.label.grid(row=1,column=2,pady=10,padx=10)
 
+
+    def changeColorMode(self):
+        self.RGBModeMenu.grid_forget()
+        self.HSVModeMenu.grid_forget()
+        self.BWModeMenu.grid_forget()
+        if self.colorMode.get()=="HSV":
+            self.HSVModeMenu.grid(row=2, column=1, columnspan=3)
+        if self.colorMode.get()=="RGB":
+            self.RGBModeMenu.grid(row=2, column=1, columnspan=3)
+        if self.colorMode.get()=="BW":
+            self.BWModeMenu.grid(row=2, column=1, columnspan=3)
+        self.genImg()
 
     def play(self):
         if self.sl5.get() > 0:
