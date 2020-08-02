@@ -6,24 +6,16 @@ Created on Wed May  6 09:25:55 2020
 """
 TODO (anyone):
 - investigate under-sampling behavior, it used to be different.
-    * e.g. Preset 2 + low resolution slider, this should be only squares
-    * when you save the picture you still get the normal result somehow
-    * I suspect Dongrui's modification of image format may be linked to this
-    * It's beautiful though, would be nice to able to turn this on/off
---- change saveImg() and it disappears on Dongdong's PC, to be checked again on Coco's
 - load_parameters function (see syntax defined upon saving, couples tag+value)
-- make background color consistent
---- done
 - protect against problematic functions (div by 0, ...)
 - improve formula buttons, make the writing "|" change with button call
 - improve saving window
-    * stills says "saved !" when cancelling  --- fixed
-    * add to save params  --- done
     * check file name doesn't already exist before saving (image / parameters)
 - improve looks (if possible without using ttk)
 - put the sliders/buttons in a loop to make the code more readable
 - add label that shows maximum/minimum reached by current formula on frame
 - if the input function is constant, it should still be shown
+- make color mode menus of a fixed size (so that the window doesn't change size)
 TODO (Corentin):
 - make image independant of sizex sizey
 - add submenus for color modes
@@ -370,31 +362,19 @@ class GUI():
     def clearFunction(self):
         self.activeFunction = ""
         self.formula.set(self.activeFunction)
-       # self.genImg()
 
     def saveImg(self):
         name = simpledialog.askstring("", "Name of this image?")
         if name: # not None
-            # save image
             self.fullImage.convert('RGB').save("Images/{}.png".format(name))
             messagebox.showinfo("", "{}.png saved!".format(name))
-            # save parameters
-            with open("Parameters/" + name + ".txt", "w+") as file:
-                params = "formula " + self.activeFunction + "\n"
-                params += "alpha " + str(self.sl1.get()) + "\n"
-                params += "beta " + str(self.sl2.get()) + "\n"
-                params += "offx " + str(self.sl3.get()) + "\n"
-                params += "offy " + str(self.sl4.get()) + "\n"
-                params += "sigma " + str(self.sl5.get()) + "\n"
-                params += "resolution " + str(self.sl5.get()) + "\n"
-                params += "colorMode " + self.colorMode.get() + "\n"
-                params += "randomModulation " + str(self.randomModulation.get()) + "\n"
-                file.write(params)
+            self.saveParams(name)
         else:
             messagebox.showinfo("", "Saving cancelled!")
 
-    def saveParams(self):
-        name = simpledialog.askstring("", "Name of this set of parameters?")
+    def saveParams(self, name=""):
+        if name == "":
+            name = simpledialog.askstring("", "Name of this set of parameters?")
         file = open("Parameters/"+name+".txt","a")
         params = "formula "+ self.activeFunction + "\n"
         params += "alpha "+ str(self.sl1.get())+"\n"
@@ -405,8 +385,17 @@ class GUI():
         params += "resolution "+ str(self.sl5.get())+"\n"
         params += "colorMode "+ self.colorMode.get() +"\n"
         params += "randomModulation "+ str(self.randomModulation.get())+"\n"
+        params += "sValue "+ str(self.sl_s_value.get()) + "\n"
+        params += "vValue "+ str(self.sl_v_value.get()) + "\n"
+        params += "bwScale "+ str(self.sl_bw_scale.get()) + "\n"
+        params += "rgbScale "+ str(self.sl_rgb_scale.get()) + "\n"
         file.write(params)
         file.close()
+       # self.genImg()
+
+    def loadParams(self, name="blackhole"):
+        pass
+        #TODO
 
     def preset(self, n):
         functions = []
