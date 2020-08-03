@@ -16,6 +16,7 @@ TODO (anyone):
 - add label that shows maximum/minimum reached by current formula on frame
 - if the input function is constant, it should still be shown
 - make color mode menus of a fixed size (so that the window doesn't change size)
+- replace alpha and beta with p1 and p2 upon saving parameters
 TODO (Corentin):
 - make image independant of sizex sizey
 - add submenus for color modes
