@@ -34,7 +34,8 @@ If you want to experiment with different visualization effects of a function, tr
 :-------------------------:|:-----------------------:
 ![ex1](Images/Tutorial/alpha5.png) | ![ex1](Images/Tutorial/alpha200.png) |  
 
-## Example creations
+## Example creations  
+example | example    
 :-------------------------:|:-----------------------:
 ![ex1](Images/wavies.png) |  ![ex1](Images/the%20pear%20of%20illusions.png) |
 ![ex1](Images/ring_of_truth.png) | ![ex1](Images/sundisk.png) |
