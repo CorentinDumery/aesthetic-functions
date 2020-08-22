@@ -5,7 +5,7 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
-- investigate under-sampling behavior, it used to be different.
+- undersampling + preset 2 looks strange, find out why
 - load_parameters function (see syntax defined upon saving, couples tag+value)
 - protect against problematic functions (div by 0, ...)
 - improve formula buttons, make the writing "|" change with button call
@@ -41,6 +41,7 @@ from scipy.ndimage.filters import gaussian_filter
 import colorsys
 import matplotlib
 from time import sleep
+
 
 mainColor = "#ccebe4"
 secondaryColor = "#daede9"
@@ -303,15 +304,33 @@ class GUI():
 
         if self.colorMode.get()== "HSV":
             array = np.ascontiguousarray(array.transpose(2,1,0))
+            if (array.shape[0]<self.root.sizey):
+                stepx = self.root.sizex//array.shape[1]
+                stepy = self.root.sizey//array.shape[0]
+                array = np.repeat(array, stepx, axis=0)
+                array = np.repeat(array, stepy, axis=1)
             img0 = Image.fromarray(array, 'HSV')
 
         elif self.colorMode.get()=="RGB":
             array = np.ascontiguousarray(array.transpose(2,1,0))
+
+            if (array.shape[0]<self.root.sizey):
+                stepx = self.root.sizex//array.shape[1]
+                stepy = self.root.sizey//array.shape[0]
+                array = np.repeat(array, stepx, axis=0)
+                array = np.repeat(array, stepy, axis=1)
+
             img0 = Image.fromarray(array, 'RGB')
         else: #mode == "BW"
             array *= float(self.sl_bw_scale.get()/100)
+            if (array.shape[0]<self.root.sizey):
+                stepx = self.root.sizex//array.shape[1]
+                stepy = self.root.sizey//array.shape[0]
+                array = np.repeat(array, stepx, axis=0)
+                array = np.repeat(array, stepy, axis=1)
             img0 = Image.fromarray(array.transpose())
         #img0 = Image.fromarray(array)
+
         self.fullImage = img0 #saving full res picture to output it
 
         ANTIALIAS = False
