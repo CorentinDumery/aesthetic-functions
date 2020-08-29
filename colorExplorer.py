@@ -5,6 +5,8 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
+- automatically replace ** with pow during evaluation
+- add rotation slider that replaces i with t*i+(1-t)*j, etc
 - undersampling + preset 2 looks strange, find out why
 - load_parameters function (see syntax defined upon saving, couples tag+value)
 - protect against problematic functions (div by 0, ...)
@@ -17,13 +19,9 @@ TODO (anyone):
 - if the input function is constant, it should still be shown
 - make color mode menus of a fixed size (so that the window doesn't change size)
 - replace alpha and beta with p1 and p2 upon saving parameters
+- add "open & multiply" button to easily combine formulas
 TODO (Corentin):
 - make image independant of sizex sizey
-- add submenus for color modes
-    - HSV: modify S/V, scale
-    - RGB: scale
-    - BW: threshold
-- write "help & tips"
 - do something clever from hole1 and hole2
 - normalization option
 """
@@ -33,7 +31,7 @@ TODO (Corentin):
 # sin cos exp fabs bitwise_or/and/xor rint
 
 import tkinter as tk
-from tkinter import simpledialog, messagebox
+from tkinter import simpledialog, messagebox, filedialog, END
 from PIL import Image, ImageTk
 import numpy as np
 from random import randrange,random
@@ -173,7 +171,7 @@ class GUI():
         ## -- FORMULAFRAME -- ##
 
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
-        self.activeFunction = f"α*(i**2+j**2)"
+        self.activeFunction = f"α*(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
         self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, command= lambda: self.addFormula("i"), padx=5)
@@ -211,6 +209,9 @@ class GUI():
 
         self.bSaveParams = tk.Button(self.formulaFrame, text='Save Parameters', bg=secondaryColor, command=self.saveParams)
         self.bSaveParams.grid(row=3, column=2)
+
+        self.bLoadParams = tk.Button(self.formulaFrame, text='Load Parameters', bg=secondaryColor, command=self.loadParams)
+        self.bLoadParams.grid(row=3, column=3)
 
         self.formulaFrame.grid(row=2,column=2)
 
@@ -402,7 +403,7 @@ class GUI():
         params += "offx "+ str(self.sl3.get())+"\n"
         params += "offy "+ str(self.sl4.get())+"\n"
         params += "sigma "+ str(self.sl5.get())+"\n"
-        params += "resolution "+ str(self.sl5.get())+"\n"
+        params += "resolution "+ str(self.sl6.get())+"\n"
         params += "colorMode "+ self.colorMode.get() +"\n"
         params += "randomModulation "+ str(self.randomModulation.get())+"\n"
         params += "sValue "+ str(self.sl_s_value.get()) + "\n"
@@ -413,9 +414,40 @@ class GUI():
         file.close()
        # self.genImg()
 
-    def loadParams(self, name="blackhole"):
-        pass
-        #TODO
+    def loadParams(self):
+
+        filepath = filedialog.askopenfilename(initialdir = "../colorExplorer/Parameters/",
+                                 title = "Select parameters file",
+                                 filetypes = (("txt files","*.txt"),("all files","*.*")))
+        if filepath == ():
+            return
+        file = open(filepath,"r")
+        line = "example"
+        while (line != ""):
+            line = file.readline()
+            words = line.split()
+            if len(words) <1:
+                continue
+            if words[0] =="formula":
+                self.activeFunction = line[8:-1]
+                self.formula.set(line[8:-1])
+                #self.formulaEntry.set(line[8:-1])
+                self.formulaEntry.delete(0,END)
+                self.formulaEntry.insert(0,line[8:-1])
+            else :
+                if len(words) != 2:
+                    print("Warning : file misread, wrong number of values per line")
+
+                tags = ["alpha", "beta", "offx", "offy", "sigma",
+                        "resolution", "colorMode", "randomModulation", "sValue", "vValue",
+                        "bwScale", "rgbScale"]
+                widgets = [self.sl1, self.sl2, self.sl3, self.sl4, self.sl5,
+                           self.sl6, self.colorMode, self.randomModulation, self.sl_s_value, self.sl_v_value,
+                           self.sl_bw_scale, self.sl_rgb_scale]
+                for i in range(len(tags)):
+                    if words[0] == tags[i]:
+                        widgets[i].set(words[1])
+        file.close()
 
     def preset(self, n):
         functions = []

@@ -1,0 +1,13 @@
+formula α*np.bitwise_and(  ((i/2)**2+(j/2)**2).astype(int), ((i/2)**3+(j/2)**3).astype(int))*1.1
+alpha 32
+beta 0
+offx 0
+offy 0
+sigma 0
+resolution 100
+colorMode HSV
+randomModulation 0
+sValue 102
+vValue 230
+bwScale 100
+rgbScale 256

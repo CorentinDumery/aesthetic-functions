@@ -1,0 +1,13 @@
+formula 2*(0.75+np.sin( (i+j)*5+np.cos( (-j+i*5)*1)*5))*np.bitwise_and(  ((i)**2+(j)**2).astype(int), (i**3-(j*3)**3).astype(int))*1.1
+alpha 15
+beta 10
+offx 0
+offy 0
+sigma 0
+resolution 30
+colorMode HSV
+randomModulation 0
+sValue 88
+vValue 255
+bwScale 114
+rgbScale 256

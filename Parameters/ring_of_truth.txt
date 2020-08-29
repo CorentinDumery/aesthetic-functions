@@ -1,0 +1,9 @@
+formula -10000*(1+np.cos((i**2+j**2)*10/α))
+alpha 23
+beta 0
+offx 0
+offy -10
+sigma 0
+resolution 30
+colorMode RGB
+randomModulation 1

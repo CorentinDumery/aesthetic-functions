@@ -1,0 +1,9 @@
+formula 100*np.exp(-np.cos((i**2+j**2)/α)-np.cos((i+j)/β))
+alpha 1
+beta 4
+offx 23
+offy 0
+sigma 0
+resolution 30
+colorMode HSV
+randomModulation 0
