@@ -1,0 +1,13 @@
+formula np.bitwise_xor(((dh1+dh1b)**2*10*p1).astype(int),((dh1-dh1b)**2*10*p2).astype(int))
+alpha 2
+beta 2
+offx -45
+offy -5
+sigma 77
+resolution 84
+colorMode RGB
+randomModulation 0
+sValue 132
+vValue 229
+bwScale 111
+rgbScale 256

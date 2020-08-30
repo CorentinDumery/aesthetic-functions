@@ -1,0 +1,13 @@
+formula 255*np.sin((i+j)*p1/20+np.cos((i-j)*p2/20)*5)
+alpha 100
+beta 19
+offx -15
+offy -5
+sigma 77
+resolution 84
+colorMode HSV
+randomModulation 0
+sValue 132
+vValue 229
+bwScale 111
+rgbScale 256

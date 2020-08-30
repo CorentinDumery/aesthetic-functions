@@ -1,0 +1,13 @@
+formula scale*( (1-np.exp(-(dh1**2+dh1b**2)/p1)) )
+alpha 170
+beta 15
+offx -15
+offy -5
+sigma 77
+resolution 30
+colorMode HSV
+randomModulation 1
+sValue 102
+vValue 230
+bwScale 111
+rgbScale 256
