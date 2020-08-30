@@ -5,6 +5,8 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
+- replace Entry with Text, and check compatibility with load/save
+- prevent formulas with potentially harmful commands ("exec", "import", ...)
 - add parameter t, and option to record video with t going from 0 to 100
 - automatically replace ** with pow during evaluation
 - add rotation slider that replaces i with t*i+(1-t)*j, etc
