@@ -5,10 +5,9 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
+- add parameter t, and option to record video with t going from 0 to 100
 - automatically replace ** with pow during evaluation
 - add rotation slider that replaces i with t*i+(1-t)*j, etc
-- undersampling + preset 2 looks strange, find out why
-- load_parameters function (see syntax defined upon saving, couples tag+value)
 - protect against problematic functions (div by 0, ...)
 - improve formula buttons, make the writing "|" change with button call
 - improve saving window
@@ -33,7 +32,8 @@ TODO (Corentin):
 import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, END
 from PIL import Image, ImageTk
-import numpy as np
+import numpy as np #needed for compatibility with formulas with np.
+from numpy import * #needed for simple formula interpretation
 from random import randrange,random
 from scipy.ndimage.filters import gaussian_filter
 import colorsys
@@ -64,6 +64,8 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
 
     f = f.replace("α",str(p1))
     f = f.replace("β",str(p2))
+    f = f.replace("alpha",str(p1))
+    f = f.replace("beta",str(p2))
     return eval(f)
 
 class GUI():
@@ -171,32 +173,34 @@ class GUI():
         ## -- FORMULAFRAME -- ##
 
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
-        self.activeFunction = f"α*(i**2+j**2)" #default formula here
+        self.activeFunction = f"alpha*(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
-        self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, command= lambda: self.addFormula("i"), padx=5)
-        self.bfi.grid(row=1, column=1)
+        display_help_buttons = False
+        if display_help_buttons:
+            self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, command= lambda: self.addFormula("i"), padx=5)
+            self.bfi.grid(row=1, column=1)
 
-        self.bfj = tk.Button(self.formulaFrame, text='j', bg=secondaryColor, command= lambda: self.addFormula("j"), padx=5)
-        self.bfj.grid(row=1, column=2)
+            self.bfj = tk.Button(self.formulaFrame, text='j', bg=secondaryColor, command= lambda: self.addFormula("j"), padx=5)
+            self.bfj.grid(row=1, column=2)
 
-        self.bfalpha = tk.Button(self.formulaFrame, text='α', bg=secondaryColor, command= lambda: self.addFormula("α"))
-        self.bfalpha.grid(row=1, column = 3)
+            self.bfalpha = tk.Button(self.formulaFrame, text='α', bg=secondaryColor, command= lambda: self.addFormula("alpha"))
+            self.bfalpha.grid(row=1, column = 3)
 
-        self.bfbeta = tk.Button(self.formulaFrame, text='β', bg=secondaryColor, command= lambda: self.addFormula("β"))
-        self.bfbeta.grid(row=1, column = 4)
+            self.bfbeta = tk.Button(self.formulaFrame, text='β', bg=secondaryColor, command= lambda: self.addFormula("beta"))
+            self.bfbeta.grid(row=1, column = 4)
 
-        self.bf1 = tk.Button(self.formulaFrame, text='exp', bg=secondaryColor, command= lambda: self.addFormula("exp"))
-        self.bf1.grid(row=1, column = 5)
+            self.bf1 = tk.Button(self.formulaFrame, text='exp', bg=secondaryColor, command= lambda: self.addFormula("exp"))
+            self.bf1.grid(row=1, column = 5)
 
-        self.bf2 = tk.Button(self.formulaFrame, text='cos', bg=secondaryColor, command= lambda: self.addFormula("cos"))
-        self.bf2.grid(row=1, column = 6)
+            self.bf2 = tk.Button(self.formulaFrame, text='cos', bg=secondaryColor, command= lambda: self.addFormula("cos"))
+            self.bf2.grid(row=1, column = 6)
 
-        self.bf3 = tk.Button(self.formulaFrame, text='sin', bg=secondaryColor, command= lambda: self.addFormula("sin"))
-        self.bf3.grid(row=1, column = 7)
+            self.bf3 = tk.Button(self.formulaFrame, text='sin', bg=secondaryColor, command= lambda: self.addFormula("sin"))
+            self.bf3.grid(row=1, column = 7)
 
         self.formulaEntry = tk.Entry(self.formulaFrame, textvariable=self.formula, width=60)
-        self.formulaEntry.grid(row=2, column=1, columnspan=5)
+        self.formulaEntry.grid(row=2, column=1, columnspan=5, pady =20)
 
         self.bApply = tk.Button(self.formulaFrame, text='Apply', bg=secondaryColor, command=self.applyFunction)
         self.bApply.grid(row=2, column=6)
@@ -431,7 +435,6 @@ class GUI():
             if words[0] =="formula":
                 self.activeFunction = line[8:-1]
                 self.formula.set(line[8:-1])
-                #self.formulaEntry.set(line[8:-1])
                 self.formulaEntry.delete(0,END)
                 self.formulaEntry.insert(0,line[8:-1])
             else :
@@ -448,6 +451,7 @@ class GUI():
                     if words[0] == tags[i]:
                         widgets[i].set(words[1])
         file.close()
+        self.changeColorMode()
 
     def preset(self, n):
         functions = []
