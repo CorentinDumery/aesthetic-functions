@@ -1,0 +1,13 @@
+formula 255*np.sin( ((dh1)**2 +(dh1b)**2)*p1/1 )
+alpha 4
+beta 100
+offx -15
+offy -5
+sigma 0
+resolution 30
+colorMode BW
+randomModulation 0
+sValue 102
+vValue 230
+bwScale 111
+rgbScale 256

@@ -1,0 +1,13 @@
+formula (scale*np.sin( (i*22+np.cos(j*4)*5)/10)*(scale*np.sin( (i*22+np.cos(j*4)*5)/10) > 0)   *np.exp((-(((i+45/100)*3)**10))/1000)*np.exp((-(((j-23/100)*4)**10))/1000)  + scale*np.sin( ((-i+p1/100)*22+np.cos(j*4)*5)/10)*(scale*np.sin( ((-i+p1/100)*22+np.cos(j*4)*5)/10) > 0)*np.exp((-((((-i+p1/100)+45/100)*3)**10))/1000)*np.exp((-(((j-23/100)*4)**10))/1000))/(p2/1)
+alpha 49
+beta 21
+offx 0
+offy 0
+sigma 77
+resolution 88
+colorMode BW
+randomModulation 0
+sValue 99
+vValue 231
+bwScale 113
+rgbScale 256

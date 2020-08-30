@@ -1,0 +1,13 @@
+formula np.sin(xx*10+np.cos(yy*10)*5)
+alpha 49
+beta 21
+offx 0
+offy 0
+sigma 77
+resolution 88
+colorMode RGB
+randomModulation 0
+sValue 99
+vValue 231
+bwScale 113
+rgbScale 256

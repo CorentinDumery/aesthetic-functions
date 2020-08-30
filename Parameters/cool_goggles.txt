@@ -1,0 +1,26 @@
+formula beta*np.log( 10+ np.sin( np.cos(i/(alpha/100)) + j**2)*100 ) + 100 
+alpha 82
+beta 10
+offx 0
+offy 0
+sigma 0
+resolution 41
+colorMode HSV
+randomModulation 0
+sValue 135
+vValue 225
+bwScale 200
+rgbScale 256
+formula beta*np.log( 10+ np.sin( np.cos(i/(alpha/100)) + j**2)*100 ) + 100 
+alpha 82
+beta 10
+offx 0
+offy 0
+sigma 0
+resolution 100
+colorMode HSV
+randomModulation 0
+sValue 135
+vValue 225
+bwScale 200
+rgbScale 256

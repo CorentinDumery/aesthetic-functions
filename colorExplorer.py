@@ -5,6 +5,8 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
+- replace Entry with Text, and check compatibility with load/save
+- prevent formulas with potentially harmful commands ("exec", "import", ...)
 - add parameter t, and option to record video with t going from 0 to 100
 - automatically replace ** with pow during evaluation
 - add rotation slider that replaces i with t*i+(1-t)*j, etc
@@ -51,11 +53,11 @@ from importlib import reload
 import userdef as user
 
 def func(xx,yy, p1, p2, offx, offy, f=""):
-    scale = 256*256*256/1000
-
     i = xx-offx
     j = yy-offy
 
+    #some constants, needed for compatibility with old formulas:
+    scale = 256*256*256/1000
     dh1 = i-hole1[0]
     dh1b = j-hole1[1]
     dh2 = i-hole2[0]
@@ -378,11 +380,10 @@ class GUI():
             self.BWModeMenu.grid(row=2, column=1, columnspan=3)
         self.genImg()
 
-    def play(self):
+    def play(self): #TODO
         if self.sl5.get() > 0:
             print("Sigma not zero, cannot play in reasonable time")
             return
-    #    for i in range(5):
         self.root.after(100, self.genImg())
 
     def addFormula(self, string):
