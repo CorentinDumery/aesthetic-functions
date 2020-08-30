@@ -30,7 +30,7 @@ TODO (Corentin):
 # sin cos exp fabs bitwise_or/and/xor rint
 
 import tkinter as tk
-from tkinter import simpledialog, messagebox, filedialog, END
+from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 from PIL import Image, ImageTk
 import numpy as np #needed for compatibility with formulas with np.
 from numpy import * #needed for simple formula interpretation
@@ -46,7 +46,8 @@ secondaryColor = "#daede9"
 hole1 = (0.5,0.5)
 hole2 = (-0.1,-0.2)
 
-
+from importlib import reload  
+import userdef
 
 def func(xx,yy, p1, p2, offx, offy, f=""):
     scale = 256*256*256/1000
@@ -67,6 +68,12 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     f = f.replace("alpha",str(p1))
     f = f.replace("beta",str(p2))
     return eval(f)
+
+def updateUserDefLib(text):
+    libfile = open("userdef.py", "w")
+    libfile.write(text)
+    libfile.close()
+    reload(userdef)
 
 class GUI():
 
@@ -172,9 +179,12 @@ class GUI():
 
         ## -- FORMULAFRAME -- ##
 
+
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
         self.activeFunction = f"alpha*(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
+        self.activeUserDef = f"#Your definitions here" #default formula here
+        self.userDef = tk.StringVar(value=self.activeUserDef)
 
         display_help_buttons = False
         if display_help_buttons:
@@ -200,8 +210,11 @@ class GUI():
             self.bf3.grid(row=1, column = 7)
 
         self.formulaEntry = tk.Entry(self.formulaFrame, textvariable=self.formula, width=60)
-        self.formulaEntry.grid(row=2, column=1, columnspan=5, pady =20)
+        self.formulaEntry.grid(row=1, column=1, columnspan=5, pady =20)
 
+        self.userDefEntry = scrolledtext.ScrolledText(self.formulaFrame, width=60)
+        self.userDefEntry.grid(row=2, column=1, columnspan=5, pady =20)
+        
         self.bApply = tk.Button(self.formulaFrame, text='Apply', bg=secondaryColor, command=self.applyFunction)
         self.bApply.grid(row=2, column=6)
 
@@ -264,6 +277,7 @@ class GUI():
         y = np.arange(miny, maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
+        updateUserDefLib(self.userDefEntry.get("1.0", END))
         res = func(xx,yy,fact1,fact2,offx,offy,self.activeFunction)
         res = res.transpose()
 
