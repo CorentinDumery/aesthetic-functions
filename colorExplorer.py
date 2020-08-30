@@ -46,8 +46,9 @@ secondaryColor = "#daede9"
 hole1 = (0.5,0.5)
 hole2 = (-0.1,-0.2)
 
+#user is the module used to load user definition
 from importlib import reload  
-import userdef
+import userdef as user
 
 def func(xx,yy, p1, p2, offx, offy, f=""):
     scale = 256*256*256/1000
@@ -70,10 +71,11 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     return eval(f)
 
 def updateUserDefLib(text):
+    '''Writes text in userdef.py and reloads the module'''
     libfile = open("userdef.py", "w")
     libfile.write(text)
     libfile.close()
-    reload(userdef)
+    reload(user)
 
 class GUI():
 
@@ -183,8 +185,6 @@ class GUI():
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
         self.activeFunction = f"alpha*(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
-        self.activeUserDef = f"#Your definitions here" #default formula here
-        self.userDef = tk.StringVar(value=self.activeUserDef)
 
         display_help_buttons = False
         if display_help_buttons:
@@ -209,12 +209,13 @@ class GUI():
             self.bf3 = tk.Button(self.formulaFrame, text='sin', bg=secondaryColor, command= lambda: self.addFormula("sin"))
             self.bf3.grid(row=1, column = 7)
 
-        self.formulaEntry = tk.Entry(self.formulaFrame, textvariable=self.formula, width=60)
-        self.formulaEntry.grid(row=1, column=1, columnspan=5, pady =20)
+        self.userDefEntry = scrolledtext.ScrolledText(self.formulaFrame, width=60, height=10)
+        self.userDefEntry.insert(END, "# Your definitions here.\n# They will be imported in the module 'user'.")
+        self.userDefEntry.grid(row=1, column=1, columnspan=5, pady =20)
 
-        self.userDefEntry = scrolledtext.ScrolledText(self.formulaFrame, width=60)
-        self.userDefEntry.grid(row=2, column=1, columnspan=5, pady =20)
-        
+        self.formulaEntry = tk.Entry(self.formulaFrame, textvariable=self.formula, width=60)
+        self.formulaEntry.grid(row=2, column=1, columnspan=5, pady =20)
+
         self.bApply = tk.Button(self.formulaFrame, text='Apply', bg=secondaryColor, command=self.applyFunction)
         self.bApply.grid(row=2, column=6)
 
