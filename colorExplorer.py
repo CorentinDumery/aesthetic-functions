@@ -52,7 +52,7 @@ hole2 = (-0.1,-0.2)
 from importlib import reload  
 import userdef as user
 
-def func(xx,yy, p1, p2, offx, offy, f=""):
+def func(xx,yy, offx, offy, f=""):
     i = xx-offx
     j = yy-offy
 
@@ -66,15 +66,14 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     n,m = xx.shape
     nb,mb = yy.shape
 
-    f = f.replace("α",str(p1))
-    f = f.replace("β",str(p2))
-    f = f.replace("alpha",str(p1))
-    f = f.replace("beta",str(p2))
     return eval(f)
 
-def updateUserDefLib(text):
+def updateUserDefLib(text, sliders):
     '''Writes text in userdef.py and reloads the module'''
     libfile = open("userdef.py", "w")
+    for paramName in sliders:
+        slider = sliders[paramName]
+        libfile.write(paramName + "=" + str(slider.get())+"\n");
     libfile.write(text)
     libfile.close()
     reload(user)
@@ -93,37 +92,37 @@ class GUI():
 
         self.sliderFrame = tk.Frame(self.root, bg= secondaryColor, pady=10)
 
-        self.sl1 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
-        self.sl1.set(100)
-        self.sl1.grid(row=1,column=0)
-        tk.Label(self.sliderFrame, text="α",padx=5, pady=5, bg= secondaryColor).grid(row=0,column=0,sticky="E")
-
-        self.sl2 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
-        self.sl2.set(100)
-        self.sl2.grid(row=1,column=1)
-        tk.Label(self.sliderFrame, text="β",padx=5, bg= secondaryColor).grid(row=0,column=1,sticky="E")
+        self.sliders = {}
 
         self.sl3 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl3.set(0)
-        self.sl3.grid(row=1,column=2)
-        tk.Label(self.sliderFrame, text="off_x", bg= secondaryColor).grid(row=0,column=2,sticky="E")
+        self.sl3.grid(row=1,column=0)
+        tk.Label(self.sliderFrame, text="off_x", bg= secondaryColor).grid(row=0,column=0,sticky="E")
 
         self.sl4 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl4.set(0)
-        self.sl4.grid(row=1,column=3)
-        tk.Label(self.sliderFrame, text="off_y", bg= secondaryColor).grid(row=0,column=3,sticky="E")
+        self.sl4.grid(row=1,column=1)
+        tk.Label(self.sliderFrame, text="off_y", bg= secondaryColor).grid(row=0,column=1,sticky="E")
 
 
         self.sl5 = tk.Scale(self.sliderFrame,from_=500, to=0, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl5.set(0)
-        self.sl5.grid(row=1,column=4)
-        tk.Label(self.sliderFrame, text="σ",padx=5, bg= secondaryColor).grid(row=0,column=4,sticky="E")
+        self.sl5.grid(row=1,column=2)
+        tk.Label(self.sliderFrame, text="σ",padx=5, bg= secondaryColor).grid(row=0,column=2,sticky="E")
 
         self.sl6 = tk.Scale(self.sliderFrame,from_=100, to=1, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl6.set(30)
-        self.sl6.grid(row=1,column=5)
-        tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=5,sticky="E")
+        self.sl6.grid(row=1,column=3)
+        tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=3,sticky="E")
 
+        self.userSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
+        self.newSliderName = tk.StringVar(value="my_param");
+        self.newSliderEntry = tk.Entry(self.userSliderFrame, textvariable = self.newSliderName)
+        self.newSliderEntry.pack(side=tk.LEFT)
+        self.newSliderButton = tk.Button(self.userSliderFrame, text="+", command=self.newSlider)
+        self.newSliderButton.pack(side=tk.RIGHT)
+
+        self.userSliderFrame.grid(row = 2, column = 0, columnspan = 4)
         self.sliderFrame.grid(row=1,column=1)
 
 
@@ -185,7 +184,7 @@ class GUI():
 
 
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
-        self.activeFunction = f"alpha*(i**2+j**2)" #default formula here
+        self.activeFunction = f"(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
         display_help_buttons = False
@@ -256,9 +255,6 @@ class GUI():
 
     def genImg(self, event = None):
 
-        fact1 = self.sl1.get()
-        fact2 = self.sl2.get()
-
         resx = self.sl6.get()*1600//100
         resy = self.sl6.get()*900//100
         offx = 640*2*(self.sl3.get())/10000
@@ -280,8 +276,8 @@ class GUI():
         y = np.arange(miny, maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
-        updateUserDefLib(self.userDefEntry.get("1.0", END))
-        res = func(xx,yy,fact1,fact2,offx,offy,self.activeFunction)
+        updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
+        res = func(xx,yy,offx,offy,self.activeFunction)
         res = res.transpose()
 
         if res.shape[1] > resy: #fix potential floating error imprecision
@@ -492,5 +488,27 @@ class GUI():
         self.randomModulation.set(randomMod[n])
 
         self.applyFunction()
+
+    def newSlider(self):
+
+        def checkSliderName(name):
+            #reject if name already taken
+            if name in self.sliders:
+                return False
+            #reject if name is not a variable name
+            #TODO refine this
+            if " " in name:
+                return False
+            return True
+
+        newSliderName = self.newSliderName.get()
+        if not checkSliderName(newSliderName):
+            return
+        newSlider = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+        newSlider.set(100)
+        newSlider.grid(row=4,column=len(self.sliders))
+        tk.Label(self.sliderFrame, text="user." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
+        self.sliders[newSliderName] = newSlider
+
 
 app = GUI()
