@@ -32,7 +32,7 @@ TODO (Corentin):
 # sin cos exp fabs bitwise_or/and/xor rint
 
 import tkinter as tk
-from tkinter import simpledialog, messagebox, filedialog, END
+from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 from PIL import Image, ImageTk
 import numpy as np #needed for compatibility with formulas with np.
 from numpy import * #needed for simple formula interpretation
@@ -48,6 +48,9 @@ secondaryColor = "#daede9"
 hole1 = (0.5,0.5)
 hole2 = (-0.1,-0.2)
 
+#user is the module used to load user definition
+from importlib import reload  
+import userdef as user
 
 def func(xx,yy, p1, p2, offx, offy, f=""):
     i = xx-offx
@@ -68,6 +71,13 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     f = f.replace("alpha",str(p1))
     f = f.replace("beta",str(p2))
     return eval(f)
+
+def updateUserDefLib(text):
+    '''Writes text in userdef.py and reloads the module'''
+    libfile = open("userdef.py", "w")
+    libfile.write(text)
+    libfile.close()
+    reload(user)
 
 class GUI():
 
@@ -173,6 +183,7 @@ class GUI():
 
         ## -- FORMULAFRAME -- ##
 
+
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
         self.activeFunction = f"alpha*(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
@@ -199,6 +210,10 @@ class GUI():
 
             self.bf3 = tk.Button(self.formulaFrame, text='sin', bg=secondaryColor, command= lambda: self.addFormula("sin"))
             self.bf3.grid(row=1, column = 7)
+
+        self.userDefEntry = scrolledtext.ScrolledText(self.formulaFrame, width=60, height=10)
+        self.userDefEntry.insert(END, "# Your definitions here.\n# They will be imported in the module 'user'.")
+        self.userDefEntry.grid(row=1, column=1, columnspan=5, pady =20)
 
         self.formulaEntry = tk.Entry(self.formulaFrame, textvariable=self.formula, width=60)
         self.formulaEntry.grid(row=2, column=1, columnspan=5, pady =20)
@@ -265,6 +280,7 @@ class GUI():
         y = np.arange(miny, maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
+        updateUserDefLib(self.userDefEntry.get("1.0", END))
         res = func(xx,yy,fact1,fact2,offx,offy,self.activeFunction)
         res = res.transpose()
 
