@@ -115,14 +115,17 @@ class GUI():
         self.sl6.grid(row=1,column=3)
         tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=3,sticky="E")
 
-        self.userSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
+        self.addSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
         self.newSliderName = tk.StringVar(value="my_param");
-        self.newSliderEntry = tk.Entry(self.userSliderFrame, textvariable = self.newSliderName)
+        self.newSliderEntry = tk.Entry(self.addSliderFrame, textvariable = self.newSliderName)
         self.newSliderEntry.pack(side=tk.LEFT)
-        self.newSliderButton = tk.Button(self.userSliderFrame, text="+", command=self.newSlider)
+        self.newSliderButton = tk.Button(self.addSliderFrame, text="+", command=self.newSlider)
         self.newSliderButton.pack(side=tk.RIGHT)
+        self.addSliderFrame.grid(row = 2, column = 0, columnspan = 4)
 
-        self.userSliderFrame.grid(row = 2, column = 0, columnspan = 4)
+        self.userSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
+        self.userSliderFrame.grid(row = 3, column = 0, columnspan = 4)
+
         self.sliderFrame.grid(row=1,column=1)
 
 
@@ -504,10 +507,10 @@ class GUI():
         newSliderName = self.newSliderName.get()
         if not checkSliderName(newSliderName):
             return
-        newSlider = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+        newSlider = tk.Scale(self.userSliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         newSlider.set(100)
         newSlider.grid(row=4,column=len(self.sliders))
-        tk.Label(self.sliderFrame, text="user." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
+        tk.Label(self.userSliderFrame, text="user." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
         self.sliders[newSliderName] = newSlider
 
 
