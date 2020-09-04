@@ -52,6 +52,19 @@ hole2 = (-0.1,-0.2)
 from importlib import reload  
 import userdef as user
 
+# This class is used to store the slider parameters
+class Slider(dict):
+    def __getattr__(self, name):
+        if name in self:
+            return self[name]
+        else:
+            raise AttributeError("No such attribute: " + name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+slider = Slider()
+
 def func(xx,yy, offx, offy, f=""):
     i = xx-offx
     j = yy-offy
@@ -71,9 +84,7 @@ def func(xx,yy, offx, offy, f=""):
 def updateUserDefLib(text, sliders):
     '''Writes text in userdef.py and reloads the module'''
     libfile = open("userdef.py", "w")
-    for paramName in sliders:
-        slider = sliders[paramName]
-        libfile.write(paramName + "=" + str(slider.get())+"\n");
+    
     libfile.write(text)
     libfile.close()
     reload(user)
@@ -279,7 +290,7 @@ class GUI():
         y = np.arange(miny, maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
-        updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
+        self.updateSliderParameters()
         res = func(xx,yy,offx,offy,self.activeFunction)
         res = res.transpose()
 
@@ -397,7 +408,14 @@ class GUI():
 
     def applyFunction(self):
         self.activeFunction = self.formula.get()
+        updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
         self.genImg()
+
+    def updateSliderParameters(self):
+        for paramName in self.sliders:
+            sl = self.sliders[paramName]
+            # dynamically adjust slider attributes
+            slider[paramName] = sl.get()
 
     def clearFunction(self):
         self.activeFunction = ""
@@ -510,7 +528,7 @@ class GUI():
         newSlider = tk.Scale(self.userSliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         newSlider.set(100)
         newSlider.grid(row=4,column=len(self.sliders))
-        tk.Label(self.userSliderFrame, text="user." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
+        tk.Label(self.userSliderFrame, text="slider." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
         self.sliders[newSliderName] = newSlider
 
 
