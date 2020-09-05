@@ -5,7 +5,9 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO (anyone):
-- replace Entry with Text, and check compatibility with load/save
+- remove useless sliders and make sure loading still works
+- make ImageHolder class with everything related to the canvas (also, use actual Canvas ?)
+- Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
 - prevent formulas with potentially harmful commands ("exec", "import", ...)
 - add parameter t, and option to record video with t going from 0 to 100
 - automatically replace ** with pow during evaluation
@@ -19,12 +21,7 @@ TODO (anyone):
 - add label that shows maximum/minimum reached by current formula on frame
 - if the input function is constant, it should still be shown
 - make color mode menus of a fixed size (so that the window doesn't change size)
-- replace alpha and beta with p1 and p2 upon saving parameters
-- add "open & multiply" button to easily combine formulas
-TODO (Corentin):
 - make image independant of sizex sizey
-- do something clever from hole1 and hole2
-- normalization option
 """
 
 # list of available functions:
@@ -78,6 +75,8 @@ def updateUserDefLib(text):
     libfile.write(text)
     libfile.close()
     reload(user)
+    
+    
 
 class GUI():
 
@@ -86,8 +85,16 @@ class GUI():
         self.root.title('ColorExplorer')
         self.root.grid()
         self.root.configure(background=mainColor)
-        self.root.sizex = 960  #Size of image on tk window
-        self.root.sizey = 540
+        self.root.sizex = 960//2  #Size of image on tk window
+        self.root.sizey = 540//2
+        
+        self.offx = 0 #TODO: put these in some ImageHolder class
+        self.offy = 0
+        self.zoom = 1
+        self.minx = self.zoom*(-640)/100
+        self.maxx = self.zoom*(+640)/100
+        self.miny = self.zoom*(-360)/100
+        self.maxy = self.zoom*(+360)/100
 
         ## -- SLIDERFRAME -- ##
 
@@ -251,7 +258,40 @@ class GUI():
         self.label = tk.Label(self.root)
 
         self.genImg()
+        
+        
+        class MouseMover(): # https://gist.github.com/fnielsen/3810848
 
+            def __init__(self, window):
+                self.lastX = 0
+                self.lastY = 0
+                self.window = window
+            
+            def mouseWheel(self, event):
+                self.window.zoom *= 1-event.delta/1200
+                self.window.genImg()
+            def b3(self, event):
+                print("b3 pressed")
+            def selectB1(self, event): 
+                self.lastX = event.x
+                self.lastY = event.y
+            def dragB1(self, event):
+                
+                sx = self.window.root.sizex 
+                sy = self.window.root.sizey 
+                
+                self.window.offx += (event.x - self.lastX)*(self.window.maxx-self.window.minx)/sx
+                self.window.offy += (event.y - self.lastY)*(self.window.maxy-self.window.miny)/sy
+                self.lastX = event.x
+                self.lastY = event.y
+                self.window.genImg()                
+            
+        # Get an instance of the MouseMover object
+        mouse_mover = MouseMover(self)
+        self.label.bind("<Button-1>", mouse_mover.selectB1)
+        self.label.bind("<MouseWheel>", mouse_mover.mouseWheel)
+        self.label.bind("<Button-3>", mouse_mover.b3)
+        self.label.bind("<B1-Motion>", mouse_mover.dragB1)
         self.root.mainloop()
 
     def genImg(self, event = None):
@@ -261,29 +301,28 @@ class GUI():
 
         resx = self.sl6.get()*1600//100
         resy = self.sl6.get()*900//100
-        offx = 640*2*(self.sl3.get())/10000
-        offy = 360*2*(self.sl4.get())/10000
 
-        minx = (-640*2/2)/100
-        maxx = (+640*2/2)/100
-        miny = (-360*2/2)/100
-        maxy = (+360*2/2)/100
-        stepx = (maxx-minx)/resx
-        stepy = (maxy-miny)/resy
+        self.minx = self.zoom*(-640*2/2)/100
+        self.maxx = self.zoom*(+640*2/2)/100
+        self.miny = self.zoom*(-360*2/2)/100
+        self.maxy = self.zoom*(+360*2/2)/100
+        stepx = (self.maxx-self.minx)/resx
+        stepy = (self.maxy-self.miny)/resy
 
         printInterval = False
         if printInterval:
-            print("Interval x:",minx,maxx)
-            print("Interval y:",miny,maxy)
+            print("Interval x:",self.minx,self.maxx)
+            print("Interval y:",self.miny,self.maxy)
 
-        x = np.arange(minx, maxx, stepx)
-        y = np.arange(miny, maxy, stepy)
+        x = np.arange(self.minx, self.maxx, stepx)
+        y = np.arange(self.miny, self.maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
         updateUserDefLib(self.userDefEntry.get("1.0", END))
-        res = func(xx,yy,fact1,fact2,offx,offy,self.activeFunction)
+        res = func(xx,yy,fact1,fact2,self.offx,self.offy,self.activeFunction)
         res = res.transpose()
 
+        res = res[:resx,:resy]
         if res.shape[1] > resy: #fix potential floating error imprecision
             res = res[:,:-1]
 
