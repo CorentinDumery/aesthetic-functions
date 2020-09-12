@@ -4,7 +4,8 @@ Created on Wed May  6 09:25:55 2020
 """
 
 """
-TODO (anyone):
+TODO:
+- fix mousewheel for ubuntu
 - remove useless sliders and make sure loading still works
 - make ImageHolder class with everything related to the canvas (also, use actual Canvas ?)
 - Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
@@ -46,10 +47,23 @@ hole1 = (0.5,0.5)
 hole2 = (-0.1,-0.2)
 
 #user is the module used to load user definition
-from importlib import reload  
+from importlib import reload
 import userdef as user
 
-def func(xx,yy, p1, p2, offx, offy, f=""):
+# This class is used to store the slider parameters
+class Slider(dict):
+    def __getattr__(self, name):
+        if name in self:
+            return self[name]
+        else:
+            raise AttributeError("No such attribute: " + name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+slider = Slider()
+
+def func(xx,yy, offx, offy, f=""):
     i = xx-offx
     j = yy-offy
 
@@ -63,20 +77,17 @@ def func(xx,yy, p1, p2, offx, offy, f=""):
     n,m = xx.shape
     nb,mb = yy.shape
 
-    f = f.replace("α",str(p1))
-    f = f.replace("β",str(p2))
-    f = f.replace("alpha",str(p1))
-    f = f.replace("beta",str(p2))
     return eval(f)
 
-def updateUserDefLib(text):
+def updateUserDefLib(text, sliders):
     '''Writes text in userdef.py and reloads the module'''
     libfile = open("userdef.py", "w")
+
     libfile.write(text)
     libfile.close()
     reload(user)
-    
-    
+
+
 
 class GUI():
 
@@ -85,9 +96,9 @@ class GUI():
         self.root.title('ColorExplorer')
         self.root.grid()
         self.root.configure(background=mainColor)
-        self.root.sizex = 960//2  #Size of image on tk window
-        self.root.sizey = 540//2
-        
+        self.root.sizex = 960  #Size of image on tk window
+        self.root.sizey = 540
+
         self.offx = 0 #TODO: put these in some ImageHolder class
         self.offy = 0
         self.zoom = 1
@@ -100,36 +111,39 @@ class GUI():
 
         self.sliderFrame = tk.Frame(self.root, bg= secondaryColor, pady=10)
 
-        self.sl1 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
-        self.sl1.set(100)
-        self.sl1.grid(row=1,column=0)
-        tk.Label(self.sliderFrame, text="α",padx=5, pady=5, bg= secondaryColor).grid(row=0,column=0,sticky="E")
-
-        self.sl2 = tk.Scale(self.sliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
-        self.sl2.set(100)
-        self.sl2.grid(row=1,column=1)
-        tk.Label(self.sliderFrame, text="β",padx=5, bg= secondaryColor).grid(row=0,column=1,sticky="E")
+        self.sliders = {}
 
         self.sl3 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl3.set(0)
-        self.sl3.grid(row=1,column=2)
-        tk.Label(self.sliderFrame, text="off_x", bg= secondaryColor).grid(row=0,column=2,sticky="E")
+        self.sl3.grid(row=1,column=0)
+        tk.Label(self.sliderFrame, text="off_x", bg= secondaryColor).grid(row=0,column=0,sticky="E")
 
         self.sl4 = tk.Scale(self.sliderFrame,from_=100, to=-100, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl4.set(0)
-        self.sl4.grid(row=1,column=3)
-        tk.Label(self.sliderFrame, text="off_y", bg= secondaryColor).grid(row=0,column=3,sticky="E")
+        self.sl4.grid(row=1,column=1)
+        tk.Label(self.sliderFrame, text="off_y", bg= secondaryColor).grid(row=0,column=1,sticky="E")
 
 
         self.sl5 = tk.Scale(self.sliderFrame,from_=500, to=0, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl5.set(0)
-        self.sl5.grid(row=1,column=4)
-        tk.Label(self.sliderFrame, text="σ",padx=5, bg= secondaryColor).grid(row=0,column=4,sticky="E")
+        self.sl5.grid(row=1,column=2)
+        tk.Label(self.sliderFrame, text="σ",padx=5, bg= secondaryColor).grid(row=0,column=2,sticky="E")
 
         self.sl6 = tk.Scale(self.sliderFrame,from_=100, to=1, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         self.sl6.set(30)
-        self.sl6.grid(row=1,column=5)
-        tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=5,sticky="E")
+        self.sl6.grid(row=1,column=3)
+        tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=3,sticky="E")
+
+        self.addSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
+        self.newSliderName = tk.StringVar(value="my_param");
+        self.newSliderEntry = tk.Entry(self.addSliderFrame, textvariable = self.newSliderName)
+        self.newSliderEntry.pack(side=tk.LEFT)
+        self.newSliderButton = tk.Button(self.addSliderFrame, text="+", command=self.newSlider)
+        self.newSliderButton.pack(side=tk.RIGHT)
+        self.addSliderFrame.grid(row = 2, column = 0, columnspan = 4)
+
+        self.userSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
+        self.userSliderFrame.grid(row = 3, column = 0, columnspan = 4)
 
         self.sliderFrame.grid(row=1,column=1)
 
@@ -192,7 +206,7 @@ class GUI():
 
 
         self.formulaFrame = tk.Frame(self.root, bg=mainColor)
-        self.activeFunction = f"alpha*(i**2+j**2)" #default formula here
+        self.activeFunction = f"255*(i**2+j**2)" #default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
         display_help_buttons = False
@@ -258,34 +272,34 @@ class GUI():
         self.label = tk.Label(self.root)
 
         self.genImg()
-        
-        
+
+
         class MouseMover(): # https://gist.github.com/fnielsen/3810848
 
             def __init__(self, window):
                 self.lastX = 0
                 self.lastY = 0
                 self.window = window
-            
+
             def mouseWheel(self, event):
                 self.window.zoom *= 1-event.delta/1200
                 self.window.genImg()
             def b3(self, event):
                 print("b3 pressed")
-            def selectB1(self, event): 
+            def selectB1(self, event):
                 self.lastX = event.x
                 self.lastY = event.y
             def dragB1(self, event):
-                
-                sx = self.window.root.sizex 
-                sy = self.window.root.sizey 
-                
+
+                sx = self.window.root.sizex
+                sy = self.window.root.sizey
+
                 self.window.offx += (event.x - self.lastX)*(self.window.maxx-self.window.minx)/sx
                 self.window.offy += (event.y - self.lastY)*(self.window.maxy-self.window.miny)/sy
                 self.lastX = event.x
                 self.lastY = event.y
-                self.window.genImg()                
-            
+                self.window.genImg()
+
         # Get an instance of the MouseMover object
         mouse_mover = MouseMover(self)
         self.label.bind("<Button-1>", mouse_mover.selectB1)
@@ -295,9 +309,6 @@ class GUI():
         self.root.mainloop()
 
     def genImg(self, event = None):
-
-        fact1 = self.sl1.get()
-        fact2 = self.sl2.get()
 
         resx = self.sl6.get()*1600//100
         resy = self.sl6.get()*900//100
@@ -318,8 +329,9 @@ class GUI():
         y = np.arange(self.miny, self.maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
-        updateUserDefLib(self.userDefEntry.get("1.0", END))
-        res = func(xx,yy,fact1,fact2,self.offx,self.offy,self.activeFunction)
+
+        self.updateSliderParameters()
+        res = func(xx, yy, self.offx, self.offy, self.activeFunction)
         res = res.transpose()
 
         res = res[:resx,:resy]
@@ -437,7 +449,14 @@ class GUI():
 
     def applyFunction(self):
         self.activeFunction = self.formula.get()
+        updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
         self.genImg()
+
+    def updateSliderParameters(self):
+        for paramName in self.sliders:
+            sl = self.sliders[paramName]
+            # dynamically adjust slider attributes
+            slider[paramName] = sl.get()
 
     def clearFunction(self):
         self.activeFunction = ""
@@ -531,5 +550,27 @@ class GUI():
         self.randomModulation.set(randomMod[n])
 
         self.applyFunction()
+
+    def newSlider(self):
+
+        def checkSliderName(name):
+            #reject if name already taken
+            if name in self.sliders:
+                return False
+            #reject if name is not a variable name
+            #TODO refine this
+            if " " in name:
+                return False
+            return True
+
+        newSliderName = self.newSliderName.get()
+        if not checkSliderName(newSliderName):
+            return
+        newSlider = tk.Scale(self.userSliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+        newSlider.set(100)
+        newSlider.grid(row=4,column=len(self.sliders))
+        tk.Label(self.userSliderFrame, text="slider." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
+        self.sliders[newSliderName] = newSlider
+
 
 app = GUI()
