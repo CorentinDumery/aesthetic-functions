@@ -286,6 +286,12 @@ class GUI():
                 self.window.genImg()
             def b3(self, event):
                 print("b3 pressed")
+            def b4(self, event): #mouse wheel up X11
+                self.window.zoom *= 0.9
+                self.window.genImg()
+            def b5(self, event): #mouse wheel up X11
+                self.window.zoom *= 1.1
+                self.window.genImg()
             def selectB1(self, event):
                 self.lastX = event.x
                 self.lastY = event.y
@@ -305,6 +311,8 @@ class GUI():
         self.label.bind("<Button-1>", mouse_mover.selectB1)
         self.label.bind("<MouseWheel>", mouse_mover.mouseWheel)
         self.label.bind("<Button-3>", mouse_mover.b3)
+        self.label.bind("<Button-4>", mouse_mover.b4) #mouse wheel up X11
+        self.label.bind("<Button-5>", mouse_mover.b5) #mouse wheel down X11
         self.label.bind("<B1-Motion>", mouse_mover.dragB1)
         self.root.mainloop()
 
