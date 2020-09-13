@@ -5,7 +5,7 @@ Created on Wed May  6 09:25:55 2020
 
 """
 TODO:
-- fix mousewheel for ubuntu
+- add option to keep/discard previous stuff upon loading parameters
 - remove useless sliders and make sure loading still works
 - make ImageHolder class with everything related to the canvas (also, use actual Canvas ?)
 - Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
@@ -15,8 +15,6 @@ TODO:
 - add rotation slider that replaces i with t*i+(1-t)*j, etc
 - protect against problematic functions (div by 0, ...)
 - improve formula buttons, make the writing "|" change with button call
-- improve saving window
-    * check file name doesn't already exist before saving (image / parameters)
 - improve looks (if possible without using ttk)
 - put the sliders/buttons in a loop to make the code more readable
 - add label that shows maximum/minimum reached by current formula on frame
@@ -39,6 +37,8 @@ from scipy.ndimage.filters import gaussian_filter
 import colorsys
 import matplotlib
 from time import sleep
+import json
+from os import path
 
 
 mainColor = "#ccebe4"
@@ -124,14 +124,14 @@ class GUI():
         tk.Label(self.sliderFrame, text="off_y", bg= secondaryColor).grid(row=0,column=1,sticky="E")
 
 
-        self.sl5 = tk.Scale(self.sliderFrame,from_=500, to=0, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
-        self.sl5.set(0)
-        self.sl5.grid(row=1,column=2)
+        self.sl_sigma = tk.Scale(self.sliderFrame,from_=500, to=0, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+        self.sl_sigma.set(0)
+        self.sl_sigma.grid(row=1,column=2)
         tk.Label(self.sliderFrame, text="σ",padx=5, bg= secondaryColor).grid(row=0,column=2,sticky="E")
 
-        self.sl6 = tk.Scale(self.sliderFrame,from_=100, to=1, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
-        self.sl6.set(30)
-        self.sl6.grid(row=1,column=3)
+        self.sl_res = tk.Scale(self.sliderFrame,from_=100, to=1, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+        self.sl_res.set(30)
+        self.sl_res.grid(row=1,column=3)
         tk.Label(self.sliderFrame, text="res", bg= secondaryColor).grid(row=0,column=3,sticky="E")
 
         self.addSliderFrame = tk.Frame(self.sliderFrame, bg = secondaryColor)
@@ -269,6 +269,10 @@ class GUI():
 
         self.presetFrame.grid(row=3,column=2)
 
+        self.maxLabelText = tk.StringVar(value = "Max value: X")
+        self.maxLabel = tk.Label(self.presetFrame, textvariable=self.maxLabelText, bg= secondaryColor)
+        self.maxLabel.grid(row=2,column=0,sticky="E")
+
         self.label = tk.Label(self.root)
 
         self.genImg()
@@ -318,8 +322,8 @@ class GUI():
 
     def genImg(self, event = None):
 
-        resx = self.sl6.get()*1600//100
-        resy = self.sl6.get()*900//100
+        resx = self.sl_res.get()*1600//100
+        resy = self.sl_res.get()*900//100
 
         self.minx = self.zoom*(-640*2/2)/100
         self.maxx = self.zoom*(+640*2/2)/100
@@ -374,7 +378,7 @@ class GUI():
         else:
             array = res
 
-        sigma = self.sl5.get()/100
+        sigma = self.sl_sigma.get()/100
         if sigma > 0:
             if array.ndim == 3:
                 array[0,:,:] = gaussian_filter(array[0,:,:], sigma=sigma)
@@ -412,6 +416,9 @@ class GUI():
             img0 = Image.fromarray(array.transpose())
         #img0 = Image.fromarray(array)
 
+        if not(math.isnan(res.max())):
+            self.maxLabelText.set("Max value: "+ f"{res.max():.2f}"+"\n"+hex(int(res.max())))
+
         self.fullImage = img0 #saving full res picture to output it
 
         ANTIALIAS = False
@@ -440,7 +447,7 @@ class GUI():
         self.genImg()
 
     def play(self): #TODO
-        if self.sl5.get() > 0:
+        if self.sl_sigma.get() > 0:
             print("Sigma not zero, cannot play in reasonable time")
             return
         self.root.after(100, self.genImg())
@@ -482,57 +489,134 @@ class GUI():
     def saveParams(self, name=""):
         if name == "":
             name = simpledialog.askstring("", "Name of this set of parameters?")
-        file = open("Parameters/"+name+".txt","a")
-        params = "formula "+ self.activeFunction + "\n"
-        params += "alpha "+ str(self.sl1.get())+"\n"
-        params += "beta "+ str(self.sl2.get())+"\n"
-        params += "offx "+ str(self.sl3.get())+"\n"
-        params += "offy "+ str(self.sl4.get())+"\n"
-        params += "sigma "+ str(self.sl5.get())+"\n"
-        params += "resolution "+ str(self.sl6.get())+"\n"
-        params += "colorMode "+ self.colorMode.get() +"\n"
-        params += "randomModulation "+ str(self.randomModulation.get())+"\n"
-        params += "sValue "+ str(self.sl_s_value.get()) + "\n"
-        params += "vValue "+ str(self.sl_v_value.get()) + "\n"
-        params += "bwScale "+ str(self.sl_bw_scale.get()) + "\n"
-        params += "rgbScale "+ str(self.sl_rgb_scale.get()) + "\n"
-        file.write(params)
-        file.close()
-       # self.genImg()
+
+        while path.exists("Parameters/"+name+".json"):
+            name = simpledialog.askstring("", "Name already exists, please pick another one")
+
+        saveToTxt = False
+        if saveToTxt:
+            file = open("Parameters/"+name+".txt","a")
+            params = "formula "+ self.activeFunction + "\n"
+            params += "alpha "+ str(0)+"\n"
+            params += "beta "+ str(0)+"\n"
+            params += "offx "+ str(self.offx)+"\n"
+            params += "offy "+ str(self.offy)+"\n"
+            params += "sigma "+ str(self.sl_sigma.get())+"\n"
+            params += "resolution "+ str(self.sl_res.get())+"\n"
+            params += "colorMode "+ self.colorMode.get() +"\n"
+            params += "randomModulation "+ str(self.randomModulation.get())+"\n"
+            params += "sValue "+ str(self.sl_s_value.get()) + "\n"
+            params += "vValue "+ str(self.sl_v_value.get()) + "\n"
+            params += "bwScale "+ str(self.sl_bw_scale.get()) + "\n"
+            params += "rgbScale "+ str(self.sl_rgb_scale.get()) + "\n"
+            file.write(params)
+            file.close()
+
+        json_data = {}
+        json_data['formula'] = self.formula.get()
+        json_data['menu_parameters']={
+            'offx': self.offx,
+            'offy': self.offy,
+            'sigma': self.sl_sigma.get(),
+            'resolution': self.sl_res.get(),
+            'colorMode': self.colorMode.get(),
+            'randomModulation': self.randomModulation.get(),
+            'sValue': self.sl_s_value.get(),
+            'vValue': self.sl_v_value.get(),
+            'bwScale': self.sl_bw_scale.get(),
+            'rgbScale': self.sl_rgb_scale.get(),
+        }
+
+        json_data['sliders'] = []
+        for slider_name in self.sliders:
+            sl = self.sliders[slider_name]
+            json_data['sliders'].append({
+                'name': slider_name,
+                'value': sl.get()
+            })
+
+        json_data['userdef_entry'] = self.userDefEntry.get("1.0", END)
+
+        with open("Parameters/"+name+".json", 'a') as outfile:
+            json.dump(json_data, outfile)
 
     def loadParams(self):
 
         filepath = filedialog.askopenfilename(initialdir = "../colorExplorer/Parameters/",
                                  title = "Select parameters file",
-                                 filetypes = (("txt files","*.txt"),("all files","*.*")))
+                                 filetypes = (("json files","*.json"), ("txt files","*.txt"),("all files","*.*")))
         if filepath == ():
             return
-        file = open(filepath,"r")
-        line = "example"
-        while (line != ""):
-            line = file.readline()
-            words = line.split()
-            if len(words) <1:
-                continue
-            if words[0] =="formula":
-                self.activeFunction = line[8:-1]
-                self.formula.set(line[8:-1])
-                self.formulaEntry.delete(0,END)
-                self.formulaEntry.insert(0,line[8:-1])
-            else :
-                if len(words) != 2:
-                    print("Warning : file misread, wrong number of values per line")
 
-                tags = ["alpha", "beta", "offx", "offy", "sigma",
-                        "resolution", "colorMode", "randomModulation", "sValue", "vValue",
-                        "bwScale", "rgbScale"]
-                widgets = [self.sl1, self.sl2, self.sl3, self.sl4, self.sl5,
-                           self.sl6, self.colorMode, self.randomModulation, self.sl_s_value, self.sl_v_value,
-                           self.sl_bw_scale, self.sl_rgb_scale]
-                for i in range(len(tags)):
-                    if words[0] == tags[i]:
-                        widgets[i].set(words[1])
-        file.close()
+        if len(filepath)>4 and filepath[-5:] == ".json":
+            with open(filepath) as json_file:
+                json_data = json.load(json_file)
+
+                self.activeFunction = json_data['formula']
+                self.formula.set(json_data['formula'])
+                self.formulaEntry.delete(0,END)
+                self.formulaEntry.insert(0,json_data['formula'])
+
+                menu_params = json_data['menu_parameters']
+                self.offx = menu_params['offx']
+                self.offy = menu_params['offy']
+                self.sl_sigma.set(menu_params['sigma'])
+                self.sl_res.set(menu_params['resolution'])
+                self.colorMode.set(menu_params['colorMode'])
+                self.randomModulation.set(menu_params['randomModulation'])
+                self.sl_s_value.set(menu_params['sValue'])
+                self.sl_v_value.set(menu_params['vValue'])
+                self.sl_bw_scale.set(menu_params['bwScale'])
+                self.sl_rgb_scale.set(menu_params['rgbScale'])
+
+                self.sliders = [] #TODO optional append/replace modes
+                for slider in json_data['sliders']:
+                    newSliderName = slider['name']
+                    newSlider = tk.Scale(self.userSliderFrame,from_=0, to=255, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+                    newSlider.set(slider['value'])
+                    newSlider.grid(row=4,column=len(self.sliders))
+                    tk.Label(self.userSliderFrame, text="slider." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
+                    self.sliders[newSliderName] = newSlider
+
+                #self.userDefEntry.delete('1.0', END) #TODO optional append/replace modes
+                self.userDefEntry.insert(END, "AAAA")#json_data['userdef_entry'])
+                applyFunction()
+
+
+        elif len(filepath)>3 and filepath[-4:] == ".txt":
+
+            ## Legacy .txt support:
+            # TODO : automatically add alpha and beta sliders & avoid naming problems
+
+            file = open(filepath,"r")
+            line = "example"
+            while (line != ""):
+                line = file.readline()
+                words = line.split()
+                if len(words) <1:
+                    continue
+                if words[0] =="formula":
+                    self.activeFunction = line[8:-1]
+                    self.formula.set(line[8:-1])
+                    self.formulaEntry.delete(0,END)
+                    self.formulaEntry.insert(0,line[8:-1])
+                else :
+                    if len(words) != 2:
+                        print("Warning : file misread, wrong number of values per line")
+
+                    tags = ["alpha", "beta", "offx", "offy", "sigma",
+                            "resolution", "colorMode", "randomModulation", "sValue", "vValue",
+                            "bwScale", "rgbScale"]
+                    widgets = [self.sl1, self.sl2, self.sl3, self.sl4, self.sl_sigma,
+                               self.sl_res, self.colorMode, self.randomModulation, self.sl_s_value, self.sl_v_value,
+                               self.sl_bw_scale, self.sl_rgb_scale]
+                    for i in range(len(tags)):
+                        if words[0] == tags[i]:
+                            widgets[i].set(words[1])
+            file.close()
+
+
+
         self.changeColorMode()
 
     def preset(self, n):
@@ -553,7 +637,7 @@ class GUI():
         self.sl2.set(beta[n])
         self.sl3.set(offx[n])
         self.sl4.set(offy[n])
-        self.sl5.set(sigma[n])
+        self.sl_sigma.set(sigma[n])
         self.colorMode.set(colorMode[n])
         self.randomModulation.set(randomMod[n])
 
@@ -574,7 +658,7 @@ class GUI():
         newSliderName = self.newSliderName.get()
         if not checkSliderName(newSliderName):
             return
-        newSlider = tk.Scale(self.userSliderFrame,from_=0, to=200, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
+        newSlider = tk.Scale(self.userSliderFrame,from_=0, to=255, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
         newSlider.set(100)
         newSlider.grid(row=4,column=len(self.sliders))
         tk.Label(self.userSliderFrame, text="slider." + newSliderName,padx=5, pady=5, bg= secondaryColor).grid(row=3,column=len(self.sliders),sticky="E")
