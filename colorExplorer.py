@@ -5,6 +5,7 @@ Created on Wed May 6 09:25:55 2020
 
 """
 TODO:
+- Use global style variables 
 - catch errors and show warning sign on interface
     - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
 - Add radial coordinates option
@@ -118,8 +119,9 @@ class GUI():
         self.maxy = self.zoom*(+360)/100
 
         ## -- SLIDERFRAME -- ##
-        self.sliderFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val, padx = 5, pady = 5, bd = 10, relief = tk.RIDGE)
-        self.sliders = {} #self defined sliders TODO rename ?
+        self.sliderFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val,
+                                    padx=5, pady=5, bd=10, relief=tk.RIDGE)
+        self.sliders = {}  # self defined sliders TODO rename ?
 
         self.sl_sigma = tk.Scale(self.sliderFrame, from_=500, to=0, orient=tk.VERTICAL,
                                  command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
@@ -135,7 +137,8 @@ class GUI():
         tk.Label(self.sliderFrame, text="res", bg=secondaryColor, highlightthickness=thick_val).grid(
             row=0, column=3, sticky="E")
 
-        self.addSliderFrame = tk.Frame(self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
+        self.addSliderFrame = tk.Frame(
+            self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.newSliderName = tk.StringVar(value="my_param")
         self.newSliderEntry = tk.Entry(
             self.addSliderFrame, textvariable=self.newSliderName)
@@ -145,14 +148,16 @@ class GUI():
         self.newSliderButton.pack(side=tk.RIGHT)
         self.addSliderFrame.grid(row=2, column=0, columnspan=4)
 
-        self.userSliderFrame = tk.Frame(self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
+        self.userSliderFrame = tk.Frame(
+            self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.userSliderFrame.grid(row=3, column=0, columnspan=4)
 
         self.sliderFrame.grid(row=1, column=1)
 
         ## -- CHECKFRAME -- ##
 
-        self.checkFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val, padx = 5, pady = 5, bd = 10, relief = tk.RIDGE)
+        self.checkFrame = tk.Frame(
+            self.root, bg=secondaryColor, highlightthickness=thick_val, padx=5, pady=5, bd=10, relief=tk.RIDGE)
 
         self.randomModulation = tk.IntVar(value=0)
         self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",
@@ -172,7 +177,8 @@ class GUI():
                                    text="HSV", value="HSV", bg=secondaryColor, highlightthickness=thick_val, command=self.changeColorMode)
         self.rad3.grid(row=1, column=3, sticky="W")
 
-        self.RGBModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
+        self.RGBModeMenu = tk.Frame(
+            self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.RGBModeMenu.grid_columnconfigure(
             0, weight=1, uniform="RGB_uniform")
         self.RGBModeMenu.grid_columnconfigure(
@@ -184,7 +190,8 @@ class GUI():
         # RGB menu used as default
         self.RGBModeMenu.grid(row=2, column=1, columnspan=3)
 
-        self.HSVModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
+        self.HSVModeMenu = tk.Frame(
+            self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.HSVModeMenu.grid_columnconfigure(
             0, weight=1, uniform="HSV_uniform")
         self.HSVModeMenu.grid_columnconfigure(
@@ -198,7 +205,8 @@ class GUI():
         self.sl_v_value.set(230)
         self.sl_v_value.grid(row=2, column=0, columnspan=2)
 
-        self.BWModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
+        self.BWModeMenu = tk.Frame(
+            self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.BWModeMenu.grid_columnconfigure(0, weight=1, uniform="BW_uniform")
         self.BWModeMenu.grid_columnconfigure(1, weight=1, uniform="BW_uniform")
         self.sl_bw_scale = tk.Scale(self.BWModeMenu, from_=0, to=200,
@@ -219,7 +227,8 @@ class GUI():
 
         ## -- FORMULAFRAME -- ##
 
-        self.formulaFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val, padx = 5, pady = 5, bd = 10, relief = tk.RIDGE)
+        self.formulaFrame = tk.Frame(
+            self.root, bg=secondaryColor, highlightthickness=thick_val, padx=5, pady=5, bd=10, relief=tk.RIDGE)
         self.activeFunction = f"255*(i**2+j**2)"  # default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
@@ -289,7 +298,8 @@ class GUI():
 
         show_preset = False
         if show_preset:
-            self.presetFrame = tk.Frame(self.root, bg=mainColor, highlightthickness=thick_val)
+            self.presetFrame = tk.Frame(
+                self.root, bg=mainColor, highlightthickness=thick_val)
             self.bPreset1 = tk.Button(
                 self.presetFrame, text='Preset 1', bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.preset(0))
             self.bPreset1.grid(row=1, column=1, padx=10, pady=15)
@@ -302,7 +312,8 @@ class GUI():
 
             self.presetFrame.grid(row=3, column=2)
 
-        self.infoFrame = tk.Frame(self.root, bg=mainColor, highlightthickness=thick_val)
+        self.infoFrame = tk.Frame(
+            self.root, bg=mainColor, highlightthickness=thick_val)
         self.maxLabelText = tk.StringVar(value="Max value: X")
         self.maxLabel = tk.Label(
             self.infoFrame, textvariable=self.maxLabelText, bg=secondaryColor, highlightthickness=thick_val)
@@ -325,7 +336,7 @@ class GUI():
                 self.window.genImg()
 
             def b3(self, event):
-                print("b3 pressed") #TODO: do something cool?
+                print("b3 pressed")  # TODO: do something cool?
 
             def b4(self, event):  # mouse wheel up X11
                 self.window.zoom *= 0.9
@@ -621,11 +632,11 @@ class GUI():
                 for slider in json_data['sliders']:
                     newSliderName = slider['name']
                     newSlider = tk.Scale(self.userSliderFrame, from_=0, to=255,
-                                         orient=tk.VERTICAL, command=self.genImg, length=200, bg=secondaryColor)
+                                         orient=tk.VERTICAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
                     newSlider.set(slider['value'])
                     newSlider.grid(row=4, column=len(self.sliders))
                     tk.Label(self.userSliderFrame, text="slider." + newSliderName, padx=5, pady=5,
-                             bg=secondaryColor).grid(row=3, column=len(self.sliders), sticky="E")
+                             bg=secondaryColor, highlightthickness=thick_val).grid(row=3, column=len(self.sliders), sticky="E")
                     self.sliders[newSliderName] = newSlider
 
                 # self.userDefEntry.delete('1.0', END) #TODO optional append/replace modes
@@ -666,7 +677,7 @@ class GUI():
                     if words[1] != 0:
                         print("alpha/beta retrocompatibility not implemented:")
                         print("Please add alpha/beta sliders and adapt formula")
-                        # TODO : implement this, just add sliders, add slider.* to 
+                        # TODO : implement this, just add sliders, add slider.* to
                         # alpha and beta in formula, and set value to words[1]
                 else:
                     if len(words) != 2:
@@ -697,10 +708,10 @@ class GUI():
         randomMod = [False, False, False]
 
         self.formula.set(functions[n])
-        #self.sl1.set(alpha[n])
-        #self.sl2.set(beta[n])
-        #self.sl3.set(offx[n])
-        #self.sl4.set(offy[n])
+        # self.sl1.set(alpha[n])
+        # self.sl2.set(beta[n])
+        # self.sl3.set(offx[n])
+        # self.sl4.set(offy[n])
         self.sl_sigma.set(sigma[n])
         self.colorMode.set(colorMode[n])
         self.randomModulation.set(randomMod[n])
@@ -723,11 +734,11 @@ class GUI():
         if not checkSliderName(newSliderName):
             return
         newSlider = tk.Scale(self.userSliderFrame, from_=255, to=0,
-                             orient=tk.VERTICAL, command=self.genImg, length=200, bg=secondaryColor)
+                             orient=tk.VERTICAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         newSlider.set(100)
         newSlider.grid(row=4, column=len(self.sliders))
         tk.Label(self.userSliderFrame, text="slider." + newSliderName, padx=5, pady=5,
-                 bg=secondaryColor).grid(row=3, column=len(self.sliders), sticky="E")
+                 bg=secondaryColor, highlightthickness=thick_val).grid(row=3, column=len(self.sliders), sticky="E")
         self.sliders[newSliderName] = newSlider
 
 
