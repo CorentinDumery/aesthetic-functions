@@ -50,10 +50,13 @@ from random import randrange, random
 import userdef as user # user is the module used to load user definition
 mainColor = "#ccebe4"
 secondaryColor = "#daede9"
+mainColor = "#f1faee"
+secondaryColor = "#e1eade"
+thick_val = 0
 
 
 class Slider(dict):
-    '''This class is used to store slider parameters'''
+    '''Stores slider parameters'''
 
     def __getattr__(self, name):
         if name in self:
@@ -115,42 +118,24 @@ class GUI():
         self.maxy = self.zoom*(+360)/100
 
         ## -- SLIDERFRAME -- ##
-
-        self.sliderFrame = tk.Frame(self.root, bg=secondaryColor, pady=10)
-
-        self.sliders = {}
-
-        '''
-        self.sl3 = tk.Scale(self.sliderFrame, from_=100, to=-100, orient=tk.VERTICAL,
-                            command=self.genImg, length=200, bg=secondaryColor)
-        self.sl3.set(0)
-        self.sl3.grid(row=1, column=0)
-        tk.Label(self.sliderFrame, text="off_x", bg=secondaryColor).grid(
-            row=0, column=0, sticky="E")
-
-        self.sl4 = tk.Scale(self.sliderFrame, from_=100, to=-100, orient=tk.VERTICAL,
-                            command=self.genImg, length=200, bg=secondaryColor)
-        self.sl4.set(0)
-        self.sl4.grid(row=1, column=1)
-        tk.Label(self.sliderFrame, text="off_y", bg=secondaryColor).grid(
-            row=0, column=1, sticky="E")
-        '''
+        self.sliderFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val, padx = 5, pady = 5, bd = 10, relief = tk.RIDGE)
+        self.sliders = {} #self defined sliders TODO rename ?
 
         self.sl_sigma = tk.Scale(self.sliderFrame, from_=500, to=0, orient=tk.VERTICAL,
-                                 command=self.genImg, length=200, bg=secondaryColor)
+                                 command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_sigma.set(0)
         self.sl_sigma.grid(row=1, column=2)
         tk.Label(self.sliderFrame, text="σ", padx=5,
                  bg=secondaryColor).grid(row=0, column=2, sticky="E")
 
         self.sl_res = tk.Scale(self.sliderFrame, from_=100, to=1, orient=tk.VERTICAL,
-                               command=self.genImg, length=200, bg=secondaryColor)
+                               command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_res.set(30)
         self.sl_res.grid(row=1, column=3)
-        tk.Label(self.sliderFrame, text="res", bg=secondaryColor).grid(
+        tk.Label(self.sliderFrame, text="res", bg=secondaryColor, highlightthickness=thick_val).grid(
             row=0, column=3, sticky="E")
 
-        self.addSliderFrame = tk.Frame(self.sliderFrame, bg=secondaryColor)
+        self.addSliderFrame = tk.Frame(self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.newSliderName = tk.StringVar(value="my_param")
         self.newSliderEntry = tk.Entry(
             self.addSliderFrame, textvariable=self.newSliderName)
@@ -160,68 +145,68 @@ class GUI():
         self.newSliderButton.pack(side=tk.RIGHT)
         self.addSliderFrame.grid(row=2, column=0, columnspan=4)
 
-        self.userSliderFrame = tk.Frame(self.sliderFrame, bg=secondaryColor)
+        self.userSliderFrame = tk.Frame(self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.userSliderFrame.grid(row=3, column=0, columnspan=4)
 
         self.sliderFrame.grid(row=1, column=1)
 
         ## -- CHECKFRAME -- ##
 
-        self.checkFrame = tk.Frame(self.root, bg=secondaryColor)
+        self.checkFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val, padx = 5, pady = 5, bd = 10, relief = tk.RIDGE)
 
         self.randomModulation = tk.IntVar(value=0)
         self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",
-                                     var=self.randomModulation, bg=secondaryColor, command=self.genImg)
+                                     var=self.randomModulation, bg=secondaryColor, highlightthickness=thick_val, command=self.genImg)
         self.check1.grid(row=0, column=1, columnspan=3)
 
         self.colorMode = tk.StringVar(value="RGB")
         self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="RGB", value="RGB", bg=secondaryColor, command=self.changeColorMode)
+                                   text="RGB", value="RGB", bg=secondaryColor, highlightthickness=thick_val, command=self.changeColorMode)
         self.rad1.grid(row=1, column=1, sticky="W")
 
         self.rad2 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="BW", value="BW", bg=secondaryColor, command=self.changeColorMode)
+                                   text="BW", value="BW", bg=secondaryColor, highlightthickness=thick_val, command=self.changeColorMode)
         self.rad2.grid(row=1, column=2, sticky="W")
 
         self.rad3 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="HSV", value="HSV", bg=secondaryColor, command=self.changeColorMode)
+                                   text="HSV", value="HSV", bg=secondaryColor, highlightthickness=thick_val, command=self.changeColorMode)
         self.rad3.grid(row=1, column=3, sticky="W")
 
-        self.RGBModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor)
+        self.RGBModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.RGBModeMenu.grid_columnconfigure(
             0, weight=1, uniform="RGB_uniform")
         self.RGBModeMenu.grid_columnconfigure(
             1, weight=1, uniform="RGB_uniform")
         self.sl_rgb_scale = tk.Scale(self.RGBModeMenu, from_=0, to=256,
-                                     orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor)
+                                     orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_rgb_scale.set(256)
         self.sl_rgb_scale.grid(row=1, column=0, columnspan=2)
         # RGB menu used as default
         self.RGBModeMenu.grid(row=2, column=1, columnspan=3)
 
-        self.HSVModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor)
+        self.HSVModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.HSVModeMenu.grid_columnconfigure(
             0, weight=1, uniform="HSV_uniform")
         self.HSVModeMenu.grid_columnconfigure(
             1, weight=1, uniform="HSV_uniform")
         self.sl_s_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
-                                   orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor)
+                                   orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_s_value.set(102)
         self.sl_s_value.grid(row=1, column=0, columnspan=2)
         self.sl_v_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
-                                   orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor)
+                                   orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_v_value.set(230)
         self.sl_v_value.grid(row=2, column=0, columnspan=2)
 
-        self.BWModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor)
+        self.BWModeMenu = tk.Frame(self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.BWModeMenu.grid_columnconfigure(0, weight=1, uniform="BW_uniform")
         self.BWModeMenu.grid_columnconfigure(1, weight=1, uniform="BW_uniform")
         self.sl_bw_scale = tk.Scale(self.BWModeMenu, from_=0, to=200,
-                                    orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor)
+                                    orient=tk.HORIZONTAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_bw_scale.set(100)
         self.sl_bw_scale.grid(row=1, column=0, columnspan=2)
 
-        #testLabel = tk.Label(HSVModeMenu, text="Test", bg=secondaryColor)
+        #testLabel = tk.Label(HSVModeMenu, text="Test", bg=secondaryColor, highlightthickness=thick_val)
         #testLabel.grid(row=0, column=0)
         # testEntry = tk.Entry(HSVModeMenu) #, textvariable=self.formula, width=10);
         #testEntry.grid(row=0, column=1)
@@ -229,43 +214,43 @@ class GUI():
         self.checkFrame.grid(row=2, column=1, padx=20, pady=20)
 
         self.playButton = tk.Button(self.root, text='Play',
-                                    bg=secondaryColor, command=self.playAnimation)
+                                    bg=secondaryColor, highlightthickness=thick_val, command=self.playAnimation)
         self.playButton.grid(row=3, column=1)
 
         ## -- FORMULAFRAME -- ##
 
-        self.formulaFrame = tk.Frame(self.root, bg=mainColor)
+        self.formulaFrame = tk.Frame(self.root, bg=secondaryColor, highlightthickness=thick_val, padx = 5, pady = 5, bd = 10, relief = tk.RIDGE)
         self.activeFunction = f"255*(i**2+j**2)"  # default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
         display_help_buttons = False
         if display_help_buttons:
-            self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor,
+            self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, highlightthickness=thick_val,
                                  command=lambda: self.addFormula("i"), padx=5)
             self.bfi.grid(row=1, column=1)
 
-            self.bfj = tk.Button(self.formulaFrame, text='j', bg=secondaryColor,
+            self.bfj = tk.Button(self.formulaFrame, text='j', bg=secondaryColor, highlightthickness=thick_val,
                                  command=lambda: self.addFormula("j"), padx=5)
             self.bfj.grid(row=1, column=2)
 
             self.bfalpha = tk.Button(
-                self.formulaFrame, text='α', bg=secondaryColor, command=lambda: self.addFormula("alpha"))
+                self.formulaFrame, text='α', bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.addFormula("alpha"))
             self.bfalpha.grid(row=1, column=3)
 
             self.bfbeta = tk.Button(
-                self.formulaFrame, text='β', bg=secondaryColor, command=lambda: self.addFormula("beta"))
+                self.formulaFrame, text='β', bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.addFormula("beta"))
             self.bfbeta.grid(row=1, column=4)
 
             self.bf1 = tk.Button(self.formulaFrame, text='exp',
-                                 bg=secondaryColor, command=lambda: self.addFormula("exp"))
+                                 bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.addFormula("exp"))
             self.bf1.grid(row=1, column=5)
 
             self.bf2 = tk.Button(self.formulaFrame, text='cos',
-                                 bg=secondaryColor, command=lambda: self.addFormula("cos"))
+                                 bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.addFormula("cos"))
             self.bf2.grid(row=1, column=6)
 
             self.bf3 = tk.Button(self.formulaFrame, text='sin',
-                                 bg=secondaryColor, command=lambda: self.addFormula("sin"))
+                                 bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.addFormula("sin"))
             self.bf3.grid(row=1, column=7)
 
         self.userDefEntry = scrolledtext.ScrolledText(
@@ -279,23 +264,23 @@ class GUI():
         self.formulaEntry.grid(row=2, column=1, columnspan=5, pady=20)
 
         self.bApply = tk.Button(
-            self.formulaFrame, text='Apply', bg=secondaryColor, command=self.applyFunction)
+            self.formulaFrame, text='Apply', bg=secondaryColor, highlightthickness=thick_val, command=self.applyFunction)
         self.bApply.grid(row=2, column=6)
 
         self.bClear = tk.Button(
-            self.formulaFrame, text='Clear', bg=secondaryColor, command=self.clearFunction)
+            self.formulaFrame, text='Clear', bg=secondaryColor, highlightthickness=thick_val, command=self.clearFunction)
         self.bClear.grid(row=2, column=7)
 
         self.bSaveIm = tk.Button(
-            self.formulaFrame, text='Save Image', bg=secondaryColor, command=self.saveImg)
+            self.formulaFrame, text='Save Image', bg=secondaryColor, highlightthickness=thick_val, command=self.saveImg)
         self.bSaveIm.grid(row=3, column=1)
 
         self.bSaveParams = tk.Button(
-            self.formulaFrame, text='Save Parameters', bg=secondaryColor, command=self.saveParams)
+            self.formulaFrame, text='Save Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.saveParams)
         self.bSaveParams.grid(row=3, column=2)
 
         self.bLoadParams = tk.Button(
-            self.formulaFrame, text='Load Parameters', bg=secondaryColor, command=self.loadParams)
+            self.formulaFrame, text='Load Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.loadParams)
         self.bLoadParams.grid(row=3, column=3)
 
         self.formulaFrame.grid(row=2, column=2)
@@ -304,23 +289,23 @@ class GUI():
 
         show_preset = False
         if show_preset:
-            self.presetFrame = tk.Frame(self.root, bg=mainColor)
+            self.presetFrame = tk.Frame(self.root, bg=mainColor, highlightthickness=thick_val)
             self.bPreset1 = tk.Button(
-                self.presetFrame, text='Preset 1', bg=secondaryColor, command=lambda: self.preset(0))
+                self.presetFrame, text='Preset 1', bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.preset(0))
             self.bPreset1.grid(row=1, column=1, padx=10, pady=15)
             self.bPreset2 = tk.Button(
-                self.presetFrame, text='Preset 2', bg=secondaryColor, command=lambda: self.preset(1))
+                self.presetFrame, text='Preset 2', bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.preset(1))
             self.bPreset2.grid(row=1, column=2, padx=10, pady=15)
             self.bPreset3 = tk.Button(
-                self.presetFrame, text='Preset 3', bg=secondaryColor, command=lambda: self.preset(2))
+                self.presetFrame, text='Preset 3', bg=secondaryColor, highlightthickness=thick_val, command=lambda: self.preset(2))
             self.bPreset3.grid(row=1, column=3, padx=10, pady=15)
 
             self.presetFrame.grid(row=3, column=2)
 
-        self.infoFrame = tk.Frame(self.root, bg=mainColor)
+        self.infoFrame = tk.Frame(self.root, bg=mainColor, highlightthickness=thick_val)
         self.maxLabelText = tk.StringVar(value="Max value: X")
         self.maxLabel = tk.Label(
-            self.infoFrame, textvariable=self.maxLabelText, bg=secondaryColor)
+            self.infoFrame, textvariable=self.maxLabelText, bg=secondaryColor, highlightthickness=thick_val)
         self.maxLabel.grid(row=2, column=0, sticky="E")
         self.infoFrame.grid(row=4, column=2)
 
@@ -340,13 +325,13 @@ class GUI():
                 self.window.genImg()
 
             def b3(self, event):
-                print("b3 pressed")
+                print("b3 pressed") #TODO: do something cool?
 
             def b4(self, event):  # mouse wheel up X11
                 self.window.zoom *= 0.9
                 self.window.genImg()
 
-            def b5(self, event):  # mouse wheel up X11
+            def b5(self, event):  # mouse wheel down X11
                 self.window.zoom *= 1.1
                 self.window.genImg()
 
