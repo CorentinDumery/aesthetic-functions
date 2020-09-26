@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May  6 09:25:55 2020
+Created on Wed May 6 09:25:55 2020
 """
 
 """
 TODO:
+- format
+- catch errors and show warning sign on interface
+    - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
+- Add radial coordinates option
+- Add BGR/RGB/GBR/... instead of RGB
+- Add 4th color mode with different formulas for R G and B
 - add option to keep/discard previous stuff upon loading parameters
 - remove useless sliders and make sure loading still works
+    - if there an "alpha/beta" in a txt, it should create such sliders
 - make ImageHolder class with everything related to the canvas (also, use actual Canvas ?)
 - Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
 - prevent formulas with potentially harmful commands ("exec", "import", ...)
@@ -569,7 +576,8 @@ class GUI():
                 self.sl_bw_scale.set(menu_params['bwScale'])
                 self.sl_rgb_scale.set(menu_params['rgbScale'])
 
-                self.sliders = [] #TODO optional append/replace modes
+                self.sliders = {} #TODO optional append/replace modes
+
                 for slider in json_data['sliders']:
                     newSliderName = slider['name']
                     newSlider = tk.Scale(self.userSliderFrame,from_=0, to=255, orient=tk.VERTICAL, command=self.genImg, length=200, bg= secondaryColor)
@@ -579,8 +587,9 @@ class GUI():
                     self.sliders[newSliderName] = newSlider
 
                 #self.userDefEntry.delete('1.0', END) #TODO optional append/replace modes
-                self.userDefEntry.insert(END, "AAAA")#json_data['userdef_entry'])
-                applyFunction()
+                self.userDefEntry.insert(END, json_data['userdef_entry'])
+                self.userDefEntry.grid(row=1, column=1, columnspan=5, pady =20)
+                self.applyFunction()
 
 
         elif len(filepath)>3 and filepath[-4:] == ".txt":
