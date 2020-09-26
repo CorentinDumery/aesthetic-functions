@@ -155,7 +155,6 @@ class GUI():
         self.sliderFrame.grid(row=1, column=1)
 
         ## -- CHECKFRAME -- ##
-
         self.checkFrame = tk.Frame(
             self.root, bg=secondaryColor, highlightthickness=thick_val, padx=5, pady=5, bd=10, relief=tk.RIDGE)
 
@@ -263,13 +262,13 @@ class GUI():
             self.bf3.grid(row=1, column=7)
 
         self.userDefEntry = scrolledtext.ScrolledText(
-            self.formulaFrame, width=60, height=10)
+            self.formulaFrame, width=100, height=10)
         self.userDefEntry.insert(
             END, "# Your definitions here.\n# They will be imported in the module 'user'.")
         self.userDefEntry.grid(row=1, column=1, columnspan=5, pady=20)
 
         self.formulaEntry = tk.Entry(
-            self.formulaFrame, textvariable=self.formula, width=60)
+            self.formulaFrame, textvariable=self.formula, width=100)
         self.formulaEntry.grid(row=2, column=1, columnspan=5, pady=20)
 
         self.bApply = tk.Button(
@@ -639,7 +638,7 @@ class GUI():
                              bg=secondaryColor, highlightthickness=thick_val).grid(row=3, column=len(self.sliders), sticky="E")
                     self.sliders[newSliderName] = newSlider
 
-                # self.userDefEntry.delete('1.0', END) #TODO optional append/replace modes
+                self.userDefEntry.delete('1.0', END) #TODO optional append/replace modes
                 self.userDefEntry.insert(END, json_data['userdef_entry'])
                 self.userDefEntry.grid(row=1, column=1, columnspan=5, pady=20)
                 self.applyFunction()
