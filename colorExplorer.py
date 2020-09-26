@@ -37,6 +37,7 @@ TODO:
 from importlib import reload
 from os import path
 import json
+import math
 from time import sleep
 import matplotlib
 import colorsys
@@ -45,7 +46,6 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 from PIL import Image, ImageTk
 import numpy as np  # needed for compatibility with formulas with np.
-from numpy import *  # needed for simple formula interpretation
 from random import randrange, random
 import userdef as user # user is the module used to load user definition
 mainColor = "#ccebe4"
@@ -120,6 +120,7 @@ class GUI():
 
         self.sliders = {}
 
+        '''
         self.sl3 = tk.Scale(self.sliderFrame, from_=100, to=-100, orient=tk.VERTICAL,
                             command=self.genImg, length=200, bg=secondaryColor)
         self.sl3.set(0)
@@ -133,6 +134,7 @@ class GUI():
         self.sl4.grid(row=1, column=1)
         tk.Label(self.sliderFrame, text="off_y", bg=secondaryColor).grid(
             row=0, column=1, sticky="E")
+        '''
 
         self.sl_sigma = tk.Scale(self.sliderFrame, from_=500, to=0, orient=tk.VERTICAL,
                                  command=self.genImg, length=200, bg=secondaryColor)
@@ -226,9 +228,9 @@ class GUI():
 
         self.checkFrame.grid(row=2, column=1, padx=20, pady=20)
 
-        self.play = tk.Button(self.root, text='Play',
-                              bg=secondaryColor, command=self.play)
-        self.play.grid(row=3, column=1)
+        self.playButton = tk.Button(self.root, text='Play',
+                                    bg=secondaryColor, command=self.playAnimation)
+        self.playButton.grid(row=3, column=1)
 
         ## -- FORMULAFRAME -- ##
 
@@ -300,23 +302,27 @@ class GUI():
 
         ## -- PRESETFRAME -- ##
 
-        self.presetFrame = tk.Frame(self.root, bg=mainColor)
-        self.bPreset1 = tk.Button(
-            self.presetFrame, text='Preset 1', bg=secondaryColor, command=lambda: self.preset(0))
-        self.bPreset1.grid(row=1, column=1, padx=10, pady=15)
-        self.bPreset2 = tk.Button(
-            self.presetFrame, text='Preset 2', bg=secondaryColor, command=lambda: self.preset(1))
-        self.bPreset2.grid(row=1, column=2, padx=10, pady=15)
-        self.bPreset3 = tk.Button(
-            self.presetFrame, text='Preset 3', bg=secondaryColor, command=lambda: self.preset(2))
-        self.bPreset3.grid(row=1, column=3, padx=10, pady=15)
+        show_preset = False
+        if show_preset:
+            self.presetFrame = tk.Frame(self.root, bg=mainColor)
+            self.bPreset1 = tk.Button(
+                self.presetFrame, text='Preset 1', bg=secondaryColor, command=lambda: self.preset(0))
+            self.bPreset1.grid(row=1, column=1, padx=10, pady=15)
+            self.bPreset2 = tk.Button(
+                self.presetFrame, text='Preset 2', bg=secondaryColor, command=lambda: self.preset(1))
+            self.bPreset2.grid(row=1, column=2, padx=10, pady=15)
+            self.bPreset3 = tk.Button(
+                self.presetFrame, text='Preset 3', bg=secondaryColor, command=lambda: self.preset(2))
+            self.bPreset3.grid(row=1, column=3, padx=10, pady=15)
 
-        self.presetFrame.grid(row=3, column=2)
+            self.presetFrame.grid(row=3, column=2)
 
+        self.infoFrame = tk.Frame(self.root, bg=mainColor)
         self.maxLabelText = tk.StringVar(value="Max value: X")
         self.maxLabel = tk.Label(
-            self.presetFrame, textvariable=self.maxLabelText, bg=secondaryColor)
+            self.infoFrame, textvariable=self.maxLabelText, bg=secondaryColor)
         self.maxLabel.grid(row=2, column=0, sticky="E")
+        self.infoFrame.grid(row=4, column=2)
 
         self.label = tk.Label(self.root)
 
@@ -499,7 +505,7 @@ class GUI():
             self.BWModeMenu.grid(row=2, column=1, columnspan=3)
         self.genImg()
 
-    def play(self):  # TODO
+    def playAnimation(self):  # TODO
         if self.sl_sigma.get() > 0:
             print("Sigma not zero, cannot play in reasonable time")
             return
@@ -649,6 +655,14 @@ class GUI():
 
             file = open(filepath, "r")
             line = "example"
+
+            tags = ["sigma",
+                    "resolution", "colorMode", "randomModulation", "sValue", "vValue",
+                    "bwScale", "rgbScale"]
+            widgets = [self.sl_sigma,
+                       self.sl_res, self.colorMode, self.randomModulation, self.sl_s_value, self.sl_v_value,
+                       self.sl_bw_scale, self.sl_rgb_scale]
+
             while (line != ""):
                 line = file.readline()
                 words = line.split()
@@ -659,17 +673,21 @@ class GUI():
                     self.formula.set(line[8:-1])
                     self.formulaEntry.delete(0, END)
                     self.formulaEntry.insert(0, line[8:-1])
+                elif words[0] == "offx":
+                    self.offx = float(words[1])
+                elif words[0] == "offy":
+                    self.offy = float(words[1])
+                elif words[0] == "alpha" or words[0] == "beta":
+                    if words[1] != 0:
+                        print("alpha/beta retrocompatibility not implemented:")
+                        print("Please add alpha/beta sliders and adapt formula")
+                        # TODO : implement this, just add sliders, add slider.* to 
+                        # alpha and beta in formula, and set value to words[1]
                 else:
                     if len(words) != 2:
                         print(
                             "Warning : file misread, wrong number of values per line")
 
-                    tags = ["alpha", "beta", "offx", "offy", "sigma",
-                            "resolution", "colorMode", "randomModulation", "sValue", "vValue",
-                            "bwScale", "rgbScale"]
-                    widgets = [self.sl1, self.sl2, self.sl3, self.sl4, self.sl_sigma,
-                               self.sl_res, self.colorMode, self.randomModulation, self.sl_s_value, self.sl_v_value,
-                               self.sl_bw_scale, self.sl_rgb_scale]
                     for i in range(len(tags)):
                         if words[0] == tags[i]:
                             widgets[i].set(words[1])
@@ -685,19 +703,19 @@ class GUI():
             "10000*np.cos( ((i+j)**2)*100/p1 )*np.sin(((i-j)**2)*100/p1)")
         functions.append(
             "255*np.sin((i+j*1.8)**2*p1/50+np.cos((i-j*1.8)**2*p2/100)*5)")
-        alpha = [110, 93, 19]
-        beta = [5, 151, 8]
-        offx = [0, 0, 0]
-        offy = [0, 0, 0]
+        #alpha = [110, 93, 19]
+        #beta = [5, 151, 8]
+        #offx = [0, 0, 0]
+        #offy = [0, 0, 0]
         sigma = [0, 0, 500]
         colorMode = ["HSV", "BW", "HSV"]
         randomMod = [False, False, False]
 
         self.formula.set(functions[n])
-        self.sl1.set(alpha[n])
-        self.sl2.set(beta[n])
-        self.sl3.set(offx[n])
-        self.sl4.set(offy[n])
+        #self.sl1.set(alpha[n])
+        #self.sl2.set(beta[n])
+        #self.sl3.set(offx[n])
+        #self.sl4.set(offy[n])
         self.sl_sigma.set(sigma[n])
         self.colorMode.set(colorMode[n])
         self.randomModulation.set(randomMod[n])
@@ -719,7 +737,7 @@ class GUI():
         newSliderName = self.newSliderName.get()
         if not checkSliderName(newSliderName):
             return
-        newSlider = tk.Scale(self.userSliderFrame, from_=0, to=255,
+        newSlider = tk.Scale(self.userSliderFrame, from_=255, to=0,
                              orient=tk.VERTICAL, command=self.genImg, length=200, bg=secondaryColor)
         newSlider.set(100)
         newSlider.grid(row=4, column=len(self.sliders))
