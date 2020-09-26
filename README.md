@@ -7,7 +7,13 @@ The objective of this project is to explore the artistic aspects of two-dimensio
 
 ## Install & Run
 ### Ubuntu, python3
-The following python libraries are required:
+
+To run the project, navigate to the project's folder and run:
+```
+python3 colorExplorer.py
+```
+
+You might need to install the following python libraries (but you probably have these already):
 ```
 python3-tk
 python3-pil.imagetk
@@ -15,10 +21,7 @@ python3-numpy
 python3-scipy
 python3-matplotlib
 ```
-To run the project, navigate to the project's folder and run:
-```
-python3 colorExplorer.py
-```
+
 ## Tutorial
 The first thing to know is that each pixel on the picture corresponds to a unique ```(i,j)``` value. In particular, the point in the center is at ```(0,0)```. For example, the function ```100*(i**2+j**2)``` takes the form of concentric circles after coloration by function value.
 
