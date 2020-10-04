@@ -5,8 +5,7 @@ Created on Wed May 6 09:25:55 2020
 
 """
 TODO:
-- save/load self.zoom
-- Use global style variables 
+- Use global style variables (in progress)
 - catch errors and show warning sign on interface
     - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
 - Add radial coordinates option
@@ -160,7 +159,7 @@ class GUI():
         tk.Label(self.sliderFrame, text="σ", padx=5,
                  bg=secondaryColor).grid(row=0, column=2, sticky="E")
 
-        self.sl_res = tk.Scale(self.sliderFrame, from_=100, to=1, orient=tk.VERTICAL,
+        self.sl_res = tk.Scale(self.sliderFrame, from_=100, to=1, orient=tk.VERTICAL, command=self.genImg,
                                length=200)
         setStyle(self.sl_res, **scaleStyle)
         self.sl_res.set(30)
@@ -581,7 +580,7 @@ class GUI():
             name = simpledialog.askstring(
                 "", "Name already exists, please pick another one")
 
-        saveToTxt = False
+        saveToTxt = False #legacy
         if saveToTxt:
             file = open("Parameters/"+name+".txt", "a")
             params = "formula " + self.activeFunction + "\n"
@@ -606,6 +605,7 @@ class GUI():
         json_data['menu_parameters'] = {
             'offx': self.offx,
             'offy': self.offy,
+            'zoom': self.zoom,
             'sigma': self.sl_sigma.get(),
             'resolution': self.sl_res.get(),
             'colorMode': self.colorMode.get(),
@@ -657,6 +657,9 @@ class GUI():
                 self.sl_v_value.set(menu_params['vValue'])
                 self.sl_bw_scale.set(menu_params['bwScale'])
                 self.sl_rgb_scale.set(menu_params['rgbScale'])
+
+                if 'zoom' in menu_params.keys():
+                    self.zoom = menu_params['zoom']
 
                 self.sliders = {}  # TODO optional append/replace modes
 
