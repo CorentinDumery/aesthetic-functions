@@ -1,9 +1,7 @@
 # colorExplorer
 ### Aesthetic 2D visualization of functions
 
-Work in Progress.
-
-The objective of this project is to explore the artistic aspects of two-dimensional mathematics. To put it simply, it is about visualizing a function in 2D, but with fancy colors and some extra options. It is not very useful, but I like it. If you're interested, I'd be delighted to see your creations and exchange tips !
+The objective of this project is to explore the artistic aspects of two-dimensional mathematics. To put it simply, it is about visualizing a function in 2D, but with fancy colors and some extra options. It is not very useful, but we like it. If you're interested, we'd be delighted to see your creations, and exchange tips !
 
 ## Install & Run
 ### Ubuntu, python3
@@ -12,8 +10,9 @@ To run the project, navigate to the project's folder and run:
 ```
 python3 colorExplorer.py
 ```
+You will first need to ```pip install importlib``` for the **userdef** entry to work properly.
 
-You might need to install the following python libraries (but you probably have these already):
+You might also need to install the following python libraries (but you probably have these already):
 ```
 python3-tk
 python3-pil.imagetk
@@ -44,3 +43,11 @@ example | example
 ![ex1](Images/ring_of_truth.png) | ![ex1](Images/sundisk.png) |
 ![ex1](Images/vinyl.png) | ![ex1](Images/sparkling%20sun.png) |
 ![ex1](Images/red%20perspective.png) | ![ex1](Images/circle%20chess.png) |
+
+## Troubleshooting
+
+If the canvas doesn't update anymore, you probably have a problem. If available, check the console for errors. From there, you should be able to rectify your formula, unless you get one of the following errors:
+- "Name 'X' is not defined" -> don't forget to add **user.** for the userdef entry and **slider.** for slider values 
+- "Module userdef has no attribute 'X'" -> don't forget to ```pip install importlib```
+
+If that didn't help, please do not hesitate to contact us so that we can fix your problem and add it to the troubleshooting tips.
