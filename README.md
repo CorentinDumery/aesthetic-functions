@@ -40,7 +40,7 @@ If you want to experiment with different visualization effects of a function, tr
 example | example    
 :-------------------------:|:-----------------------:
 ![ex1](Images/wavies.png) |  ![ex1](Images/the%20pear%20of%20illusions.png) |
-![ex1](Images/mandelbrot.png) | ![ex1](Images/sundisk.png) |
+![ex1](Images/rainbow_mandelbrot_zoom.png) | ![ex1](Images/sundisk.png) |
 ![ex1](Images/vinyl.png) | ![ex1](Images/sparkling%20sun.png) |
 ![ex1](Images/red%20perspective.png) | ![ex1](Images/circle%20chess.png) |
 
