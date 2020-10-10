@@ -167,6 +167,12 @@ class GUI():
         tk.Label(self.sliderFrame, text="res", bg=secondaryColor, highlightthickness=thick_val).grid(
             row=0, column=3, sticky="E")
 
+        self.saveWithMaxResolution = tk.BooleanVar()
+        self.saveWithMaxResolution.set(True)
+        self.checkMaxResolution = tk.Checkbutton(self.sliderFrame, text="Save with max resolution",
+                                     var=self.saveWithMaxResolution, bg=secondaryColor, highlightthickness=thick_val)
+        self.checkMaxResolution.grid(row=2, column=1, columnspan=3)
+
         self.addSliderFrame = tk.Frame(
             self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.newSliderName = tk.StringVar(value="my_param")
@@ -176,11 +182,11 @@ class GUI():
         self.newSliderButton = tk.Button(
             self.addSliderFrame, text="+", command=self.newSlider)
         self.newSliderButton.pack(side=tk.RIGHT)
-        self.addSliderFrame.grid(row=2, column=0, columnspan=4)
+        self.addSliderFrame.grid(row=3, column=0, columnspan=4)
 
         self.userSliderFrame = tk.Frame(
             self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
-        self.userSliderFrame.grid(row=3, column=0, columnspan=4)
+        self.userSliderFrame.grid(row=4, column=0, columnspan=4)
 
         self.sliderFrame.grid(row=1, column=1)
 
@@ -565,7 +571,15 @@ class GUI():
     def saveImg(self):
         name = simpledialog.askstring("", "Name of this image?")
         if name:  # not None
-            self.fullImage.convert('RGB').save("Images/{}.png".format(name))
+            if self.saveWithMaxResolution.get():
+                old_res = self.sl_res.get()
+                self.sl_res.set(100)
+                self.genImg()
+                self.fullImage.convert('RGB').save("Images/{}.png".format(name))
+                self.sl_res.set(old_res)
+                self.genImg()
+            else:
+                self.fullImage.convert('RGB').save("Images/{}.png".format(name))
             messagebox.showinfo("", "{}.png saved!".format(name))
             self.saveParams(name)
         else:
