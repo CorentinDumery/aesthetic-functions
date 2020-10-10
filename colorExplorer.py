@@ -5,6 +5,7 @@ Created on Wed May 6 09:25:55 2020
 
 """
 TODO:
+- reset button
 - Use global style variables (in progress)
 - catch errors and show warning sign on interface
     - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
@@ -256,9 +257,10 @@ class GUI():
 
         self.checkFrame.grid(row=2, column=1, padx=20, pady=20)
 
-        self.playButton = tk.Button(self.root, text='Play',
-                                    bg=secondaryColor, highlightthickness=thick_val, command=self.playAnimation)
-        self.playButton.grid(row=3, column=1)
+        # TODO : Add button that records video using variable "Time"
+        #self.playButton = tk.Button(self.root, text='Play',
+        #                            bg=secondaryColor, highlightthickness=thick_val, command=self.playAnimation)
+        #self.playButton.grid(row=3, column=1)
 
         ## -- FORMULAFRAME -- ##
 
@@ -327,6 +329,10 @@ class GUI():
         self.bLoadParams = tk.Button(
             self.formulaFrame, text='Load Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.loadParams)
         self.bLoadParams.grid(row=3, column=3)
+
+        self.bAppendParams = tk.Button(
+            self.formulaFrame, text='Append Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.appendParams)
+        self.bAppendParams.grid(row=3, column=4)
 
         self.formulaFrame.grid(row=2, column=2)
 
@@ -643,7 +649,7 @@ class GUI():
         with open("Parameters/"+name+".json", 'a') as outfile:
             json.dump(json_data, outfile)
 
-    def loadParams(self):
+    def loadParams(self, append = False):
 
         filepath = filedialog.askopenfilename(initialdir="../colorExplorer/Parameters/",
                                               title="Select parameters file",
@@ -654,11 +660,13 @@ class GUI():
         if len(filepath) > 4 and filepath[-5:] == ".json":
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
-
-                self.activeFunction = json_data['formula']
-                self.formula.set(json_data['formula'])
+                if not(append):
+                    self.activeFunction = json_data['formula']
+                else : 
+                    self.activeFunction += " + "+json_data['formula']
+                self.formula.set(self.activeFunction)
                 self.formulaEntry.delete(0, END)
-                self.formulaEntry.insert(0, json_data['formula'])
+                self.formulaEntry.insert(0, self.activeFunction)
 
                 menu_params = json_data['menu_parameters']
                 self.offx = menu_params['offx']
@@ -675,7 +683,8 @@ class GUI():
                 if 'zoom' in menu_params.keys():
                     self.zoom = menu_params['zoom']
 
-                self.sliders = {}  # TODO optional append/replace modes
+                if not(append):
+                    self.sliders = {} 
 
                 # TODO use addSlider here instead
                 for slider in json_data['sliders']:
@@ -689,8 +698,8 @@ class GUI():
                              bg=secondaryColor, highlightthickness=thick_val).grid(row=3, column=len(self.sliders), sticky="E")
                     self.sliders[newSliderName] = newSlider
 
-                # TODO optional append/replace modes
-                self.userDefEntry.delete('1.0', END)
+                if not(append):
+                    self.userDefEntry.delete('1.0', END)
                 self.userDefEntry.insert(END, json_data['userdef_entry'])
                 self.userDefEntry.grid(row=1, column=1, columnspan=5, pady=20)
                 self.applyFunction()
@@ -741,6 +750,9 @@ class GUI():
             file.close()
 
         self.changeColorMode()
+
+    def appendParams(self):
+        self.loadParams(append = True)
 
     def preset(self, n):
         functions = []

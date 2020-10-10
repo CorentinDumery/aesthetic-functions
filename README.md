@@ -14,6 +14,7 @@ You will first need to ```pip install importlib``` for the **userdef** entry to 
 
 You might also need to install the following python libraries (but you probably have these already):
 ```
+python3-opencv
 python3-tk
 python3-pil.imagetk
 python3-numpy
