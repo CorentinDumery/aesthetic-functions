@@ -5,6 +5,8 @@ Created on Wed May 6 09:25:55 2020
 
 """
 TODO:
+- make .json from the old .txt files
+- expand frames to fit
 - reset button
 - Use global style variables (in progress)
 - catch errors and show warning sign on interface
@@ -50,6 +52,7 @@ from PIL import Image, ImageTk
 import numpy as np  # needed for compatibility with formulas with np.
 from random import randrange, random
 import userdef as user # user is the module used to load user definition
+from time import time
 mainColor = "#ccebe4"
 secondaryColor = "#daede9"
 mainColor = "#f1faee"
@@ -139,11 +142,14 @@ class GUI():
 
         self.offx = 0  # TODO: put these in some ImageHolder class
         self.offy = 0
-        self.zoom = 1
-        self.minx = self.zoom*(-640)/100
-        self.maxx = self.zoom*(+640)/100
-        self.miny = self.zoom*(-360)/100
-        self.maxy = self.zoom*(+360)/100
+        self.zoom = tk.DoubleVar()
+        self.zoom.set(1)
+        self.minx = self.zoom.get()*(-640)/100
+        self.maxx = self.zoom.get()*(+640)/100
+        self.miny = self.zoom.get()*(-360)/100
+        self.maxy = self.zoom.get()*(+360)/100
+        self.computationTime = tk.DoubleVar()
+        self.fps = tk.IntVar()
 
         ## -- SLIDERFRAME -- ##
 
@@ -334,7 +340,7 @@ class GUI():
             self.formulaFrame, text='Append Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.appendParams)
         self.bAppendParams.grid(row=3, column=4)
 
-        self.formulaFrame.grid(row=2, column=2)
+        self.formulaFrame.grid(row=2, column=2, rowspan =2)
 
         ## -- PRESETFRAME -- ##
 
@@ -354,13 +360,44 @@ class GUI():
 
             self.presetFrame.grid(row=3, column=2)
 
+        ## -- INFOFRAME -- ##
+
+        # TODO : add offx, offy, min value, i/j intervals, computation time
+
         self.infoFrame = tk.Frame(
-            self.root, bg=mainColor, highlightthickness=thick_val)
+            self.root)
+        setStyle(self.infoFrame, **frameStyle)
+
         self.maxLabelText = tk.StringVar(value="Max value: X")
         self.maxLabel = tk.Label(
             self.infoFrame, textvariable=self.maxLabelText, bg=secondaryColor, highlightthickness=thick_val)
         self.maxLabel.grid(row=2, column=0, sticky="E")
-        self.infoFrame.grid(row=4, column=2)
+        
+        self.zoomLabelText = tk.StringVar(value="Zoom value:")
+        self.zoomLabel = tk.Label(
+            self.infoFrame, textvariable=self.zoomLabelText, bg=secondaryColor, highlightthickness=thick_val)
+        self.zoomLabel.grid(row=3, column=0, sticky="W")
+        self.zoomLabelValue = tk.Label(
+            self.infoFrame, textvariable=self.zoom, width=4, anchor=tk.W, bg=secondaryColor, highlightthickness=thick_val)
+        self.zoomLabelValue.grid(row=3, column=1, sticky="W")
+
+        self.timeLabelText = tk.StringVar(value="Computation time:")
+        self.timeLabel = tk.Label(
+            self.infoFrame, textvariable=self.timeLabelText, bg=secondaryColor, highlightthickness=thick_val)
+        self.timeLabel.grid(row=4, column=0, sticky="W")
+        self.timeLabelValue = tk.Label(
+            self.infoFrame, textvariable=self.computationTime, width=4, anchor=tk.W, bg=secondaryColor, highlightthickness=thick_val)
+        self.timeLabelValue.grid(row=4, column=1, sticky="W")
+
+        self.fpsLabelText = tk.StringVar(value="FPS:")
+        self.fpsLabel = tk.Label(
+            self.infoFrame, textvariable=self.fpsLabelText, bg=secondaryColor, highlightthickness=thick_val)
+        self.fpsLabel.grid(row=5, column=0, sticky="W")
+        self.fpsLabelValue = tk.Label(
+            self.infoFrame, textvariable=self.fps, width=4, anchor=tk.W, bg=secondaryColor, highlightthickness=thick_val)
+        self.fpsLabelValue.grid(row=5, column=1, sticky="W")
+
+        self.infoFrame.grid(row=3, column=1)
 
         self.label = tk.Label(self.root)
 
@@ -374,18 +411,18 @@ class GUI():
                 self.window = window
 
             def mouseWheel(self, event):
-                self.window.zoom *= 1-event.delta/1200
+                self.window.zoom.set( self.window.zoom.get() * (1-event.delta/1200))
                 self.window.genImg()
 
             def b3(self, event):
                 print("b3 pressed")  # TODO: do something cool?
 
             def b4(self, event):  # mouse wheel up X11
-                self.window.zoom *= 0.9
+                self.window.zoom.set( self.window.zoom.get() *  0.9 )
                 self.window.genImg()
 
             def b5(self, event):  # mouse wheel down X11
-                self.window.zoom *= 1.1
+                self.window.zoom.set( self.window.zoom.get() * 1.1 )
                 self.window.genImg()
 
             def selectB1(self, event):
@@ -416,14 +453,15 @@ class GUI():
         self.root.mainloop()
 
     def genImg(self, event=None):
-
+        
+        time_beginning = time()
         resx = self.sl_res.get()*1600//100
         resy = self.sl_res.get()*900//100
 
-        self.minx = self.zoom*(-640*2/2)/100
-        self.maxx = self.zoom*(+640*2/2)/100
-        self.miny = self.zoom*(-360*2/2)/100
-        self.maxy = self.zoom*(+360*2/2)/100
+        self.minx = self.zoom.get()*(-640*2/2)/100
+        self.maxx = self.zoom.get()*(+640*2/2)/100
+        self.miny = self.zoom.get()*(-360*2/2)/100
+        self.maxy = self.zoom.get()*(+360*2/2)/100
         stepx = (self.maxx-self.minx)/resx
         stepy = (self.maxy-self.miny)/resy
 
@@ -514,7 +552,7 @@ class GUI():
 
         if not(math.isnan(res.max())):
             self.maxLabelText.set(
-                "Max value: " + f"{res.max():.2f}"+"\n"+hex(int(res.max())))
+                "Max value: " + f"{res.max():.2f}"+"\nMax (hex):"+hex(int(res.max())))
 
         self.fullImage = img0  # saving full res picture to output it
 
@@ -530,6 +568,8 @@ class GUI():
        # self.label = tk.Label(self.root,image=self.image)
         self.label.configure(image=self.image)
         self.label.grid(row=1, column=2, pady=10, padx=10)
+        self.computationTime.set(time() - time_beginning)
+        self.fps.set(int(1/(time() - time_beginning)))
 
     def changeColorMode(self):
         self.RGBModeMenu.grid_forget()
@@ -625,7 +665,7 @@ class GUI():
         json_data['menu_parameters'] = {
             'offx': self.offx,
             'offy': self.offy,
-            'zoom': self.zoom,
+            'zoom': self.zoom.get(),
             'sigma': self.sl_sigma.get(),
             'resolution': self.sl_res.get(),
             'colorMode': self.colorMode.get(),
@@ -681,7 +721,7 @@ class GUI():
                 self.sl_rgb_scale.set(menu_params['rgbScale'])
 
                 if 'zoom' in menu_params.keys():
-                    self.zoom = menu_params['zoom']
+                    self.zoom.set(menu_params['zoom'])
 
                 if not(append):
                     self.sliders = {} 
