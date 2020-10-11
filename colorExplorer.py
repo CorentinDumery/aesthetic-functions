@@ -37,8 +37,7 @@ TODO:
 # sin cos exp fabs bitwise_or/and/xor rint
 
 
-from importlib import reload
-from os import path
+from os import path, name
 import json
 import math
 import sys
@@ -52,6 +51,7 @@ from PIL import Image, ImageTk
 import numpy as np  # needed for compatibility with formulas with np.
 from random import randrange, random
 import userdef as user # user is the module used to load user definition
+import importlib
 from time import time
 mainColor = "#ccebe4"
 secondaryColor = "#daede9"
@@ -133,7 +133,7 @@ def updateUserDefLib(text, sliders):
     libfile = open("userdef.py", "w")
     libfile.write(text)
     libfile.close()
-    reload(user)
+    importlib.reload(user)
 
 
 class GUI():
@@ -145,6 +145,9 @@ class GUI():
         self.root.configure(background=mainColor)
         self.root.sizex = 960  # Size of image on tk window
         self.root.sizey = 540
+        if os.name == 'nt': #windows needs smaller sizes for some reason
+            self.root.sizex = (960//3)*2  # Size of image on tk window
+            self.root.sizey = (540//3)*2
 
         self.offx = 0  # TODO: put these in some ImageHolder class
         self.offy = 0
@@ -582,7 +585,7 @@ class GUI():
             self.label.configure(image=self.image)
             self.label.grid(row=1, column=2, pady=10, padx=10)
             self.computationTime.set(time() - time_beginning)
-            self.fps.set(int(1/(time() - time_beginning)))
+            self.fps.set(int(1/(time() - time_beginning + 0.00001)))
         
         except ValueError:
             print("Invalid value !")
