@@ -2,4 +2,5 @@ Parameters/*.txt
 userdef.py
 Images/Ignore/*
 Parameters/Ignore/*
-
+__pycache__/*
+.vscode/*

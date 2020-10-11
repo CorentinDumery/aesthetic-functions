@@ -8,6 +8,7 @@ TODO:
 - make .json from the old .txt files
 - expand frames to fit
 - reset button
+- import any image as a np array and use it in canvas
 - Use global style variables (in progress)
 - catch errors and show warning sign on interface
     - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
@@ -20,11 +21,9 @@ TODO:
 - make ImageHolder class with everything related to the canvas (also, use actual Canvas ?)
 - Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
 - prevent formulas with potentially harmful commands ("exec", "import", ...)
-- add parameter t, and option to record video with t going from 0 to 100
-- automatically replace ** with pow during evaluation
+- add parameter "time", and option to record video with t going from 0 to 100
 - add rotation slider that replaces i with t*i+(1-t)*j, etc
 - protect against problematic functions (div by 0, ...)
-- improve formula buttons, make the writing "|" change with button call
 - improve looks (if possible without using ttk)
 - put the sliders/buttons in a loop to make the code more readable
 - add label that shows maximum/minimum reached by current formula on frame
@@ -42,6 +41,7 @@ from importlib import reload
 from os import path
 import json
 import math
+import sys
 from time import sleep
 import matplotlib
 import colorsys
@@ -119,7 +119,13 @@ def func(xx, yy, offx, offy, f=""):
     n, m = xx.shape
     nb, mb = yy.shape
 
-    return eval(f)
+    image = eval(f)
+    if type(image).__module__ != 'numpy' :
+        print("Warning: your formula leads to invalid arrays.")
+        if isinstance(image, int) or isinstance(image, float):  
+            print("Interpreting formula as a constant.")
+            image = np.full((nb, m), image)
+    return image
 
 
 def updateUserDefLib(text, sliders):
@@ -340,6 +346,12 @@ class GUI():
             self.formulaFrame, text='Append Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.appendParams)
         self.bAppendParams.grid(row=3, column=4)
 
+        self.errorMessage = tk.StringVar()
+        self.errorMessage.set("No error.")
+        self.errorLabel = tk.Label(
+            self.formulaFrame, textvariable=self.errorMessage, bg=secondaryColor, highlightthickness=thick_val)
+        self.errorLabel.grid(row=1, column = 6)
+
         self.formulaFrame.grid(row=2, column=2, rowspan =2)
 
         ## -- PRESETFRAME -- ##
@@ -453,123 +465,130 @@ class GUI():
         self.root.mainloop()
 
     def genImg(self, event=None):
-        
-        time_beginning = time()
-        resx = self.sl_res.get()*1600//100
-        resy = self.sl_res.get()*900//100
+        try :
+            self.errorMessage.set("No error")
+            time_beginning = time()
+            resx = self.sl_res.get()*1600//100
+            resy = self.sl_res.get()*900//100
 
-        self.minx = self.zoom.get()*(-640*2/2)/100
-        self.maxx = self.zoom.get()*(+640*2/2)/100
-        self.miny = self.zoom.get()*(-360*2/2)/100
-        self.maxy = self.zoom.get()*(+360*2/2)/100
-        stepx = (self.maxx-self.minx)/resx
-        stepy = (self.maxy-self.miny)/resy
+            self.minx = self.zoom.get()*(-640*2/2)/100
+            self.maxx = self.zoom.get()*(+640*2/2)/100
+            self.miny = self.zoom.get()*(-360*2/2)/100
+            self.maxy = self.zoom.get()*(+360*2/2)/100
+            stepx = (self.maxx-self.minx)/resx
+            stepy = (self.maxy-self.miny)/resy
 
-        printInterval = False
-        if printInterval:
-            print("Interval x:", self.minx, self.maxx)
-            print("Interval y:", self.miny, self.maxy)
+            printInterval = False
+            if printInterval:
+                print("Interval x:", self.minx, self.maxx)
+                print("Interval y:", self.miny, self.maxy)
 
-        x = np.arange(self.minx, self.maxx, stepx)
-        y = np.arange(self.miny, self.maxy, stepy)
-        xx, yy = np.meshgrid(x, y, sparse=True)
+            x = np.arange(self.minx, self.maxx, stepx)
+            y = np.arange(self.miny, self.maxy, stepy)
+            xx, yy = np.meshgrid(x, y, sparse=True)
 
-        self.updateSliderParameters()
-        res = func(xx, yy, self.offx, self.offy, self.activeFunction)
-        res = res.transpose()
+            self.updateSliderParameters()
+            res = func(xx, yy, self.offx, self.offy, self.activeFunction)
+            res = res.transpose()
 
-        res = res[:resx, :resy]
-        if res.shape[1] > resy:  # fix potential floating error imprecision
-            res = res[:, :-1]
+            res = res[:resx, :resy]
+            if res.shape[1] > resy:  # fix potential floating error imprecision
+                res = res[:, :-1]
 
-        normalized = False
-        if normalized:
-            res = 256*res/np.max(res)
+            normalized = False
+            if normalized:
+                res = 256*res/np.max(res)
 
-        if self.randomModulation.get():
-            randMat = np.random.rand(res.shape[0], res.shape[1])
-            res = res*randMat
+            if self.randomModulation.get():
+                randMat = np.random.rand(res.shape[0], res.shape[1])
+                res = res*randMat
 
-        if self.colorMode.get() == "HSV":
+            if self.colorMode.get() == "HSV":
 
-            type0 = "uint8"
-            array = np.zeros((3, resx, resy), type0)
-            array[0, :, :] = res % (256*256*256)
-            array[1, :, :] = np.full(
-                (res.shape[0], res.shape[1]), self.sl_s_value.get(), type0)
-            array[2, :, :] = np.full(
-                (res.shape[0], res.shape[1]), self.sl_v_value.get(), type0)
+                type0 = "uint8"
+                array = np.zeros((3, resx, resy), type0)
+                array[0, :, :] = res % (256*256*256)
+                array[1, :, :] = np.full(
+                    (res.shape[0], res.shape[1]), self.sl_s_value.get(), type0)
+                array[2, :, :] = np.full(
+                    (res.shape[0], res.shape[1]), self.sl_v_value.get(), type0)
 
-        elif self.colorMode.get() == "RGB":
-            scale = self.sl_rgb_scale.get()
-            max_value = min(scale, 256)
+            elif self.colorMode.get() == "RGB":
+                scale = self.sl_rgb_scale.get()
+                max_value = min(scale, 256)
 
-            array = np.zeros((3, resx, resy), 'uint8')
-            array[0, :, :] = res % max_value
-            array[1, :, :] = (res/max_value) % max_value
-            array[2, :, :] = (res/(max_value*max_value)) % max_value
+                array = np.zeros((3, resx, resy), 'uint8')
+                array[0, :, :] = res % max_value
+                array[1, :, :] = (res/max_value) % max_value
+                array[2, :, :] = (res/(max_value*max_value)) % max_value
 
-        else:
-            array = res
-
-        sigma = self.sl_sigma.get()/100
-        if sigma > 0:
-            if array.ndim == 3:
-                array[0, :, :] = gaussian_filter(array[0, :, :], sigma=sigma)
-                array[1, :, :] = gaussian_filter(array[1, :, :], sigma=sigma)
-                array[2, :, :] = gaussian_filter(array[2, :, :], sigma=sigma)
             else:
-                array[:, :] = gaussian_filter(array[:, :], sigma=sigma)
+                array = res
 
-        if self.colorMode.get() == "HSV":
-            array = np.ascontiguousarray(array.transpose(2, 1, 0))
-            if (array.shape[0] < self.root.sizey):
-                stepx = self.root.sizex//array.shape[1]
-                stepy = self.root.sizey//array.shape[0]
-                array = np.repeat(array, stepx, axis=0)
-                array = np.repeat(array, stepy, axis=1)
-            img0 = Image.fromarray(array, 'HSV')
+            sigma = self.sl_sigma.get()/100
+            if sigma > 0:
+                if array.ndim == 3:
+                    array[0, :, :] = gaussian_filter(array[0, :, :], sigma=sigma)
+                    array[1, :, :] = gaussian_filter(array[1, :, :], sigma=sigma)
+                    array[2, :, :] = gaussian_filter(array[2, :, :], sigma=sigma)
+                else:
+                    array[:, :] = gaussian_filter(array[:, :], sigma=sigma)
 
-        elif self.colorMode.get() == "RGB":
-            array = np.ascontiguousarray(array.transpose(2, 1, 0))
+            if self.colorMode.get() == "HSV":
+                array = np.ascontiguousarray(array.transpose(2, 1, 0))
+                if (array.shape[0] < self.root.sizey):
+                    stepx = self.root.sizex//array.shape[1]
+                    stepy = self.root.sizey//array.shape[0]
+                    array = np.repeat(array, stepx, axis=0)
+                    array = np.repeat(array, stepy, axis=1)
+                img0 = Image.fromarray(array, 'HSV')
 
-            if (array.shape[0] < self.root.sizey):
-                stepx = self.root.sizex//array.shape[1]
-                stepy = self.root.sizey//array.shape[0]
-                array = np.repeat(array, stepx, axis=0)
-                array = np.repeat(array, stepy, axis=1)
+            elif self.colorMode.get() == "RGB":
+                array = np.ascontiguousarray(array.transpose(2, 1, 0))
 
-            img0 = Image.fromarray(array, 'RGB')
-        else:  # mode == "BW"
-            array *= float(self.sl_bw_scale.get()/100)
-            if (array.shape[0] < self.root.sizey):
-                stepx = self.root.sizex//array.shape[1]
-                stepy = self.root.sizey//array.shape[0]
-                array = np.repeat(array, stepx, axis=0)
-                array = np.repeat(array, stepy, axis=1)
-            img0 = Image.fromarray(array.transpose())
-        #img0 = Image.fromarray(array)
+                if (array.shape[0] < self.root.sizey):
+                    stepx = self.root.sizex//array.shape[1]
+                    stepy = self.root.sizey//array.shape[0]
+                    array = np.repeat(array, stepx, axis=0)
+                    array = np.repeat(array, stepy, axis=1)
 
-        if not(math.isnan(res.max())):
-            self.maxLabelText.set(
-                "Max value: " + f"{res.max():.2f}"+"\nMax (hex):"+hex(int(res.max())))
+                img0 = Image.fromarray(array, 'RGB')
+            else:  # mode == "BW"
+                array *= float(self.sl_bw_scale.get()/100)
+                if (array.shape[0] < self.root.sizey):
+                    stepx = self.root.sizex//array.shape[1]
+                    stepy = self.root.sizey//array.shape[0]
+                    array = np.repeat(array, stepx, axis=0)
+                    array = np.repeat(array, stepy, axis=1)
+                img0 = Image.fromarray(array.transpose())
+            #img0 = Image.fromarray(array)
 
-        self.fullImage = img0  # saving full res picture to output it
+            if not(math.isnan(res.max())):
+                if res.max() < 255*255*255*255:
+                    self.maxLabelText.set(
+                        "Max value: " + f"{res.max():.2f}"+"\nMax (hex):"+hex(int(res.max())))
 
-        ANTIALIAS = False
-        if ANTIALIAS:
-            img0 = img0.resize(
-                (self.root.sizex, self.root.sizey), Image.ANTIALIAS)
-        else:
-            img0 = img0.resize((self.root.sizex, self.root.sizey))
+            self.fullImage = img0  # saving full res picture to output it
 
-        img = ImageTk.PhotoImage(img0)
-        self.image = img
-       # self.label = tk.Label(self.root,image=self.image)
-        self.label.configure(image=self.image)
-        self.label.grid(row=1, column=2, pady=10, padx=10)
-        self.computationTime.set(time() - time_beginning)
-        self.fps.set(int(1/(time() - time_beginning)))
+            ANTIALIAS = False
+            if ANTIALIAS:
+                img0 = img0.resize(
+                    (self.root.sizex, self.root.sizey), Image.ANTIALIAS)
+            else:
+                img0 = img0.resize((self.root.sizex, self.root.sizey))
+
+            img = ImageTk.PhotoImage(img0)
+            self.image = img
+            self.label.configure(image=self.image)
+            self.label.grid(row=1, column=2, pady=10, padx=10)
+            self.computationTime.set(time() - time_beginning)
+            self.fps.set(int(1/(time() - time_beginning)))
+        
+        except ValueError:
+            print("Invalid value !")
+        except SyntaxError as e:
+            print("Invalid syntax !", str(e) )
+            self.errorMessage.set(e)
 
     def changeColorMode(self):
         self.RGBModeMenu.grid_forget()
