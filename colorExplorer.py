@@ -130,10 +130,18 @@ def func(xx, yy, offx, offy, f=""):
 
 def updateUserDefLib(text, sliders):
     '''Writes text in userdef.py and reloads the module'''
-    libfile = open("userdef.py", "w")
-    libfile.write(text)
-    libfile.close()
-    importlib.reload(user)
+    try:
+        libfile = open("userdef.py", "w")
+        libfile.write(text)
+        libfile.close()
+        importlib.reload(user)
+        return "Userdef: no error."
+    except:
+        e = sys.exc_info()[0].__name__
+        message = sys.exc_info()[1]
+        print("Error caught:")
+        print(message)
+        return "Userdef: "+ e
 
 
 class GUI():
@@ -241,7 +249,7 @@ class GUI():
         self.RGBModeMenu.grid_columnconfigure(
             1, weight=1, uniform="RGB_uniform")
         self.sl_rgb_scale = tk.Scale(self.RGBModeMenu, from_=0, to=256,
-                                     orient=tk.HORIZONTAL, command=self.genImg, length=200)
+                                     orient=tk.HORIZONTAL, command=self.genImg, length=150)
         setStyle(self.sl_rgb_scale, **scaleStyle)
         self.sl_rgb_scale.set(256)
         self.sl_rgb_scale.grid(row=1, column=0, columnspan=2)
@@ -255,13 +263,13 @@ class GUI():
         self.HSVModeMenu.grid_columnconfigure(
             1, weight=1, uniform="HSV_uniform")
         self.sl_s_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
-                                   orient=tk.HORIZONTAL, command=self.genImg, length=200)
+                                   orient=tk.HORIZONTAL, command=self.genImg, length=150)
         setStyle(self.sl_s_value, **scaleStyle)
         self.sl_s_value.set(102)
         self.sl_s_value.grid(row=1, column=0, columnspan=2)
 
         self.sl_v_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
-                                   orient=tk.HORIZONTAL, command=self.genImg, length=200)
+                                   orient=tk.HORIZONTAL, command=self.genImg, length=150)
         setStyle(self.sl_v_value, **scaleStyle)
         self.sl_v_value.set(230)
         self.sl_v_value.grid(row=2, column=0, columnspan=2)
@@ -271,7 +279,7 @@ class GUI():
         self.BWModeMenu.grid_columnconfigure(0, weight=1, uniform="BW_uniform")
         self.BWModeMenu.grid_columnconfigure(1, weight=1, uniform="BW_uniform")
         self.sl_bw_scale = tk.Scale(self.BWModeMenu, from_=0, to=200,
-                                    orient=tk.HORIZONTAL, command=self.genImg, length=200)
+                                    orient=tk.HORIZONTAL, command=self.genImg, length=150)
         setStyle(self.sl_bw_scale, **scaleStyle)
         self.sl_bw_scale.set(100)
         self.sl_bw_scale.grid(row=1, column=0, columnspan=2)
@@ -325,7 +333,7 @@ class GUI():
             self.formulaFrame, width=100, height=10)
         self.userDefEntry.insert(
             END, "# Your definitions here.\n# They will be imported in the module 'user'.")
-        self.userDefEntry.grid(row=1, column=1, columnspan=5, pady=20)
+        self.userDefEntry.grid(row=0, column=1, rowspan = 2, columnspan=5, pady=20)
 
         self.formulaEntry = tk.Entry(
             self.formulaFrame, textvariable=self.formula, width=100)
@@ -355,8 +363,14 @@ class GUI():
             self.formulaFrame, text='Append Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.appendParams)
         self.bAppendParams.grid(row=3, column=4)
 
+        self.errorUserdef = tk.StringVar()
+        self.errorUserdef.set("Userdef: no error.")
+        self.errorLabel = tk.Label(
+            self.formulaFrame, textvariable=self.errorUserdef, bg=secondaryColor, highlightthickness=thick_val)
+        self.errorLabel.grid(row=0, column = 6)
+
         self.errorMessage = tk.StringVar()
-        self.errorMessage.set("No error.")
+        self.errorMessage.set("Formula: no error.")
         self.errorLabel = tk.Label(
             self.formulaFrame, textvariable=self.errorMessage, bg=secondaryColor, highlightthickness=thick_val)
         self.errorLabel.grid(row=1, column = 6)
@@ -475,7 +489,7 @@ class GUI():
 
     def genImg(self, event=None):
         try :
-            self.errorMessage.set("Error, see console") #will be replaced if no error found
+            self.errorMessage.set("Formula: Error, see console") #will be replaced if no error found
             time_beginning = time()
             resx = self.sl_res.get()*1600//100
             resy = self.sl_res.get()*900//100
@@ -593,12 +607,14 @@ class GUI():
             self.computationTime.set(time() - time_beginning)
             self.fps.set(int(1/(time() - time_beginning + 0.00001)))
             
-            self.errorMessage.set("No Error")
-        except ValueError:
-            print("Invalid value !")
-        except SyntaxError as e:
-            print("Invalid syntax !", str(e) )
-            self.errorMessage.set(e)
+            self.errorMessage.set("Formula: No Error")
+        except:
+            e = sys.exc_info()[0].__name__
+            message = sys.exc_info()[1]
+            print("Error caught:")
+            print(message)
+            print("Error caught:", sys.exc_info())
+            self.errorMessage.set("Formula: "+e)
 
     def changeColorMode(self):
         self.RGBModeMenu.grid_forget()
@@ -630,7 +646,8 @@ class GUI():
 
     def applyFunction(self):
         self.activeFunction = self.formula.get()
-        updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
+        error_str = updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
+        self.errorUserdef.set(error_str)
         self.genImg()
 
     def updateSliderParameters(self):
@@ -759,7 +776,7 @@ class GUI():
                 for slider in json_data['sliders']:
                     newSliderName = slider['name']
                     newSlider = tk.Scale(self.userSliderFrame, from_=0, to=255,
-                                         orient=tk.VERTICAL, command=self.genImg, length=200)
+                                         orient=tk.VERTICAL, command=self.genImg, length=150)
                     setStyle(newSlider, **scaleStyle)
                     newSlider.set(slider['value'])
                     newSlider.grid(row=4, column=len(self.sliders))
@@ -858,7 +875,7 @@ class GUI():
         if not checkSliderName(newSliderName):
             return
         newSlider = tk.Scale(self.userSliderFrame, from_=255, to=0,
-                             orient=tk.VERTICAL, command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
+                             orient=tk.VERTICAL, command=self.genImg, length=150, bg=secondaryColor, highlightthickness=thick_val)
         setStyle(newSlider, **scaleStyle)
         newSlider.set(100)
         newSlider.grid(row=4, column=len(self.sliders))
