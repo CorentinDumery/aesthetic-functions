@@ -30,14 +30,14 @@ TODO:
 - if the input function is constant, it should still be shown
 - make color mode menus of a fixed size (so that the window doesn't change size)
 - make image independant of sizex sizey
+- find out why importlib doesn't work on first kernel on Windows
 """
 
 # list of available functions:
 # https://numpy.org/doc/stable/reference/ufuncs.html#available-ufuncs
 # sin cos exp fabs bitwise_or/and/xor rint
 
-
-from os import path, name
+import os
 import json
 import math
 import sys
@@ -169,14 +169,14 @@ class GUI():
         self.sliders = {}  # self defined sliders TODO rename ?
 
         self.sl_sigma = tk.Scale(self.sliderFrame, from_=500, to=0, orient=tk.VERTICAL,
-                                 command=self.genImg, length=200, bg=secondaryColor, highlightthickness=thick_val)
+                                 command=self.genImg, length=150, bg=secondaryColor, highlightthickness=thick_val)
         self.sl_sigma.set(0)
         self.sl_sigma.grid(row=1, column=2)
         tk.Label(self.sliderFrame, text="σ", padx=5,
                  bg=secondaryColor).grid(row=0, column=2, sticky="E")
 
         self.sl_res = tk.Scale(self.sliderFrame, from_=100, to=1, orient=tk.VERTICAL, command=self.genImg,
-                               length=200)
+                               length=150)
         setStyle(self.sl_res, **scaleStyle)
         self.sl_res.set(30)
         self.sl_res.grid(row=1, column=3)
@@ -195,14 +195,20 @@ class GUI():
         self.newSliderEntry = tk.Entry(
             self.addSliderFrame, textvariable=self.newSliderName)
         self.newSliderEntry.pack(side=tk.LEFT)
+        
         self.newSliderButton = tk.Button(
             self.addSliderFrame, text="+", command=self.newSlider)
         self.newSliderButton.pack(side=tk.RIGHT)
+        
         self.addSliderFrame.grid(row=3, column=0, columnspan=4)
 
-        self.userSliderFrame = tk.Frame(
+        self.userSliderFrame = tk.Frame( #Empty frame for now, but user can add sliders here
             self.sliderFrame, bg=secondaryColor, highlightthickness=thick_val)
-        self.userSliderFrame.grid(row=4, column=0, columnspan=4)
+        self.userSliderFrame.grid(row=5, column=0, columnspan=4)
+
+        self.deleteSliderButton = tk.Button(
+            self.sliderFrame, text="Delete sliders", command=self.deleteSliders)
+        self.deleteSliderButton.grid(row =4, column=1, columnspan =5) 
 
         self.sliderFrame.grid(row=1, column=1)
 
@@ -469,7 +475,7 @@ class GUI():
 
     def genImg(self, event=None):
         try :
-            self.errorMessage.set("No error")
+            self.errorMessage.set("Error, see console") #will be replaced if no error found
             time_beginning = time()
             resx = self.sl_res.get()*1600//100
             resy = self.sl_res.get()*900//100
@@ -586,7 +592,8 @@ class GUI():
             self.label.grid(row=1, column=2, pady=10, padx=10)
             self.computationTime.set(time() - time_beginning)
             self.fps.set(int(1/(time() - time_beginning + 0.00001)))
-        
+            
+            self.errorMessage.set("No Error")
         except ValueError:
             print("Invalid value !")
         except SyntaxError as e:
@@ -658,7 +665,7 @@ class GUI():
             name = simpledialog.askstring(
                 "", "Name of this set of parameters?")
 
-        while path.exists("Parameters/"+name+".json"):
+        while os.path.exists("Parameters/"+name+".json"):
             name = simpledialog.askstring(
                 "", "Name already exists, please pick another one")
 
@@ -858,6 +865,13 @@ class GUI():
         tk.Label(self.userSliderFrame, text="slider." + newSliderName, padx=5, pady=5,
                  bg=secondaryColor, highlightthickness=thick_val).grid(row=3, column=len(self.sliders), sticky="E")
         self.sliders[newSliderName] = newSlider
+        
+    def deleteSliders(self):
+        self.sliders = {}
+        for widget in self.userSliderFrame.winfo_children():
+            widget.destroy()
+        global slider
+        slider = Slider()
 
 
 app = GUI()
