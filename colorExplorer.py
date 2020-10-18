@@ -34,23 +34,25 @@ import os
 import json
 import math
 import sys
-from time import sleep
-import matplotlib
-import colorsys
+from time import time
 from scipy.ndimage.filters import gaussian_filter
 import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 from PIL import Image, ImageTk
-import numpy as np  # needed for compatibility with formulas with np.
+import numpy as np  # needed for compatibility with formulas with np
 from random import randrange, random
 import userdef as user # user is the module used to load user definition
 import importlib
-from time import time
+
 mainColor = "#ccebe4"
 secondaryColor = "#daede9"
 mainColor = "#f1faee"
 secondaryColor = "#e1eade"
 thick_val = 0
+
+use_global_image = False #functionality works, but still needs refinement
+if use_global_image:
+    imgStar = Image.open('starrynight.jpg')
 
 frameStyle = {
     'bg': secondaryColor,
@@ -563,6 +565,14 @@ class GUI():
                     array[2, :, :] = np.full(
                         (res.shape[0], res.shape[1]), self.sl_v_value.get(), type0)
 
+                    if use_global_image:
+                        global imgStar
+                        imgResized = imgStar.resize((resx, resy))
+                        imgNp = np.asarray( imgResized, dtype="uint8" )
+                        np.add(array[0, :, :], imgNp[:,:,0].transpose(), out=array[0, :, :], casting="unsafe")
+                        np.add(array[1, :, :], imgNp[:,:,1].transpose(), out=array[1, :, :], casting="unsafe")
+                        np.add(array[2, :, :], imgNp[:,:,2].transpose(), out=array[2, :, :], casting="unsafe")
+
                 elif self.colorMode.get() == "RGB":
                     scale = self.sl_rgb_scale.get()
                     max_value = min(scale, 256)
@@ -572,6 +582,14 @@ class GUI():
                     array[1, :, :] = (res/max_value) % max_value
                     array[2, :, :] = (res/(max_value*max_value)) % max_value
 
+                    if use_global_image:
+                        imgResized = imgStar.resize((resx, resy))
+                        imgNp = np.asarray( imgResized, dtype="uint8" )
+                        np.add(array[0, :, :], imgNp[:,:,0].transpose(), out=array[0, :, :], casting="unsafe")
+                        np.add(array[1, :, :], imgNp[:,:,1].transpose(), out=array[1, :, :], casting="unsafe")
+                        np.add(array[2, :, :], imgNp[:,:,2].transpose(), out=array[2, :, :], casting="unsafe")
+
+                    
                 else: # BW
                     array = res
             
@@ -722,7 +740,7 @@ class GUI():
         if name:  # not None
             if self.saveWithMaxResolution.get():
                 old_res = self.sl_res.get()
-                self.sl_res.set(100)
+                self.sl_res.set(30)
                 self.genImg()
                 self.fullImage.convert('RGB').save("Images/{}.png".format(name))
                 self.sl_res.set(old_res)
@@ -832,7 +850,8 @@ class GUI():
                 attributes = [('formulaRed',self.formulaRed), ('formulaGreen',self.formulaGreen), ('formulaBlue',self.formulaBlue)]
 
                 for attr in attributes:
-                    attr[1].set(json_data[attr[0]])
+                    if attr[0] in json_data.keys():
+                        attr[1].set(json_data[attr[0]])
 
                 if not(append):
                     self.sliders = {} 
