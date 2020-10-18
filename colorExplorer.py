@@ -7,6 +7,7 @@ Created on Wed May 6 09:25:55 2020
 TODO:
 - make .json from the old .txt files
 - expand frames to fit
+- append parameters for R/G/B
 - reset button
 - import any image as a np array and use it in canvas
 - Use global style variables (in progress)
@@ -14,20 +15,12 @@ TODO:
     - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
 - Add radial coordinates option
 - Add BGR/RGB/GBR/... instead of RGB
-- Add 4th color mode with different formulas for R G and B
-- add option to keep/discard previous stuff upon loading parameters
-- remove useless sliders and make sure loading still works
-    - if there's an "alpha/beta" in a txt, it should create such sliders
 - make ImageHolder class with everything related to the canvas (also, use actual Canvas ?)
 - Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
 - prevent formulas with potentially harmful commands ("exec", "import", ...)
 - add parameter "time", and option to record video with t going from 0 to 100
 - add rotation slider that replaces i with t*i+(1-t)*j, etc
-- protect against problematic functions (div by 0, ...)
-- improve looks (if possible without using ttk)
 - put the sliders/buttons in a loop to make the code more readable
-- add label that shows maximum/minimum reached by current formula on frame
-- if the input function is constant, it should still be shown
 - make color mode menus of a fixed size (so that the window doesn't change size)
 - make image independant of sizex sizey
 - find out why importlib doesn't work on first kernel on Windows
@@ -242,6 +235,10 @@ class GUI():
                                    text="HSV", value="HSV", bg=secondaryColor, highlightthickness=thick_val, command=self.changeColorMode)
         self.rad3.grid(row=1, column=3, sticky="W")
 
+        self.rad4 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
+                                   text="R/G/B", value="R/G/B", bg=secondaryColor, highlightthickness=thick_val, command=self.changeColorMode)
+        self.rad4.grid(row=1, column=4, sticky="W")
+
         self.RGBModeMenu = tk.Frame(
             self.checkFrame, bg=secondaryColor, highlightthickness=thick_val)
         self.RGBModeMenu.grid_columnconfigure(
@@ -299,6 +296,13 @@ class GUI():
         self.activeFunction = f"255*(i**2+j**2)"  # default formula here
         self.formula = tk.StringVar(value=self.activeFunction)
 
+        self.functionRed = f"255*(i**2+j**2)"  # Formulas for R/G/B color mode
+        self.formulaRed = tk.StringVar(value=self.functionRed)
+        self.functionGreen = f"255*(i**2+j**2)"  
+        self.formulaGreen = tk.StringVar(value=self.functionGreen)
+        self.functionBlue = f"255*(i**2+j**2)"  
+        self.formulaBlue = tk.StringVar(value=self.functionBlue)
+
         display_help_buttons = False  # TODO replace with something more appropriate
         if display_help_buttons:
             self.bfi = tk.Button(self.formulaFrame, text='i', bg=secondaryColor, highlightthickness=thick_val,
@@ -335,9 +339,31 @@ class GUI():
             END, "# Your definitions here.\n# They will be imported in the module 'user'.")
         self.userDefEntry.grid(row=0, column=1, rowspan = 2, columnspan=5, pady=20)
 
+
         self.formulaEntry = tk.Entry(
             self.formulaFrame, textvariable=self.formula, width=100)
         self.formulaEntry.grid(row=2, column=1, columnspan=5, pady=20)
+
+        self.threeFormulaFrame = tk.Frame(
+                self.formulaFrame, bg=mainColor, highlightthickness=thick_val)
+        #TODO apply frame style
+
+        self.formulaRedEntry = tk.Entry(
+            self.threeFormulaFrame, textvariable=self.formulaRed, width=100)
+        self.formulaRedEntry.grid(row=0, column=1, columnspan=5, pady=0)
+
+        self.formulaGreenEntry = tk.Entry(
+            self.threeFormulaFrame, textvariable=self.formulaGreen, width=100)
+        self.formulaGreenEntry.grid(row=1, column=1, columnspan=5, pady=0)
+
+        self.formulaBlueEntry = tk.Entry(
+            self.threeFormulaFrame, textvariable=self.formulaBlue, width=100)
+        self.formulaBlueEntry.grid(row=2, column=1, columnspan=5, pady=0)
+        
+        
+
+        #self.threeFormulaFrame.grid(row=2, columnspan=5) #grid only when mode is R/G/B
+        
 
         self.bApply = tk.Button(
             self.formulaFrame, text='Apply', bg=secondaryColor, highlightthickness=thick_val, command=self.applyFunction)
@@ -349,19 +375,19 @@ class GUI():
 
         self.bSaveIm = tk.Button(
             self.formulaFrame, text='Save Image', bg=secondaryColor, highlightthickness=thick_val, command=self.saveImg)
-        self.bSaveIm.grid(row=3, column=1)
+        self.bSaveIm.grid(row=6, column=1)
 
         self.bSaveParams = tk.Button(
             self.formulaFrame, text='Save Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.saveParams)
-        self.bSaveParams.grid(row=3, column=2)
+        self.bSaveParams.grid(row=6, column=2)
 
         self.bLoadParams = tk.Button(
             self.formulaFrame, text='Load Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.loadParams)
-        self.bLoadParams.grid(row=3, column=3)
+        self.bLoadParams.grid(row=6, column=3)
 
         self.bAppendParams = tk.Button(
             self.formulaFrame, text='Append Parameters', bg=secondaryColor, highlightthickness=thick_val, command=self.appendParams)
-        self.bAppendParams.grid(row=3, column=4)
+        self.bAppendParams.grid(row=6, column=4)
 
         self.errorUserdef = tk.StringVar()
         self.errorUserdef.set("Userdef: no error.")
@@ -511,42 +537,63 @@ class GUI():
             xx, yy = np.meshgrid(x, y, sparse=True)
 
             self.updateSliderParameters()
-            res = func(xx, yy, self.offx, self.offy, self.activeFunction)
-            res = res.transpose()
 
-            res = res[:resx, :resy]
-            if res.shape[1] > resy:  # fix potential floating error imprecision
-                res = res[:, :-1]
+            if self.colorMode.get() != "R/G/B":
+                res = func(xx, yy, self.offx, self.offy, self.activeFunction)
+                res = res.transpose()
 
-            normalized = False
-            if normalized:
-                res = 256*res/np.max(res)
+                res = res[:resx, :resy]
+                if res.shape[1] > resy:  # fix potential floating error imprecision
+                    res = res[:, :-1]
 
-            if self.randomModulation.get():
-                randMat = np.random.rand(res.shape[0], res.shape[1])
-                res = res*randMat
+                normalized = False
+                if normalized:
+                    res = 256*res/np.max(res)
 
-            if self.colorMode.get() == "HSV":
+                if self.randomModulation.get():
+                    randMat = np.random.rand(res.shape[0], res.shape[1])
+                    res = res*randMat
 
-                type0 = "uint8"
-                array = np.zeros((3, resx, resy), type0)
-                array[0, :, :] = res % (256*256*256)
-                array[1, :, :] = np.full(
-                    (res.shape[0], res.shape[1]), self.sl_s_value.get(), type0)
-                array[2, :, :] = np.full(
-                    (res.shape[0], res.shape[1]), self.sl_v_value.get(), type0)
+                if self.colorMode.get() == "HSV":
+                    type0 = "uint8"
+                    array = np.zeros((3, resx, resy), type0)
+                    array[0, :, :] = res % (256*256*256)
+                    array[1, :, :] = np.full(
+                        (res.shape[0], res.shape[1]), self.sl_s_value.get(), type0)
+                    array[2, :, :] = np.full(
+                        (res.shape[0], res.shape[1]), self.sl_v_value.get(), type0)
 
-            elif self.colorMode.get() == "RGB":
+                elif self.colorMode.get() == "RGB":
+                    scale = self.sl_rgb_scale.get()
+                    max_value = min(scale, 256)
+
+                    array = np.zeros((3, resx, resy), 'uint8')
+                    array[0, :, :] = res % max_value
+                    array[1, :, :] = (res/max_value) % max_value
+                    array[2, :, :] = (res/(max_value*max_value)) % max_value
+
+                else: # BW
+                    array = res
+            
+            else : # R/G/B
                 scale = self.sl_rgb_scale.get()
                 max_value = min(scale, 256)
-
                 array = np.zeros((3, resx, resy), 'uint8')
-                array[0, :, :] = res % max_value
-                array[1, :, :] = (res/max_value) % max_value
-                array[2, :, :] = (res/(max_value*max_value)) % max_value
+                functions = [self.functionRed, self.functionGreen, self.functionBlue]
+                for channel in range(3):
+                    res = func(xx, yy, self.offx, self.offy, functions[channel])
+                    res = res.transpose()
 
-            else:
-                array = res
+                    res = res[:resx, :resy]
+                    if res.shape[1] > resy:  # fix potential floating error imprecision
+                        res = res[:, :-1]
+
+                    if self.randomModulation.get():
+                        randMat = np.random.rand(res.shape[0], res.shape[1])
+                        res = res*randMat
+
+                    array[channel, :, :] = res % max_value
+
 
             sigma = self.sl_sigma.get()/100
             if sigma > 0:
@@ -566,7 +613,7 @@ class GUI():
                     array = np.repeat(array, stepy, axis=1)
                 img0 = Image.fromarray(array, 'HSV')
 
-            elif self.colorMode.get() == "RGB":
+            elif self.colorMode.get() in ["RGB", "R/G/B"]:
                 array = np.ascontiguousarray(array.transpose(2, 1, 0))
 
                 if (array.shape[0] < self.root.sizey):
@@ -606,26 +653,33 @@ class GUI():
             self.label.grid(row=1, column=2, pady=10, padx=10)
             self.computationTime.set(time() - time_beginning)
             self.fps.set(int(1/(time() - time_beginning + 0.00001)))
-            
             self.errorMessage.set("Formula: No Error")
+
         except:
             e = sys.exc_info()[0].__name__
             message = sys.exc_info()[1]
             print("Error caught:")
             print(message)
-            print("Error caught:", sys.exc_info())
             self.errorMessage.set("Formula: "+e)
 
     def changeColorMode(self):
         self.RGBModeMenu.grid_forget()
         self.HSVModeMenu.grid_forget()
         self.BWModeMenu.grid_forget()
+        self.formulaEntry.grid_forget()
+        self.threeFormulaFrame.grid_forget()
         if self.colorMode.get() == "HSV":
             self.HSVModeMenu.grid(row=2, column=1, columnspan=3)
         if self.colorMode.get() == "RGB":
             self.RGBModeMenu.grid(row=2, column=1, columnspan=3)
         if self.colorMode.get() == "BW":
             self.BWModeMenu.grid(row=2, column=1, columnspan=3)
+        if self.colorMode.get() in ["HSV", "RGB", "BW"]:
+            self.formulaEntry.grid(row=2, column=1, columnspan=5, pady=20)
+        if self.colorMode.get() == "R/G/B":
+            self.RGBModeMenu.grid(row=2, column=1, columnspan=3)
+            self.threeFormulaFrame.grid(row=2, columnspan=5)
+
         self.genImg()
 
     def playAnimation(self):  # TODO
@@ -634,7 +688,7 @@ class GUI():
             return
         self.root.after(100, self.genImg())
 
-    def addFormula(self, string):
+    def addFormula(self, string): # obsolete
         txt = self.formula.get()
         pos = self.formulaEntry.index(tk.INSERT)
         if string in ["exp", "cos", "sin"]:
@@ -646,6 +700,9 @@ class GUI():
 
     def applyFunction(self):
         self.activeFunction = self.formula.get()
+        self.functionRed = self.formulaRed.get()
+        self.functionGreen = self.formulaGreen.get()
+        self.functionBlue = self.formulaBlue.get()
         error_str = updateUserDefLib(self.userDefEntry.get("1.0", END), self.sliders)
         self.errorUserdef.set(error_str)
         self.genImg()
@@ -686,28 +743,11 @@ class GUI():
             name = simpledialog.askstring(
                 "", "Name already exists, please pick another one")
 
-        saveToTxt = False #legacy
-        if saveToTxt:
-            file = open("Parameters/"+name+".txt", "a")
-            params = "formula " + self.activeFunction + "\n"
-            params += "alpha " + str(0)+"\n"
-            params += "beta " + str(0)+"\n"
-            params += "offx " + str(self.offx)+"\n"
-            params += "offy " + str(self.offy)+"\n"
-            params += "sigma " + str(self.sl_sigma.get())+"\n"
-            params += "resolution " + str(self.sl_res.get())+"\n"
-            params += "colorMode " + self.colorMode.get() + "\n"
-            params += "randomModulation " + \
-                str(self.randomModulation.get())+"\n"
-            params += "sValue " + str(self.sl_s_value.get()) + "\n"
-            params += "vValue " + str(self.sl_v_value.get()) + "\n"
-            params += "bwScale " + str(self.sl_bw_scale.get()) + "\n"
-            params += "rgbScale " + str(self.sl_rgb_scale.get()) + "\n"
-            file.write(params)
-            file.close()
-
         json_data = {}
         json_data['formula'] = self.formula.get()
+        json_data['formulaRed'] = self.formulaRed.get()
+        json_data['formulaGreen'] = self.formulaGreen.get()
+        json_data['formulaBlue'] = self.formulaBlue.get()
         json_data['menu_parameters'] = {
             'offx': self.offx,
             'offy': self.offy,
@@ -734,6 +774,26 @@ class GUI():
 
         with open("Parameters/"+name+".json", 'a') as outfile:
             json.dump(json_data, outfile)
+
+        saveToTxt = False #legacy
+        if saveToTxt:
+            file = open("Parameters/"+name+".txt", "a")
+            params = "formula " + self.activeFunction + "\n"
+            params += "alpha " + str(0)+"\n"
+            params += "beta " + str(0)+"\n"
+            params += "offx " + str(self.offx)+"\n"
+            params += "offy " + str(self.offy)+"\n"
+            params += "sigma " + str(self.sl_sigma.get())+"\n"
+            params += "resolution " + str(self.sl_res.get())+"\n"
+            params += "colorMode " + self.colorMode.get() + "\n"
+            params += "randomModulation " + \
+                str(self.randomModulation.get())+"\n"
+            params += "sValue " + str(self.sl_s_value.get()) + "\n"
+            params += "vValue " + str(self.sl_v_value.get()) + "\n"
+            params += "bwScale " + str(self.sl_bw_scale.get()) + "\n"
+            params += "rgbScale " + str(self.sl_rgb_scale.get()) + "\n"
+            file.write(params)
+            file.close()
 
     def loadParams(self, append = False):
 
@@ -769,6 +829,11 @@ class GUI():
                 if 'zoom' in menu_params.keys():
                     self.zoom.set(menu_params['zoom'])
 
+                attributes = [('formulaRed',self.formulaRed), ('formulaGreen',self.formulaGreen), ('formulaBlue',self.formulaBlue)]
+
+                for attr in attributes:
+                    attr[1].set(json_data[attr[0]])
+
                 if not(append):
                     self.sliders = {} 
 
@@ -787,7 +852,7 @@ class GUI():
                 if not(append):
                     self.userDefEntry.delete('1.0', END)
                 self.userDefEntry.insert(END, json_data['userdef_entry'])
-                self.userDefEntry.grid(row=1, column=1, columnspan=5, pady=20)
+                self.userDefEntry.grid(row=0, column=1, rowspan = 2, columnspan=5, pady=20) #TODO get values from dict
                 self.applyFunction()
 
         elif len(filepath) > 3 and filepath[-4:] == ".txt":
@@ -840,7 +905,7 @@ class GUI():
     def appendParams(self):
         self.loadParams(append = True)
 
-    def preset(self, n):
+    def preset(self, n): # obsolete
         functions = []
         functions.append(
             "p1*np.cos(np.sin(i*10/p2))+p1*np.cos(np.sin(j*10/p2))")
