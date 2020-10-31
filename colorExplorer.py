@@ -740,7 +740,7 @@ class GUI():
         if name:  # not None
             if self.saveWithMaxResolution.get():
                 old_res = self.sl_res.get()
-                self.sl_res.set(30)
+                self.sl_res.set(100)
                 self.genImg()
                 self.fullImage.convert('RGB').save("Images/{}.png".format(name))
                 self.sl_res.set(old_res)
@@ -851,7 +851,10 @@ class GUI():
 
                 for attr in attributes:
                     if attr[0] in json_data.keys():
-                        attr[1].set(json_data[attr[0]])
+                        if not(append):
+                            attr[1].set(json_data[attr[0]])
+                        else:
+                            attr[1].set(attr[1].get() + " + " + json_data[attr[0]])
 
                 if not(append):
                     self.sliders = {} 
