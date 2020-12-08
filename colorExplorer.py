@@ -5,7 +5,7 @@ Created on Wed May 6 09:25:55 2020
 
 """
 TODO:
-- load random json
+- random generation
 - make .json from the old .txt files
 - expand frames to fit
 - append parameters for R/G/B
@@ -41,7 +41,7 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 from PIL import Image, ImageTk
 import numpy as np  # needed for compatibility with formulas with np
-from random import randrange, random
+import random
 import userdef as user # user is the module used to load user definition
 import importlib
 mainColor = "#ccebe4"
@@ -366,6 +366,10 @@ class GUI():
             self.formulaFrame, text='Load Parameters', **baseStyle, command=self.loadParams)
         self.bLoadParams.grid(row=6, column=3)
 
+        self.openRandomButton = tk.Button(
+            self.formulaFrame, text='Open Random', **baseStyle, command=self.openRandom)
+        self.openRandomButton.grid(row=6, column=5)
+
         self.bAppendParams = tk.Button(
             self.formulaFrame, text='Append Parameters', **baseStyle, command=self.appendParams)
         self.bAppendParams.grid(row=6, column=4)
@@ -383,24 +387,6 @@ class GUI():
         self.errorLabel.grid(row=1, column=6)
 
         self.formulaFrame.grid(row=2, column=2, rowspan=2)
-
-        ## -- PRESETFRAME -- ##
-
-        show_preset = False  # TODO : replace with something more appropriate
-        if show_preset:
-            self.presetFrame = tk.Frame(
-                self.root, **baseStyle)
-            self.bPreset1 = tk.Button(
-                self.presetFrame, text='Preset 1', **baseStyle, command=lambda: self.preset(0))
-            self.bPreset1.grid(row=1, column=1, padx=10, pady=15)
-            self.bPreset2 = tk.Button(
-                self.presetFrame, text='Preset 2', **baseStyle, command=lambda: self.preset(1))
-            self.bPreset2.grid(row=1, column=2, padx=10, pady=15)
-            self.bPreset3 = tk.Button(
-                self.presetFrame, text='Preset 3', **baseStyle, command=lambda: self.preset(2))
-            self.bPreset3.grid(row=1, column=3, padx=10, pady=15)
-
-            self.presetFrame.grid(row=3, column=2)
 
         ## -- INFOFRAME -- ##
 
@@ -805,11 +791,19 @@ class GUI():
             file.write(params)
             file.close()
 
-    def loadParams(self, append=False):
+    def openRandom(self):
+        dir = "../colorExplorer/Parameters"
+        file = random.choice([dir +"/"+ x for x in os.listdir(
+            dir) if os.path.isfile(os.path.join(dir, x))])
+        self.loadParams(filepath=file)
 
-        filepath = filedialog.askopenfilename(initialdir="../colorExplorer/Parameters/",
-                                              title="Select parameters file",
-                                              filetypes=(("json files", "*.json"), ("txt files", "*.txt"), ("all files", "*.*")))
+    def loadParams(self, append=False, filepath=""):
+
+        if filepath == "":
+            filepath = filedialog.askopenfilename(initialdir="../colorExplorer/Parameters/",
+                                                  title="Select parameters file",
+                                                  filetypes=(("json files", "*.json"), ("txt files", "*.txt"), ("all files", "*.*")))
+
         if filepath == ():
             return
 
