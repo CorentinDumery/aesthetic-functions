@@ -6,6 +6,7 @@ Created on Wed May 6 09:25:55 2020
 """
 TODO:
 - random generation
+- fix zoom in some json (eg caro.json)
 - make .json from the old .txt files
 - expand frames to fit
 - append parameters for R/G/B
@@ -366,13 +367,13 @@ class GUI():
             self.formulaFrame, text='Load Parameters', **baseStyle, command=self.loadParams)
         self.bLoadParams.grid(row=6, column=3)
 
-        self.openRandomButton = tk.Button(
-            self.formulaFrame, text='Open Random', **baseStyle, command=self.openRandom)
-        self.openRandomButton.grid(row=6, column=5)
-
         self.bAppendParams = tk.Button(
             self.formulaFrame, text='Append Parameters', **baseStyle, command=self.appendParams)
         self.bAppendParams.grid(row=6, column=4)
+
+        self.openRandomButton = tk.Button(
+            self.formulaFrame, text='Open Random', **baseStyle, command=self.openRandom)
+        self.openRandomButton.grid(row=6, column=5)
 
         self.errorUserdef = tk.StringVar()
         self.errorUserdef.set("Userdef: no error.")
@@ -793,9 +794,10 @@ class GUI():
 
     def openRandom(self):
         dir = "../colorExplorer/Parameters"
-        file = random.choice([dir +"/"+ x for x in os.listdir(
+        file = random.choice([dir + "/" + x for x in os.listdir(
             dir) if os.path.isfile(os.path.join(dir, x))])
         self.loadParams(filepath=file)
+        print("Opening "+file)
 
     def loadParams(self, append=False, filepath=""):
 
@@ -806,6 +808,9 @@ class GUI():
 
         if filepath == ():
             return
+
+        if not(append):
+            self.deleteSliders()
 
         if len(filepath) > 4 and filepath[-5:] == ".json":
             with open(filepath) as json_file:
