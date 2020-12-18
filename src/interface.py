@@ -5,7 +5,7 @@ from time import time
 import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 import random
-import userdef as user  # used to load user definitions
+import src.userdef as user  # used to load user definitions
 import importlib
 from src.image_canvas import Canvas
 from src.style import mainColor, frameStyle, titleStyle, scaleStyle, baseStyle, frameGrid
@@ -392,7 +392,7 @@ class Interface():
         def updateUserDefLib(text, sliders):
             '''Writes text in userdef.py and reloads the module'''
             try:
-                libfile = open("userdef.py", "w")
+                libfile = open("src/userdef.py", "w")
                 libfile.write(text)
                 libfile.close()
                 importlib.reload(user)

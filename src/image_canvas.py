@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image, ImageTk
 from scipy.ndimage.filters import gaussian_filter
-import userdef as user
+import src.userdef as user
 import math
 
 

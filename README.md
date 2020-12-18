@@ -4,7 +4,6 @@
 The objective of this project is to explore the artistic aspects of two-dimensional mathematics. To put it simply, it is about visualizing a function in 2D, but with fancy colors and some extra options. It is not very useful, but we like it. If you're interested, we'd be delighted to see your creations, and exchange tips !
 
 ## Install & Run
-### Ubuntu, python3
 
 To run the project, navigate to the project's folder and run:
 ```
