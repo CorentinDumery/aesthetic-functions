@@ -8,7 +8,7 @@ The objective of this project is to explore the artistic aspects of two-dimensio
 
 To run the project, navigate to the project's folder and run:
 ```
-python3 colorExplorer.py
+python3 main.py
 ```
 
 You might also need to install the following python libraries, all of which can be installed using `pip install`: importlib, tk, pil.imagetk, numpy, scipy, matplotlib.

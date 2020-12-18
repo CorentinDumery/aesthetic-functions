@@ -1,0 +1,13 @@
+# TODO:
+- random generation
+- Add stuff to stats frame
+- append parameters for R/G/B
+- reset button
+- import any image as a np array and use it in canvas
+- catch errors and show warning sign on interface
+    - show them with https://beenje.github.io/blog/posts/logging-to-a-tkinter-scrolledtext-widget/
+- Change MouseMover to get x/y in picture coordinates, and show label with value under mouse
+- prevent formulas with potentially harmful commands ("exec", "import", ...)
+- add parameter "time", and option to record video with t going from 0 to 100
+- add rotation slider that replaces i with t*i+(1-t)*j, etc
+- make image independant of sizex sizey

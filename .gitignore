@@ -4,3 +4,5 @@ Images/Ignore/*
 Parameters/Ignore/*
 __pycache__/*
 .vscode/*
+legacy/*
+src/__pycache__/*
