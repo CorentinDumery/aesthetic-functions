@@ -8,7 +8,7 @@ import random
 import src.userdef as user  # used to load user definitions
 import importlib
 from src.image_canvas import Canvas
-from src.style import mainColor, frameStyle, titleStyle, scaleStyle, baseStyle, frameGrid
+from src.style import mainColor, frameStyle, titleStyle, scaleStyle, baseStyle, frameGrid, buttonGrid
 
 
 class Interface():
@@ -93,6 +93,10 @@ class Interface():
         self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",
                                      var=self.randomModulation, **baseStyle, command=self.updateCanvas)
         self.check1.grid(row=1, column=1, columnspan=3)
+        
+        self.newRandomButton = tk.Button(self.checkFrame, text="New Random Seed", 
+                                         **baseStyle, command=self.newRandom)
+        self.newRandomButton.grid(row =4 , column=1, columnspan=3 )
 
         self.colorMode = tk.StringVar(value="RGB")
         self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
@@ -192,27 +196,27 @@ class Interface():
 
         self.bApply = tk.Button(
             self.formulaFrame, text='Apply', **baseStyle, command=self.applyFunction)
-        self.bApply.grid(row=3, column=6)
+        self.bApply.grid(row=3, column=6, **buttonGrid)
 
         self.bSaveIm = tk.Button(
             self.formulaFrame, text='Save Image', **baseStyle, command=self.saveImg)
-        self.bSaveIm.grid(row=7, column=1)
+        self.bSaveIm.grid(row=7, column=1, **buttonGrid)
 
         self.bSaveParams = tk.Button(
             self.formulaFrame, text='Save Parameters', **baseStyle, command=self.saveParams)
-        self.bSaveParams.grid(row=7, column=2)
+        self.bSaveParams.grid(row=7, column=2, **buttonGrid)
 
         self.bLoadParams = tk.Button(
             self.formulaFrame, text='Load Parameters', **baseStyle, command=self.loadParams)
-        self.bLoadParams.grid(row=7, column=3)
+        self.bLoadParams.grid(row=7, column=3, **buttonGrid)
 
         self.bAppendParams = tk.Button(
             self.formulaFrame, text='Append Parameters', **baseStyle, command=self.appendParams)
-        self.bAppendParams.grid(row=7, column=4)
+        self.bAppendParams.grid(row=7, column=4, **buttonGrid)
 
         self.openRandomButton = tk.Button(
             self.formulaFrame, text='Open Random', **baseStyle, command=self.openRandom)
-        self.openRandomButton.grid(row=7, column=5)
+        self.openRandomButton.grid(row=7, column=5, **buttonGrid)
 
         self.errorUserdef = tk.StringVar()
         self.errorUserdef.set("Userdef: no error.")
@@ -364,6 +368,10 @@ class Interface():
             print("Error caught:")
             print(message)
             self.errorMessage.set("Formula: "+e)
+    
+    def newRandom(self):
+        self.canvas.newRandomSeed()
+        self.updateCanvas()
 
     def changeColorMode(self):
         ''' Forget previous layout and apply new one '''
@@ -394,7 +402,7 @@ class Interface():
             try:
                 libfile = open("src/userdef.py", "w")
                 libfile.write(text)
-                libfile.close()
+                libfile.close()            
                 importlib.reload(user)
                 return "Userdef: no error."
             except:

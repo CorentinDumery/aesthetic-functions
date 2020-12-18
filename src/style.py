@@ -25,6 +25,10 @@ frameGrid = {
     'sticky': tk.E+tk.W+tk.N+tk.S
 }
 
+buttonGrid = {
+    'sticky': tk.E+tk.W+tk.N+tk.S
+}
+
 titleStyle = {
     **baseStyle,
     'font': ("Courier", 18, "bold"),

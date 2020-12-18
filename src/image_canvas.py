@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from scipy.ndimage.filters import gaussian_filter
 import src.userdef as user
 import math
+import random
 
 
 use_global_image = False  # functionality works, but still needs refinement
@@ -10,10 +11,11 @@ if use_global_image:
     imgStar = Image.open('starrynight.jpg')
 
 
-def func(xx, yy, offx, offy, slider={}, f=""):
+def func(xx, yy, offx, offy, slider={}, f="", random_seed=0):
     '''Generic function that computes pixel values for canvas'''
     i = xx-offx
     j = yy-offy
+    random.seed(random_seed)
 
     image = eval(f)
     if type(image).__module__ != 'numpy':
@@ -34,6 +36,7 @@ class Canvas:
         self.res = 30
         self.offx = 0
         self.offy = 0
+        self.randomSeed = 0
         self.colorMode = "HSV"
         self.activeFunction = "i**2 + j**2"
         self.functionRed = "i**2 + j**2"
@@ -59,7 +62,8 @@ class Canvas:
 
         if self.colorMode != "R/G/B":
             res = func(xx, yy, self.offx, self.offy,
-                       self.sliderDict, self.activeFunction)
+                       self.sliderDict, self.activeFunction,
+                       self.randomSeed)
             res = res.transpose()
 
             res = res[:resx, :resy]
@@ -243,3 +247,6 @@ class Canvas:
     
     def setSigma(self, sigma):
         self.sigma = sigma
+    
+    def newRandomSeed(self):
+        self.randomSeed = random.randrange(0, 100000)
