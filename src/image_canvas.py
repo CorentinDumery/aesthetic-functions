@@ -6,7 +6,9 @@ import math
 import random
 
 
-use_global_image = False  # functionality works, but still needs refinement
+use_global_image = False
+# functionality works, but still needs refinement
+# just set to True to test it
 if use_global_image:
     imgStar = Image.open('starrynight.jpg')
 
@@ -75,7 +77,7 @@ class Canvas:
             if normalized:
                 res = 256*res/np.max(res)
 
-            if self.randomModulation:            
+            if self.randomModulation:
                 np.random.seed(self.randomSeed)
                 randMat = np.random.rand(res.shape[0], res.shape[1])
                 res = res*randMat
@@ -195,18 +197,18 @@ class Canvas:
 
         img = ImageTk.PhotoImage(img0)
         return img
-    
+
     def saveImage(self, name):
         self.fullImage.convert('RGB').save(
-                    "Images/{}.png".format(name))
-    
+            "Images/{}.png".format(name))
+
     def setMinMax(self, pairx, pairy):
         self.minx, self.maxx = pairx
         self.miny, self.maxy = pairy
-        
+
     def getMax(self):
         return self.max_value
-    
+
     def setRes(self, res):
         self.res = res
 
@@ -246,9 +248,9 @@ class Canvas:
 
     def setBWScale(self, scale):
         self.bw_scale = scale
-    
+
     def setSigma(self, sigma):
         self.sigma = sigma
-    
+
     def newRandomSeed(self):
         self.randomSeed = random.randrange(0, 100000)

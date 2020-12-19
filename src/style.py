@@ -3,7 +3,7 @@ import tkinter as tk
 mainColor = "#f1faee"
 secondaryColor = "#e1eade"
 
-#Convention: 
+# Convention:
 # "Style" is used when creating tk widget
 # "Grid" is used when doing widget.grid(...)
 

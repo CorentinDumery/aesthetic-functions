@@ -81,22 +81,11 @@ class Interface():
             self.sliderFrame, text="Delete sliders", command=self.deleteSliders)
         self.deleteSliderButton.grid(row=5, column=1, columnspan=5)
 
-        self.sliderFrame.grid(row=1, column=1, **frameGrid)
-
         ## -- CHECKFRAME -- ##
         self.checkFrame = tk.Frame(self.root, **frameStyle)
         title_check = tk.Label(
             self.checkFrame, text="COLOR MODEL", **titleStyle)
         title_check.grid(row=0, column=0, columnspan=8)
-
-        self.randomModulation = tk.IntVar(value=0)
-        self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",
-                                     var=self.randomModulation, **baseStyle, command=self.updateCanvas)
-        self.check1.grid(row=1, column=1, columnspan=3)
-        
-        self.newRandomButton = tk.Button(self.checkFrame, text="New Random Seed", 
-                                         **baseStyle, command=self.newRandom)
-        self.newRandomButton.grid(row =4 , column=1, columnspan=3 )
 
         self.colorMode = tk.StringVar(value="RGB")
         self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
@@ -151,7 +140,14 @@ class Interface():
         self.sl_bw_scale.set(100)
         self.sl_bw_scale.grid(row=1, column=0, columnspan=2)
 
-        self.checkFrame.grid(row=2, column=1, **frameGrid)
+        self.randomModulation = tk.IntVar(value=0)
+        self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",
+                                     var=self.randomModulation, **baseStyle, command=self.updateCanvas)
+        self.check1.grid(row=4, column=1, columnspan=3)
+
+        self.newRandomButton = tk.Button(self.checkFrame, text="New Random Seed",
+                                         **baseStyle, command=self.newRandom)
+        self.newRandomButton.grid(row=5, column=1, columnspan=5, **buttonGrid)
 
         ## -- FORMULAFRAME -- ##
 
@@ -170,7 +166,7 @@ class Interface():
         self.formulaBlue = tk.StringVar(value=f"150*(i**2+j**2)")
 
         self.userDefEntry = scrolledtext.ScrolledText(
-            self.formulaFrame, width=100, height=10)
+            self.formulaFrame, width=100, height=12)
         self.userDefEntry.insert(
             END, "# Your definitions here.\n# They will be imported in the module 'user'.")
         self.userDefEntry.grid(
@@ -198,31 +194,11 @@ class Interface():
             self.formulaFrame, text='Apply', **baseStyle, command=self.applyFunction)
         self.bApply.grid(row=3, column=6, **buttonGrid)
 
-        self.bSaveIm = tk.Button(
-            self.formulaFrame, text='Save Image', **baseStyle, command=self.saveImg)
-        self.bSaveIm.grid(row=7, column=1, **buttonGrid)
-
-        self.bSaveParams = tk.Button(
-            self.formulaFrame, text='Save Parameters', **baseStyle, command=self.saveParams)
-        self.bSaveParams.grid(row=7, column=2, **buttonGrid)
-
-        self.bLoadParams = tk.Button(
-            self.formulaFrame, text='Load Parameters', **baseStyle, command=self.loadParams)
-        self.bLoadParams.grid(row=7, column=3, **buttonGrid)
-
-        self.bAppendParams = tk.Button(
-            self.formulaFrame, text='Append Parameters', **baseStyle, command=self.appendParams)
-        self.bAppendParams.grid(row=7, column=4, **buttonGrid)
-
-        self.openRandomButton = tk.Button(
-            self.formulaFrame, text='Open Random', **baseStyle, command=self.openRandom)
-        self.openRandomButton.grid(row=7, column=5, **buttonGrid)
-
         self.errorUserdef = tk.StringVar()
         self.errorUserdef.set("Userdef: no error.")
         self.errorLabel = tk.Label(
             self.formulaFrame, textvariable=self.errorUserdef, **baseStyle)
-        self.errorLabel.grid(row=1, column=6)
+        self.errorLabel.grid(row=2, column=6)
 
         self.errorMessage = tk.StringVar()
         self.errorMessage.set("Formula: no error.")
@@ -230,12 +206,37 @@ class Interface():
             self.formulaFrame, textvariable=self.errorMessage, **baseStyle)
         self.errorLabel.grid(row=2, column=6)
 
-        self.formulaFrame.grid(row=2, column=2, rowspan=2, **frameGrid)
+        ## -- IOFRAME -- ##
+
+        self.IOFrame = tk.Frame(self.root)
+
+        for i in range(1, 6):
+            self.IOFrame.grid_columnconfigure(
+                i, weight=1, uniform="IOFrameUniform")
+
+        self.bSaveIm = tk.Button(
+            self.IOFrame, text='Save Image', **baseStyle, command=self.saveImg)
+        self.bSaveIm.grid(row=7, column=1, **buttonGrid)
+
+        self.bSaveParams = tk.Button(
+            self.IOFrame, text='Save Parameters', **baseStyle, command=self.saveParams)
+        self.bSaveParams.grid(row=7, column=2, **buttonGrid)
+
+        self.bLoadParams = tk.Button(
+            self.IOFrame, text='Load Parameters', **baseStyle, command=self.loadParams)
+        self.bLoadParams.grid(row=7, column=3, **buttonGrid)
+
+        self.bAppendParams = tk.Button(
+            self.IOFrame, text='Append Parameters', **baseStyle, command=self.appendParams)
+        self.bAppendParams.grid(row=7, column=4, **buttonGrid)
+
+        self.openRandomButton = tk.Button(
+            self.IOFrame, text='Open Random', **baseStyle, command=self.openRandom)
+        self.openRandomButton.grid(row=7, column=5, **buttonGrid)
 
         ## -- INFOFRAME -- ##
 
-        self.infoFrame = tk.Frame(
-            self.root, **frameStyle)
+        self.infoFrame = tk.Frame(self.root, **frameStyle)
 
         title_info = tk.Label(self.infoFrame, text="STATS", **titleStyle)
         title_info.grid(row=1, column=0, columnspan=2)
@@ -269,11 +270,18 @@ class Interface():
             self.infoFrame, textvariable=self.fps, anchor=tk.W, **baseStyle)
         self.fpsLabelValue.grid(row=5, column=1, sticky="W")
 
-        self.infoFrame.grid(row=3, column=1, **frameGrid)
-
         self.canvas_label = tk.Label(self.root)
 
-        self.updateCanvas()
+        ## -- Frames layout -- ##
+
+        self.checkFrame.grid(row=3, column=1, **frameGrid)
+        self.sliderFrame.grid(row=1, rowspan=2, column=1, **frameGrid)
+        self.infoFrame.grid(row=4, column=1, **frameGrid)
+
+        self.formulaFrame.grid(row=3, column=2, rowspan=2, **frameGrid)
+        self.IOFrame.grid(row=2, column=2, sticky=tk.S+tk.W+tk.E)
+
+        ## -- Mouse handler -- ##
 
         class MouseMover():
 
@@ -323,8 +331,10 @@ class Interface():
         self.canvas_label.bind("<Button-1>", mouse_mover.selectB1)
         self.canvas_label.bind("<MouseWheel>", mouse_mover.mouseWheel)
         self.canvas_label.bind("<Button-3>", mouse_mover.b3)
-        self.canvas_label.bind("<Button-4>", mouse_mover.b4) # mouse wheel up X11
-        self.canvas_label.bind("<Button-5>", mouse_mover.b5) # mouse wheel down X11
+        # mouse wheel up X11
+        self.canvas_label.bind("<Button-4>", mouse_mover.b4)
+        # mouse wheel down X11
+        self.canvas_label.bind("<Button-5>", mouse_mover.b5)
         self.canvas_label.bind("<B1-Motion>", mouse_mover.dragB1)
 
         self.changeColorMode()
@@ -368,7 +378,7 @@ class Interface():
             print("Error caught:")
             print(message)
             self.errorMessage.set("Formula: "+e)
-    
+
     def newRandom(self):
         self.canvas.newRandomSeed()
         self.updateCanvas()
@@ -402,7 +412,7 @@ class Interface():
             try:
                 libfile = open("src/userdef.py", "w")
                 libfile.write(text)
-                libfile.close()            
+                libfile.close()
                 importlib.reload(user)
                 return "Userdef: no error."
             except:
@@ -487,6 +497,7 @@ class Interface():
 
     def openRandom(self):
         dir = "../colorExplorer/Parameters"
+        random.seed()
         file = random.choice([dir + "/" + x for x in os.listdir(
             dir) if os.path.isfile(os.path.join(dir, x))])
         print("Opening "+file)
@@ -551,12 +562,10 @@ class Interface():
                 self.userDefEntry.delete('1.0', END)
             self.userDefEntry.insert(END, json_data['userdef_entry'])
 
-
         self.computeMinMax()
         self.canvas.setOff(self.offx, self.offy)
-        self.changeColorMode()
-
         self.applyFunction()
+        self.changeColorMode()
 
     def appendParams(self):
         self.loadParams(append=True)
