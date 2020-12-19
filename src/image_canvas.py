@@ -16,6 +16,7 @@ def func(xx, yy, offx, offy, slider={}, f="", random_seed=0):
     i = xx-offx
     j = yy-offy
     random.seed(random_seed)
+    np.random.seed(random_seed)
 
     image = eval(f)
     if type(image).__module__ != 'numpy':
@@ -74,7 +75,8 @@ class Canvas:
             if normalized:
                 res = 256*res/np.max(res)
 
-            if self.randomModulation:
+            if self.randomModulation:            
+                np.random.seed(self.randomSeed)
                 randMat = np.random.rand(res.shape[0], res.shape[1])
                 res = res*randMat
 
