@@ -198,7 +198,7 @@ class Interface():
         self.errorUserdef.set("Userdef: no error.")
         self.errorLabel = tk.Label(
             self.formulaFrame, textvariable=self.errorUserdef, **baseStyle)
-        self.errorLabel.grid(row=2, column=6)
+        self.errorLabel.grid(row=1, column=6)
 
         self.errorMessage = tk.StringVar()
         self.errorMessage.set("Formula: no error.")
