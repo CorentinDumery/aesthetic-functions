@@ -33,242 +33,23 @@ class Interface():
 
         self.sliderDict = self.SliderDict()
         self.sliders = {}
+        
+        ## -- Frames setup -- ##
 
-        ## -- SLIDERFRAME -- ##
+        self.sliderFrame = tk.Frame(self.root, **frameStyle)        
+        self.setupSliderFrame(self.sliderFrame)
 
-        self.sliderFrame = tk.Frame(self.root, **frameStyle)
+        self.checkFrame = tk.Frame(self.root, **frameStyle)            
+        self.setupCheckFrame(self.checkFrame)
 
-        title_slider = tk.Label(self.sliderFrame, text="SLIDERS", **titleStyle)
-        title_slider.grid(row=0, column=0, columnspan=4)
-
-        self.sl_sigma = tk.Scale(self.sliderFrame, from_=500, to=0, orient=tk.VERTICAL,
-                                 command=self.updateCanvas, length=150, **scaleStyle)
-        self.sl_sigma.set(0)
-        self.sl_sigma.grid(row=2, column=2)
-        tk.Label(self.sliderFrame, text="σ", padx=5,
-                 **baseStyle).grid(row=1, column=2, sticky="E")
-
-        self.sl_res = tk.Scale(self.sliderFrame, **scaleStyle, from_=100, to=1, orient=tk.VERTICAL, command=self.updateCanvas,
-                               length=150)
-        self.sl_res.set(30)
-        self.sl_res.grid(row=2, column=3)
-        tk.Label(self.sliderFrame, text="res", **baseStyle).grid(
-            row=1, column=3, sticky="E")
-
-        self.saveWithMaxResolution = tk.BooleanVar()
-        self.saveWithMaxResolution.set(True)
-        self.checkMaxResolution = tk.Checkbutton(self.sliderFrame, text="Save with max resolution",
-                                                 var=self.saveWithMaxResolution, **baseStyle)
-        self.checkMaxResolution.grid(row=3, column=1, columnspan=3)
-
-        self.addSliderFrame = tk.Frame(self.sliderFrame, **baseStyle)
-        self.newSliderName = tk.StringVar(value="my_param")
-        self.newSliderEntry = tk.Entry(
-            self.addSliderFrame, textvariable=self.newSliderName)
-        self.newSliderEntry.pack(side=tk.LEFT)
-
-        self.newSliderButton = tk.Button(
-            self.addSliderFrame, text="+", command=self.newSlider)
-        self.newSliderButton.pack(side=tk.RIGHT)
-
-        self.addSliderFrame.grid(row=4, column=0, columnspan=4)
-
-        self.userSliderFrame = tk.Frame(  # Empty frame for now, but user can add sliders here
-            self.sliderFrame, **baseStyle)
-        self.userSliderFrame.grid(row=6, column=0, columnspan=4)
-
-        self.deleteSliderButton = tk.Button(
-            self.sliderFrame, text="Delete sliders", command=self.deleteSliders)
-        self.deleteSliderButton.grid(row=5, column=1, columnspan=5)
-
-        ## -- CHECKFRAME -- ##
-        self.checkFrame = tk.Frame(self.root, **frameStyle)
-        title_check = tk.Label(
-            self.checkFrame, text="COLOR MODEL", **titleStyle)
-        title_check.grid(row=0, column=0, columnspan=8)
-
-        self.colorMode = tk.StringVar(value="RGB")
-        self.rad1 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="RGB", value="RGB", **baseStyle, command=self.changeColorMode)
-        self.rad1.grid(row=2, column=1, sticky="W")
-
-        self.rad2 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="BW", value="BW", **baseStyle, command=self.changeColorMode)
-        self.rad2.grid(row=2, column=2, sticky="W")
-
-        self.rad3 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="HSV", value="HSV", **baseStyle, command=self.changeColorMode)
-        self.rad3.grid(row=2, column=3, sticky="W")
-
-        self.rad4 = tk.Radiobutton(self.checkFrame, variable=self.colorMode,
-                                   text="R/G/B", value="R/G/B", **baseStyle, command=self.changeColorMode)
-        self.rad4.grid(row=2, column=4, sticky="W")
-
-        self.RGBModeMenu = tk.Frame(
-            self.checkFrame, **baseStyle)
-        self.RGBModeMenu.grid_columnconfigure(
-            0, weight=1, uniform="RGB_uniform")
-        self.RGBModeMenu.grid_columnconfigure(
-            1, weight=1, uniform="RGB_uniform")
-        self.sl_rgb_scale = tk.Scale(self.RGBModeMenu, from_=0, to=256,
-                                     orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
-        self.sl_rgb_scale.set(256)
-        self.sl_rgb_scale.grid(row=1, column=0, columnspan=2)
-
-        self.HSVModeMenu = tk.Frame(
-            self.checkFrame, **baseStyle)
-        self.HSVModeMenu.grid_columnconfigure(
-            0, weight=1, uniform="HSV_uniform")
-        self.HSVModeMenu.grid_columnconfigure(
-            1, weight=1, uniform="HSV_uniform")
-        self.sl_s_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
-                                   orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
-        self.sl_s_value.set(102)
-        self.sl_s_value.grid(row=1, column=0, columnspan=2)
-
-        self.sl_v_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
-                                   orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
-        self.sl_v_value.set(230)
-        self.sl_v_value.grid(row=2, column=0, columnspan=2)
-
-        self.BWModeMenu = tk.Frame(
-            self.checkFrame, **baseStyle)
-        self.BWModeMenu.grid_columnconfigure(0, weight=1, uniform="BW_uniform")
-        self.BWModeMenu.grid_columnconfigure(1, weight=1, uniform="BW_uniform")
-        self.sl_bw_scale = tk.Scale(self.BWModeMenu, from_=0, to=200,
-                                    orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
-        self.sl_bw_scale.set(100)
-        self.sl_bw_scale.grid(row=1, column=0, columnspan=2)
-
-        self.randomModulation = tk.IntVar(value=0)
-        self.check1 = tk.Checkbutton(self.checkFrame, text="Random Modulation",
-                                     var=self.randomModulation, **baseStyle, command=self.updateCanvas)
-        self.check1.grid(row=4, column=1, columnspan=3)
-
-        self.newRandomButton = tk.Button(self.checkFrame, text="New Random Seed",
-                                         **baseStyle, command=self.newRandom)
-        self.newRandomButton.grid(row=5, column=1, columnspan=5, **buttonGrid)
-
-        ## -- FORMULAFRAME -- ##
-
-        self.formulaFrame = tk.Frame(self.root, **frameStyle)
-
-        title_formula = tk.Label(
-            self.formulaFrame, text="FORMULAS", **titleStyle)
-        title_formula.grid(row=0, column=0, columnspan=10)
-
-        self.activeFunction = f"255*(i**2+j**2)"  # default formula here
-        self.formula = tk.StringVar(value=self.activeFunction)
-
-        # Formulas for R/G/B color mode
-        self.formulaRed = tk.StringVar(value=f"255*(i**2+j**2)")
-        self.formulaGreen = tk.StringVar(value=f"200*(i**2+j**2)")
-        self.formulaBlue = tk.StringVar(value=f"150*(i**2+j**2)")
-
-        self.userDefEntry = scrolledtext.ScrolledText(
-            self.formulaFrame, width=100, height=12)
-        self.userDefEntry.insert(
-            END, "# Your definitions here.\n# They will be imported in the module 'user'.")
-        self.userDefEntry.grid(
-            row=1, column=1, rowspan=2, columnspan=5, pady=5)
-
-        self.formulaEntry = tk.Entry(
-            self.formulaFrame, textvariable=self.formula, width=100)
-
-        self.threeFormulaFrame = tk.Frame(
-            self.formulaFrame, **baseStyle)
-
-        self.formulaRedEntry = tk.Entry(
-            self.threeFormulaFrame, textvariable=self.formulaRed, width=100)
-        self.formulaRedEntry.grid(row=1, column=1, columnspan=5, pady=0)
-
-        self.formulaGreenEntry = tk.Entry(
-            self.threeFormulaFrame, textvariable=self.formulaGreen, width=100)
-        self.formulaGreenEntry.grid(row=2, column=1, columnspan=5, pady=0)
-
-        self.formulaBlueEntry = tk.Entry(
-            self.threeFormulaFrame, textvariable=self.formulaBlue, width=100)
-        self.formulaBlueEntry.grid(row=3, column=1, columnspan=5, pady=0)
-
-        self.bApply = tk.Button(
-            self.formulaFrame, text='Apply', **baseStyle, command=self.applyFunction)
-        self.bApply.grid(row=3, column=6, **buttonGrid)
-
-        self.errorUserdef = tk.StringVar()
-        self.errorUserdef.set("Userdef: no error.")
-        self.errorLabel = tk.Label(
-            self.formulaFrame, textvariable=self.errorUserdef, **baseStyle)
-        self.errorLabel.grid(row=1, column=6)
-
-        self.errorMessage = tk.StringVar()
-        self.errorMessage.set("Formula: no error.")
-        self.errorLabel = tk.Label(
-            self.formulaFrame, textvariable=self.errorMessage, **baseStyle)
-        self.errorLabel.grid(row=2, column=6)
-
-        ## -- IOFRAME -- ##
-
+        self.formulaFrame = tk.Frame(self.root, **frameStyle)        
+        self.setupFormulaFrame(self.formulaFrame)
+        
         self.IOFrame = tk.Frame(self.root)
-
-        for i in range(1, 6):
-            self.IOFrame.grid_columnconfigure(
-                i, weight=1, uniform="IOFrameUniform")
-
-        self.bSaveIm = tk.Button(
-            self.IOFrame, text='Save Image', **baseStyle, command=self.saveImg)
-        self.bSaveIm.grid(row=7, column=1, **buttonGrid)
-
-        self.bSaveParams = tk.Button(
-            self.IOFrame, text='Save Parameters', **baseStyle, command=self.saveParams)
-        self.bSaveParams.grid(row=7, column=2, **buttonGrid)
-
-        self.bLoadParams = tk.Button(
-            self.IOFrame, text='Load Parameters', **baseStyle, command=self.loadParams)
-        self.bLoadParams.grid(row=7, column=3, **buttonGrid)
-
-        self.bAppendParams = tk.Button(
-            self.IOFrame, text='Append Parameters', **baseStyle, command=self.appendParams)
-        self.bAppendParams.grid(row=7, column=4, **buttonGrid)
-
-        self.openRandomButton = tk.Button(
-            self.IOFrame, text='Open Random', **baseStyle, command=self.openRandom)
-        self.openRandomButton.grid(row=7, column=5, **buttonGrid)
-
-        ## -- INFOFRAME -- ##
-
+        self.setupIOFrame(self.IOFrame)
+        
         self.infoFrame = tk.Frame(self.root, **frameStyle)
-
-        title_info = tk.Label(self.infoFrame, text="STATS", **titleStyle)
-        title_info.grid(row=1, column=0, columnspan=2)
-
-        self.maxLabelText = tk.StringVar(value="Max value: X")
-        self.maxLabel = tk.Label(
-            self.infoFrame, textvariable=self.maxLabelText, **baseStyle)
-        self.maxLabel.grid(row=2, column=0, sticky="E")
-
-        self.zoomLabelText = tk.StringVar(value="Zoom value:")
-        self.zoomLabel = tk.Label(
-            self.infoFrame, textvariable=self.zoomLabelText, **baseStyle)
-        self.zoomLabel.grid(row=3, column=0, sticky="W")
-        self.zoomLabelValue = tk.Label(
-            self.infoFrame, textvariable=self.zoom, anchor=tk.W, **baseStyle)
-        self.zoomLabelValue.grid(row=3, column=1, sticky="W")
-
-        self.timeLabelText = tk.StringVar(value="Computation time:")
-        self.timeLabel = tk.Label(
-            self.infoFrame, textvariable=self.timeLabelText, **baseStyle)
-        self.timeLabel.grid(row=4, column=0, sticky="W")
-        self.timeLabelValue = tk.Label(
-            self.infoFrame, textvariable=self.computationTime, anchor=tk.W, **baseStyle)
-        self.timeLabelValue.grid(row=4, column=1, sticky="W")
-
-        self.fpsLabelText = tk.StringVar(value="FPS:")
-        self.fpsLabel = tk.Label(
-            self.infoFrame, textvariable=self.fpsLabelText, **baseStyle)
-        self.fpsLabel.grid(row=5, column=0, sticky="W")
-        self.fpsLabelValue = tk.Label(
-            self.infoFrame, textvariable=self.fps, anchor=tk.W, **baseStyle)
-        self.fpsLabelValue.grid(row=5, column=1, sticky="W")
+        self.setupInfoFrame(self.infoFrame)
 
         self.canvas_label = tk.Label(self.root)
 
@@ -283,51 +64,7 @@ class Interface():
 
         ## -- Mouse handler -- ##
 
-        class MouseMover():
-
-            def __init__(self, window):
-                self.lastX = 0
-                self.lastY = 0
-                self.window = window
-
-            def mouseWheel(self, event):
-                self.window.zoom.set(round(self.window.zoom.get()
-                                           * (1-event.delta/1200), 5))
-                self.window.computeMinMax()
-                self.window.updateCanvas()
-
-            def b3(self, event):  # right click
-                pass
-
-            def b4(self, event):  # mouse wheel up X11
-                self.window.zoom.set(round(self.window.zoom.get() * 0.9, 5))
-                self.window.computeMinMax()
-                self.window.updateCanvas()
-
-            def b5(self, event):  # mouse wheel down X11
-                self.window.zoom.set(round(self.window.zoom.get() * 1.1, 5))
-                self.window.computeMinMax()
-                self.window.updateCanvas()
-
-            def selectB1(self, event):
-                self.lastX = event.x
-                self.lastY = event.y
-
-            def dragB1(self, event):
-                sx = self.window.root.sizex
-                sy = self.window.root.sizey
-                self.window.computeMinMax()
-
-                self.window.offx += (event.x - self.lastX) * \
-                    (self.window.maxx-self.window.minx)/sx
-                self.window.offy += (event.y - self.lastY) * \
-                    (self.window.maxy-self.window.miny)/sy
-                self.lastX = event.x
-                self.lastY = event.y
-                self.window.canvas.setOff(self.window.offx, self.window.offy)
-                self.window.updateCanvas()
-
-        mouse_mover = MouseMover(self)
+        mouse_mover = self.MouseMover(self)
         self.canvas_label.bind("<Button-1>", mouse_mover.selectB1)
         self.canvas_label.bind("<MouseWheel>", mouse_mover.mouseWheel)
         self.canvas_label.bind("<Button-3>", mouse_mover.b3)
@@ -378,6 +115,226 @@ class Interface():
             print("Error caught:")
             print(message)
             self.errorMessage.set("Formula: "+e)
+            
+    def setupSliderFrame(self, frame):
+        title_slider = tk.Label(frame, text="SLIDERS", **titleStyle)
+        title_slider.grid(row=0, column=0, columnspan=4)
+
+        self.sl_sigma = tk.Scale(frame, from_=500, to=0, orient=tk.VERTICAL,
+                                 command=self.updateCanvas, length=150, **scaleStyle)
+        self.sl_sigma.set(0)
+        self.sl_sigma.grid(row=2, column=2)
+        tk.Label(frame, text="σ", padx=5,
+                 **baseStyle).grid(row=1, column=2, sticky="E")
+
+        self.sl_res = tk.Scale(frame, **scaleStyle, from_=100, to=1, orient=tk.VERTICAL, command=self.updateCanvas,
+                               length=150)
+        self.sl_res.set(30)
+        self.sl_res.grid(row=2, column=3)
+        tk.Label(frame, text="res", **baseStyle).grid(
+            row=1, column=3, sticky="E")
+
+        self.saveWithMaxResolution = tk.BooleanVar()
+        self.saveWithMaxResolution.set(True)
+        checkMaxResolution = tk.Checkbutton(frame, text="Save with max resolution",
+                                                 var=self.saveWithMaxResolution, **baseStyle)
+        checkMaxResolution.grid(row=3, column=1, columnspan=3)
+
+        self.addSliderFrame = tk.Frame(frame, **baseStyle)
+        self.newSliderName = tk.StringVar(value="my_param")
+        self.newSliderEntry = tk.Entry(
+            self.addSliderFrame, textvariable=self.newSliderName)
+        self.newSliderEntry.pack(side=tk.LEFT)
+
+        self.newSliderButton = tk.Button(
+            self.addSliderFrame, text="+", command=self.newSlider)
+        self.newSliderButton.pack(side=tk.RIGHT)
+
+        self.addSliderFrame.grid(row=4, column=0, columnspan=4)
+
+        self.userSliderFrame = tk.Frame(  # Empty frame for now, but user can add sliders here
+            frame, **baseStyle)
+        self.userSliderFrame.grid(row=6, column=0, columnspan=4)
+
+        self.deleteSliderButton = tk.Button(
+            frame, text="Delete sliders", command=self.deleteSliders)
+        self.deleteSliderButton.grid(row=5, column=1, columnspan=5)
+        
+    def setupCheckFrame(self, frame):
+        title_check = tk.Label(
+            frame, text="COLOR MODEL", **titleStyle)
+        title_check.grid(row=0, column=0, columnspan=8)
+
+        self.colorMode = tk.StringVar(value="RGB")
+        rad1 = tk.Radiobutton(frame, variable=self.colorMode,
+                                   text="RGB", value="RGB", **baseStyle, command=self.changeColorMode)
+        rad1.grid(row=2, column=1, sticky="W")
+
+        rad2 = tk.Radiobutton(frame, variable=self.colorMode,
+                                   text="BW", value="BW", **baseStyle, command=self.changeColorMode)
+        rad2.grid(row=2, column=2, sticky="W")
+
+        rad3 = tk.Radiobutton(frame, variable=self.colorMode,
+                                   text="HSV", value="HSV", **baseStyle, command=self.changeColorMode)
+        rad3.grid(row=2, column=3, sticky="W")
+
+        rad4 = tk.Radiobutton(frame, variable=self.colorMode,
+                                   text="R/G/B", value="R/G/B", **baseStyle, command=self.changeColorMode)
+        rad4.grid(row=2, column=4, sticky="W")
+
+        self.RGBModeMenu = tk.Frame(frame, **baseStyle)
+        self.RGBModeMenu.grid_columnconfigure(
+            0, weight=1, uniform="RGB_uniform")
+        self.RGBModeMenu.grid_columnconfigure(
+            1, weight=1, uniform="RGB_uniform")
+        self.sl_rgb_scale = tk.Scale(self.RGBModeMenu, from_=0, to=256,
+                                     orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
+        self.sl_rgb_scale.set(256)
+        self.sl_rgb_scale.grid(row=1, column=0, columnspan=2)
+
+        self.HSVModeMenu = tk.Frame(frame, **baseStyle)
+        self.HSVModeMenu.grid_columnconfigure(
+            0, weight=1, uniform="HSV_uniform")
+        self.HSVModeMenu.grid_columnconfigure(
+            1, weight=1, uniform="HSV_uniform")
+        self.sl_s_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
+                                   orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
+        self.sl_s_value.set(102)
+        self.sl_s_value.grid(row=1, column=0, columnspan=2)
+
+        self.sl_v_value = tk.Scale(self.HSVModeMenu, from_=0, to=255,
+                                   orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
+        self.sl_v_value.set(230)
+        self.sl_v_value.grid(row=2, column=0, columnspan=2)
+
+        self.BWModeMenu = tk.Frame(frame, **baseStyle)
+        self.BWModeMenu.grid_columnconfigure(0, weight=1, uniform="BW_uniform")
+        self.BWModeMenu.grid_columnconfigure(1, weight=1, uniform="BW_uniform")
+        self.sl_bw_scale = tk.Scale(self.BWModeMenu, from_=0, to=200,
+                                    orient=tk.HORIZONTAL, command=self.updateCanvas, length=150, **scaleStyle)
+        self.sl_bw_scale.set(100)
+        self.sl_bw_scale.grid(row=1, column=0, columnspan=2)
+
+        self.randomModulation = tk.IntVar(value=0)
+        check1 = tk.Checkbutton(frame, text="Random Modulation",
+                                     var=self.randomModulation, **baseStyle, command=self.updateCanvas)
+        check1.grid(row=4, column=1, columnspan=3)
+
+        newRandomButton = tk.Button(frame, text="New Random Seed",
+                                         **baseStyle, command=self.newRandom)
+        newRandomButton.grid(row=5, column=1, columnspan=5, **buttonGrid)
+        
+    def setupFormulaFrame(self, frame):
+        title_formula = tk.Label(
+            frame, text="FORMULAS", **titleStyle)
+        title_formula.grid(row=0, column=0, columnspan=10)
+
+        self.activeFunction = f"255*(i**2+j**2)"  # default formula here
+        self.formula = tk.StringVar(value=self.activeFunction)
+
+        # Formulas for R/G/B color mode
+        self.formulaRed = tk.StringVar(value=f"255*(i**2+j**2)")
+        self.formulaGreen = tk.StringVar(value=f"200*(i**2+j**2)")
+        self.formulaBlue = tk.StringVar(value=f"150*(i**2+j**2)")
+
+        self.userDefEntry = scrolledtext.ScrolledText(
+            frame, width=100, height=12)
+        self.userDefEntry.insert(
+            END, "# Your definitions here.\n# They will be imported in the module 'user'.")
+        self.userDefEntry.grid(
+            row=1, column=1, rowspan=2, columnspan=5, pady=5)
+
+        self.formulaEntry = tk.Entry(
+            frame, textvariable=self.formula, width=100)
+
+        self.threeFormulaFrame = tk.Frame(
+            frame, **baseStyle)
+
+        self.formulaRedEntry = tk.Entry(
+            self.threeFormulaFrame, textvariable=self.formulaRed, width=100)
+        self.formulaRedEntry.grid(row=1, column=1, columnspan=5, pady=0)
+
+        self.formulaGreenEntry = tk.Entry(
+            self.threeFormulaFrame, textvariable=self.formulaGreen, width=100)
+        self.formulaGreenEntry.grid(row=2, column=1, columnspan=5, pady=0)
+
+        self.formulaBlueEntry = tk.Entry(
+            self.threeFormulaFrame, textvariable=self.formulaBlue, width=100)
+        self.formulaBlueEntry.grid(row=3, column=1, columnspan=5, pady=0)
+
+        bApply = tk.Button(
+            frame, text='Apply', **baseStyle, command=self.applyFunction)
+        bApply.grid(row=3, column=6, **buttonGrid)
+
+        self.errorUserdef = tk.StringVar()
+        self.errorUserdef.set("Userdef: no error.")
+        errorLabelUser = tk.Label(
+            frame, textvariable=self.errorUserdef, **baseStyle)
+        errorLabelUser.grid(row=1, column=6)
+
+        self.errorMessage = tk.StringVar()
+        self.errorMessage.set("Formula: no error.")
+        errorLabelForm = tk.Label(
+            frame, textvariable=self.errorMessage, **baseStyle)
+        errorLabelForm.grid(row=2, column=6)
+
+    def setupIOFrame(self, frame):
+        for i in range(1, 6):
+            frame.grid_columnconfigure(
+                i, weight=1, uniform="IOFrameUniform")
+        
+        bSaveIm = tk.Button(
+        frame, text='Save Image', **baseStyle, command=self.saveImg)
+        bSaveIm.grid(row=7, column=1, **buttonGrid)
+
+        bSaveParams = tk.Button(
+            frame, text='Save Parameters', **baseStyle, command=self.saveParams)
+        bSaveParams.grid(row=7, column=2, **buttonGrid)
+
+        bLoadParams = tk.Button(
+            frame, text='Load Parameters', **baseStyle, command=self.loadParams)
+        bLoadParams.grid(row=7, column=3, **buttonGrid)
+
+        bAppendParams = tk.Button(
+            frame, text='Append Parameters', **baseStyle, command=self.appendParams)
+        bAppendParams.grid(row=7, column=4, **buttonGrid)
+
+        openRandomButton = tk.Button(
+            frame, text='Open Random', **baseStyle, command=self.openRandom)
+        openRandomButton.grid(row=7, column=5, **buttonGrid)
+            
+    def setupInfoFrame(self, frame):
+        title_info = tk.Label(frame, text="STATS", **titleStyle)
+        title_info.grid(row=1, column=0, columnspan=2)
+
+        self.maxLabelText = tk.StringVar(value="Max value: X")
+        maxLabel = tk.Label(
+            frame, textvariable=self.maxLabelText, **baseStyle)
+        maxLabel.grid(row=2, column=0, sticky="E")
+
+        zoomLabelText = tk.StringVar(value="Zoom value:")
+        zoomLabel = tk.Label(
+            frame, textvariable=zoomLabelText, **baseStyle)
+        zoomLabel.grid(row=3, column=0, sticky="W")
+        zoomLabelValue = tk.Label(
+            frame, textvariable=self.zoom, anchor=tk.W, **baseStyle)
+        zoomLabelValue.grid(row=3, column=1, sticky="W")
+
+        timeLabelText = tk.StringVar(value="Computation time:")
+        timeLabel = tk.Label(
+            frame, textvariable=timeLabelText, **baseStyle)
+        timeLabel.grid(row=4, column=0, sticky="W")
+        timeLabelValue = tk.Label(
+            frame, textvariable=self.computationTime, anchor=tk.W, **baseStyle)
+        timeLabelValue.grid(row=4, column=1, sticky="W")
+
+        fpsLabelText = tk.StringVar(value="FPS:")
+        fpsLabel = tk.Label(
+            frame, textvariable=fpsLabelText, **baseStyle)
+        fpsLabel.grid(row=5, column=0, sticky="W")
+        fpsLabelValue = tk.Label(
+            frame, textvariable=self.fps, anchor=tk.W, **baseStyle)
+        fpsLabelValue.grid(row=5, column=1, sticky="W")
 
     def newRandom(self):
         self.canvas.newRandomSeed()
@@ -433,6 +390,50 @@ class Interface():
         self.miny = self.zoom.get()*(-360)/100
         self.maxy = self.zoom.get()*(+360)/100
         self.canvas.setMinMax((self.minx, self.maxx), (self.miny, self.maxy))
+        
+    class MouseMover():
+
+        def __init__(self, window):
+            self.lastX = 0
+            self.lastY = 0
+            self.window = window
+
+        def mouseWheel(self, event):
+            self.window.zoom.set(round(self.window.zoom.get()
+                                       * (1-event.delta/1200), 5))
+            self.window.computeMinMax()
+            self.window.updateCanvas()
+
+        def b3(self, event):  # right click
+            pass
+
+        def b4(self, event):  # mouse wheel up X11
+            self.window.zoom.set(round(self.window.zoom.get() * 0.9, 5))
+            self.window.computeMinMax()
+            self.window.updateCanvas()
+
+        def b5(self, event):  # mouse wheel down X11
+            self.window.zoom.set(round(self.window.zoom.get() * 1.1, 5))
+            self.window.computeMinMax()
+            self.window.updateCanvas()
+
+        def selectB1(self, event):
+            self.lastX = event.x
+            self.lastY = event.y
+
+        def dragB1(self, event):
+            sx = self.window.root.sizex
+            sy = self.window.root.sizey
+            self.window.computeMinMax()
+
+            self.window.offx += (event.x - self.lastX) * \
+                (self.window.maxx-self.window.minx)/sx
+            self.window.offy += (event.y - self.lastY) * \
+                (self.window.maxy-self.window.miny)/sy
+            self.lastX = event.x
+            self.lastY = event.y
+            self.window.canvas.setOff(self.window.offx, self.window.offy)
+            self.window.updateCanvas()
 
     ### --- I/O parameters and images --- ###
 

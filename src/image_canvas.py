@@ -140,6 +140,7 @@ class Canvas:
                     res = res[:, :-1]
 
                 if self.randomModulation:
+                    np.random.seed(self.randomSeed)
                     randMat = np.random.rand(res.shape[0], res.shape[1])
                     res = res*randMat
 
