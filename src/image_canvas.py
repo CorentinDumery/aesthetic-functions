@@ -10,23 +10,7 @@ use_global_image = False
 # functionality works, but still needs refinement
 # just set to True to test it
 if use_global_image:
-    imgStar = Image.open('starrynight.jpg')
-
-
-def func(xx, yy, offx, offy, slider={}, f="", random_seed=0):
-    '''Generic function that computes pixel values for canvas'''
-    i = xx-offx
-    j = yy-offy
-    random.seed(random_seed)
-    np.random.seed(random_seed)
-
-    image = eval(f)
-    if type(image).__module__ != 'numpy':
-        print("Warning: your formula leads to invalid arrays.")
-        if isinstance(image, int) or isinstance(image, float):
-            print("Interpreting formula as a constant.")
-            image = np.full((yy.shape[0], xx.shape[1]), image)
-    return image
+    img_star = Image.open('starrynight.jpg')
 
 
 class Canvas:
@@ -36,26 +20,41 @@ class Canvas:
         self.sizey = sizey
 
         # Default values
-        self.res = 30
+        self.resolution = 30
         self.offx = 0
         self.offy = 0
-        self.randomSeed = 0
-        self.colorMode = "HSV"
-        self.activeFunction = "i**2 + j**2"
-        self.functionRed = "i**2 + j**2"
-        self.functionGreen = "i**2 + j**2"
-        self.functionBlue = "i**2 + j**2"
-        self.sliderDict = {}
-        self.randomModulation = False
+        self.random_seed = 0
+        self.color_mode = "HSV"
+        self.active_function = "i**2 + j**2"
+        self.function_R = "i**2 + j**2"
+        self.function_G = "i**2 + j**2"
+        self.function_B = "i**2 + j**2"
+        self.slider_dict = {}
+        self.random_modulation = False
         self.s_value = 200
         self.v_value = 200
         self.rgb_scale = 255
         self.bw_scale = 100
         self.sigma = 0
 
+    def generate_array(self, x_values, y_values, slider={}, f=""):
+        '''Generic function that computes pixel values for canvas'''
+        i = x_values-self.offx
+        j = y_values-self.offy
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)
+
+        image = eval(f)
+        if type(image).__module__ != 'numpy':
+            print("Warning: your formula leads to invalid arrays.")
+            if isinstance(image, int) or isinstance(image, float):
+                print("Interpreting formula as a constant.")
+                image = np.full((y_values.shape[0], x_values.shape[1]), image)
+        return image
+
     def generate_image(self):
-        resx = self.res*1600//100
-        resy = self.res*900//100
+        resx = self.resolution*1600//100
+        resy = self.resolution*900//100
         stepx = (self.maxx-self.minx)/resx
         stepy = (self.maxy-self.miny)/resy
 
@@ -63,26 +62,23 @@ class Canvas:
         y = np.arange(self.miny, self.maxy, stepy)
         xx, yy = np.meshgrid(x, y, sparse=True)
 
-        if self.colorMode != "R/G/B":
-            res = func(xx, yy, self.offx, self.offy,
-                       self.sliderDict, self.activeFunction,
-                       self.randomSeed)
+        if self.color_mode != "R/G/B":
+            res = self.generate_array(xx, yy, self.slider_dict, self.active_function)
             res = res.transpose()
 
             res = res[:resx, :resy]
             if res.shape[1] > resy:  # fix potential floating error imprecision
                 res = res[:, :-1]
 
-            normalized = False #Could be worth adding this to interface
+            normalized = False  # Could be worth adding this to interface
             if normalized:
                 res = 256*res/np.max(res)
 
-            if self.randomModulation:
-                np.random.seed(self.randomSeed)
-                randMat = np.random.rand(res.shape[0], res.shape[1])
-                res = res*randMat
+            if self.random_modulation:
+                np.random.seed(self.random_seed)
+                res = res*np.random.rand(res.shape[0], res.shape[1])
 
-            if self.colorMode == "HSV":
+            if self.color_mode == "HSV":
                 type0 = "uint8"
                 array = np.zeros((3, resx, resy), type0)
                 array[0, :, :] = res % (256*256*256)
@@ -91,18 +87,18 @@ class Canvas:
                 array[2, :, :] = np.full(
                     (res.shape[0], res.shape[1]), self.v_value, type0)
 
-                if use_global_image:
-                    global imgStar
-                    imgResized = imgStar.resize((resx, resy))
-                    imgNp = np.asarray(imgResized, dtype="uint8")
-                    np.add(array[0, :, :], imgNp[:, :, 0].transpose(
+                if use_global_image:  # WIP
+                    global img_star
+                    img_resized = img_star.resize((resx, resy))
+                    img_np = np.asarray(img_resized, dtype="uint8")
+                    np.add(array[0, :, :], img_np[:, :, 0].transpose(
                     ), out=array[0, :, :], casting="unsafe")
-                    np.add(array[1, :, :], imgNp[:, :, 1].transpose(
+                    np.add(array[1, :, :], img_np[:, :, 1].transpose(
                     ), out=array[1, :, :], casting="unsafe")
-                    np.add(array[2, :, :], imgNp[:, :, 2].transpose(
+                    np.add(array[2, :, :], img_np[:, :, 2].transpose(
                     ), out=array[2, :, :], casting="unsafe")
 
-            elif self.colorMode == "RGB":
+            elif self.color_mode == "RGB":
                 scale = self.rgb_scale
                 max_value = min(scale+1, 256)
 
@@ -111,14 +107,14 @@ class Canvas:
                 array[1, :, :] = (res/max_value) % max_value
                 array[2, :, :] = (res/(max_value*max_value)) % max_value
 
-                if use_global_image: # WIP
-                    imgResized = imgStar.resize((resx, resy))
-                    imgNp = np.asarray(imgResized, dtype="uint8")
-                    np.add(array[0, :, :], imgNp[:, :, 0].transpose(
+                if use_global_image:  # WIP
+                    img_resized = img_star.resize((resx, resy))
+                    img_np = np.asarray(img_resized, dtype="uint8")
+                    np.add(array[0, :, :], img_np[:, :, 0].transpose(
                     ), out=array[0, :, :], casting="unsafe")
-                    np.add(array[1, :, :], imgNp[:, :, 1].transpose(
+                    np.add(array[1, :, :], img_np[:, :, 1].transpose(
                     ), out=array[1, :, :], casting="unsafe")
-                    np.add(array[2, :, :], imgNp[:, :, 2].transpose(
+                    np.add(array[2, :, :], img_np[:, :, 2].transpose(
                     ), out=array[2, :, :], casting="unsafe")
 
             else:  # BW
@@ -128,10 +124,10 @@ class Canvas:
             scale = self.rgb_scale
             max_value = min(scale+1, 256)
             array = np.zeros((3, resx, resy), 'uint8')
-            functions = [self.functionRed,
-                         self.functionGreen, self.functionBlue]
+            functions = [self.function_R,
+                         self.function_G, self.function_B]
             for channel in range(3):
-                res = func(xx, yy, self.offx, self.offy, self.sliderDict,
+                res = self.generate_array(xx, yy, self.slider_dict,
                            functions[channel])
                 res = res.transpose()
 
@@ -139,10 +135,9 @@ class Canvas:
                 if res.shape[1] > resy:  # fix potential floating error imprecision
                     res = res[:, :-1]
 
-                if self.randomModulation:
-                    np.random.seed(self.randomSeed)
-                    randMat = np.random.rand(res.shape[0], res.shape[1])
-                    res = res*randMat
+                if self.random_modulation:
+                    np.random.seed(self.random_seed)
+                    res = res*np.random.rand(res.shape[0], res.shape[1])
 
                 array[channel, :, :] = res % max_value
 
@@ -158,7 +153,7 @@ class Canvas:
             else:
                 array[:, :] = gaussian_filter(array[:, :], sigma=sigma)
 
-        if self.colorMode == "HSV":
+        if self.color_mode == "HSV":
             array = np.ascontiguousarray(array.transpose(2, 1, 0))
             if (array.shape[0] < self.sizey):
                 stepx = self.sizex//array.shape[1]
@@ -167,16 +162,15 @@ class Canvas:
                 array = np.repeat(array, stepy, axis=1)
             img0 = Image.fromarray(array, 'HSV')
 
-        elif self.colorMode in ["RGB", "R/G/B"]:
+        elif self.color_mode in ["RGB", "R/G/B"]:
             array = np.ascontiguousarray(array.transpose(2, 1, 0))
-
             if (array.shape[0] < self.sizey):
                 stepx = self.sizex//array.shape[1]
                 stepy = self.sizey//array.shape[0]
                 array = np.repeat(array, stepx, axis=0)
                 array = np.repeat(array, stepy, axis=1)
-
             img0 = Image.fromarray(array, 'RGB')
+
         else:  # mode == "BW"
             array *= float(self.bw_scale/100)
             if (array.shape[0] < self.sizey):
@@ -187,64 +181,39 @@ class Canvas:
             img0 = Image.fromarray(array.transpose())
 
         self.max_value = res.max()
-        self.fullImage = img0  # saving full res picture before resize
+        self.full_image = img0  # saving full res picture before resize
         img0 = img0.resize((self.sizex, self.sizey))
         img = ImageTk.PhotoImage(img0)
         return img
 
     def save_image(self, name):
-        self.fullImage.convert('RGB').save(
+        self.full_image.convert('RGB').save(
             "Images/{}.png".format(name))
 
-    def setMinMax(self, pairx, pairy):
+    def set_minmax(self, pairx, pairy):
         self.minx, self.maxx = pairx
         self.miny, self.maxy = pairy
 
-    def getMax(self):
+    def get_max(self):
         return self.max_value
 
-    def setRes(self, res):
-        self.res = res
+    def set_color_mode(self, mode):
+        self.color_mode = mode
 
-    def setOff(self, offx, offy):
-        self.offx = offx
-        self.offy = offy
+    def set_function(self, f):
+        self.active_function = f
 
-    def setColorMode(self, mode):
-        self.colorMode = mode
+    def set_function_R(self, f):
+        self.function_R = f
 
-    def setFunction(self, f):
-        self.activeFunction = f
+    def set_function_G(self, f):
+        self.function_G = f
 
-    def setFunctionRed(self, f):
-        self.functionRed = f
+    def set_function_B(self, f):
+        self.function_B = f
 
-    def setFunctionGreen(self, f):
-        self.functionGreen = f
-
-    def setFunctionBlue(self, f):
-        self.functionBlue = f
-
-    def setSliderDict(self, sl_dict):
-        self.sliderDict = sl_dict
-
-    def setRandomMod(self, boolean):
-        self.randomModulation = boolean
-
-    def setSValue(self, s):
-        self.s_value = s
-
-    def setVValue(self, v):
-        self.v_value = v
-
-    def setRGBScale(self, scale):
-        self.rgb_scale = scale
-
-    def setBWScale(self, scale):
-        self.bw_scale = scale
-
-    def setSigma(self, sigma):
-        self.sigma = sigma
+    def set_slider_dict(self, sl_dict):
+        self.slider_dict = sl_dict
 
     def new_random_seed(self):
-        self.randomSeed = random.randrange(0, 100000)
+        self.random_seed = random.randrange(0, 100000)

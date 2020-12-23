@@ -1,42 +1,42 @@
 import tkinter as tk
 
-mainColor = "#f1faee"
-secondaryColor = "#e1eade"
+main_color = "#f1faee"
+secondary_color = "#e1eade"
 
 # Convention:
-# "Style" is used when creating tk widget
-# "Grid" is used when doing widget.grid(...)
+# "_style" is used when creating tk widget
+# "_grid" is used when doing widget.grid(...)
 
 
-baseStyle = {
-    'bg': secondaryColor,
+base_style = {
+    'bg': secondary_color,
     'highlightthickness': 0
 }
 
-frameStyle = {
-    **baseStyle,
+frame_style = {
+    **base_style,
     'padx': 5,
     'pady': 5,
     'bd': 10,
     'relief': tk.RIDGE
 }
 
-frameGrid = {
+frame_grid = {
     'sticky': tk.E+tk.W+tk.N+tk.S
 }
 
-buttonGrid = {
+button_grid = {
     'sticky': tk.E+tk.W+tk.N+tk.S
 }
 
-titleStyle = {
-    **baseStyle,
+title_style = {
+    **base_style,
     'font': ("Courier", 18, "bold"),
     'justify': 'center'
 }
 
-scaleStyle = {
-    **baseStyle,
+scale_style = {
+    **base_style,
     'from_': 0,
     'to_': 255,
     'length': 150
