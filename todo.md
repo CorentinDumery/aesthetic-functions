@@ -1,4 +1,5 @@
 # TODO:
+- PEP8 for image_canvas (methods+attributes) and interface (attributes)
 - random generation
 - Add stuff to stats frame
 - append parameters for R/G/B

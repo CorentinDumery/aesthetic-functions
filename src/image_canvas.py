@@ -53,7 +53,7 @@ class Canvas:
         self.bw_scale = 100
         self.sigma = 0
 
-    def generateImage(self):
+    def generate_image(self):
         resx = self.res*1600//100
         resy = self.res*900//100
         stepx = (self.maxx-self.minx)/resx
@@ -73,7 +73,7 @@ class Canvas:
             if res.shape[1] > resy:  # fix potential floating error imprecision
                 res = res[:, :-1]
 
-            normalized = False
+            normalized = False #Could be worth adding this to interface
             if normalized:
                 res = 256*res/np.max(res)
 
@@ -104,14 +104,14 @@ class Canvas:
 
             elif self.colorMode == "RGB":
                 scale = self.rgb_scale
-                max_value = min(scale, 256)
+                max_value = min(scale+1, 256)
 
                 array = np.zeros((3, resx, resy), 'uint8')
                 array[0, :, :] = res % max_value
                 array[1, :, :] = (res/max_value) % max_value
                 array[2, :, :] = (res/(max_value*max_value)) % max_value
 
-                if use_global_image:
+                if use_global_image: # WIP
                     imgResized = imgStar.resize((resx, resy))
                     imgNp = np.asarray(imgResized, dtype="uint8")
                     np.add(array[0, :, :], imgNp[:, :, 0].transpose(
@@ -126,7 +126,7 @@ class Canvas:
 
         else:  # R/G/B
             scale = self.rgb_scale
-            max_value = min(scale, 256)
+            max_value = min(scale+1, 256)
             array = np.zeros((3, resx, resy), 'uint8')
             functions = [self.functionRed,
                          self.functionGreen, self.functionBlue]
@@ -187,19 +187,12 @@ class Canvas:
             img0 = Image.fromarray(array.transpose())
 
         self.max_value = res.max()
-        self.fullImage = img0  # saving full res picture to output it
-
-        ANTIALIAS = False
-        if ANTIALIAS:
-            img0 = img0.resize(
-                (self.sizex, self.sizey), Image.ANTIALIAS)
-        else:
-            img0 = img0.resize((self.sizex, self.sizey))
-
+        self.fullImage = img0  # saving full res picture before resize
+        img0 = img0.resize((self.sizex, self.sizey))
         img = ImageTk.PhotoImage(img0)
         return img
 
-    def saveImage(self, name):
+    def save_image(self, name):
         self.fullImage.convert('RGB').save(
             "Images/{}.png".format(name))
 
@@ -253,5 +246,5 @@ class Canvas:
     def setSigma(self, sigma):
         self.sigma = sigma
 
-    def newRandomSeed(self):
+    def new_random_seed(self):
         self.randomSeed = random.randrange(0, 100000)

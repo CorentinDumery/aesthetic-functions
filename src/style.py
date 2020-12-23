@@ -36,5 +36,8 @@ titleStyle = {
 }
 
 scaleStyle = {
-    **baseStyle
+    **baseStyle,
+    'from_': 0,
+    'to_': 255,
+    'length': 150
 }
