@@ -1,7 +1,7 @@
-Parameters/*.txt
-userdef.py
-Images/Ignore/*
-Parameters/Ignore/*
+parameters/*.txt
+src/userdef.py
+images/ignore/*
+parameters/ignore/*
 __pycache__/*
 .vscode/*
 legacy/*
