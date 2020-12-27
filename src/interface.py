@@ -452,7 +452,7 @@ class Interface():
             name = simpledialog.askstring(
                 "", "Name of this set of parameters?")
 
-        while os.path.exists("Parameters/"+name+".json"):
+        while os.path.exists("parameters/"+name+".json"):
             name = simpledialog.askstring(
                 "", "Name already exists, please pick another one")
 
@@ -485,11 +485,11 @@ class Interface():
 
         json_data['userdef_entry'] = self.userdef_entry.get("1.0", END)
 
-        with open("Parameters/"+name+".json", 'a') as outfile:
+        with open("parameters/"+name+".json", 'a') as outfile:
             json.dump(json_data, outfile)
 
     def open_random(self):
-        dir = "../colorExplorer/Parameters"
+        dir = "../colorExplorer/parameters"
         random.seed()
         file = random.choice([dir + "/" + x for x in os.listdir(
             dir) if os.path.isfile(os.path.join(dir, x))])
@@ -499,7 +499,7 @@ class Interface():
     def load_params(self, append=False, filepath=""):
 
         if filepath == "":
-            filepath = filedialog.askopenfilename(initialdir="../colorExplorer/Parameters/",
+            filepath = filedialog.askopenfilename(initialdir="../colorExplorer/parameters/",
                                                   title="Select parameters file",
                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
 

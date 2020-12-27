@@ -30,10 +30,10 @@ If you want to experiment with different visualization effects of a function, tr
 ## Example creations  
 example | example    
 :-------------------------:|:-----------------------:
-![ex1](images/wavies.png) |  ![ex1](images/the%20pear%20of%20illusions.png) |
-![ex1](images/rainbow_mandelbrot_zoom.png) | ![ex1](images/sundisk.png) |
-![ex1](images/vinyl.png) | ![ex1](images/sparkling%20sun.png) |
-![ex1](images/red%20perspective.png) | ![ex1](images/circle%20chess.png) |
+![ex1](images/wavies.png) |  ![ex1](images/the_pear_of_illusions.png) |
+![ex1](images/rainbow_mandelbrot.png) | ![ex1](images/sundisk.png) |
+![ex1](images/vinyl.png) | ![ex1](images/sparkling_sun.png) |
+![ex1](images/red_perspective.png) | ![ex1](images/circle_chess.png) |
 
 ## Troubleshooting
 

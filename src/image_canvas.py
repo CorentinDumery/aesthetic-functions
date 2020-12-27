@@ -188,7 +188,7 @@ class Canvas:
 
     def save_image(self, name):
         self.full_image.convert('RGB').save(
-            "Images/{}.png".format(name))
+            "images/{}.png".format(name))
 
     def set_minmax(self, pairx, pairy):
         self.minx, self.maxx = pairx
