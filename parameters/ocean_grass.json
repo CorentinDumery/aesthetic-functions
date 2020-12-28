@@ -1,19 +1,19 @@
 {
     "formula": "user.julia(i,j, slider.real/100, slider.imag/100)",
-    "formulaBlue": "user.mandelbrot(i,j)",
-    "formulaGreen": "user.spiral(i,j, slider.smallcoeff)",
-    "formulaRed": "user.julia(i,j, slider.real/20, slider.imag/100)",
+    "formula_blue": "user.mandelbrot(i,j)",
+    "formula_green": "user.spiral(i,j, slider.smallcoeff)",
+    "formula_red": "user.julia(i,j, slider.real/20, slider.imag/100)",
     "menu_parameters": {
-        "bwScale": 92,
-        "colorMode": "R/G/B",
+        "bw_scale": 92,
+        "color_model": "R/G/B",
         "offx": 0.09563604861049253,
         "offy": 0.7953728578267709,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 102,
+        "rgb_scale": 256,
+        "s_value": 102,
         "sigma": 0,
-        "vValue": 230,
+        "v_value": 230,
         "zoom": 0.08778
     },
     "sliders": [

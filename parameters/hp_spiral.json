@@ -1,19 +1,19 @@
 {
     "formula": "255*(i**2+j**2) + (np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1) *41194",
-    "formulaBlue": "(np.exp( - (user.spiral(i+1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75",
-    "formulaGreen": "(np.exp( - (user.spiral(i-1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75",
-    "formulaRed": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1)*235  + (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*45",
+    "formula_blue": "(np.exp( - (user.spiral(i+1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75",
+    "formula_green": "(np.exp( - (user.spiral(i-1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75",
+    "formula_red": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1)*235  + (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*45",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "R/G/B",
+        "bw_scale": 100,
+        "color_model": "R/G/B",
         "offx": 0.24983841470469442,
         "offy": 0.3903732310402199,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 143,
+        "rgb_scale": 256,
+        "s_value": 143,
         "sigma": 0,
-        "vValue": 216,
+        "v_value": 216,
         "zoom": 6.960168584376716
     },
     "sliders": [

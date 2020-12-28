@@ -1,19 +1,19 @@
 {
     "formula": "",
-    "formulaBlue": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + slider.width) >1) *4119",
-    "formulaGreen": "255*(np.exp(-0.0000002*(i**2+j**2)))*(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + slider.width) >1) *4119",
-    "formulaRed": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + slider.width) >1) *41194",
+    "formula_blue": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + slider.width) >1) *4119",
+    "formula_green": "255*(np.exp(-0.0000002*(i**2+j**2)))*(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + slider.width) >1) *4119",
+    "formula_red": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + slider.width) >1) *41194",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "R/G/B",
+        "bw_scale": 100,
+        "color_model": "R/G/B",
         "offx": 0.32400818918486907,
         "offy": 0.07141006003480707,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 143,
+        "rgb_scale": 256,
+        "s_value": 143,
         "sigma": 0,
-        "vValue": 216,
+        "v_value": 216,
         "zoom": 7.50887194366857
     },
     "sliders": [

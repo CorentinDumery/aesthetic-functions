@@ -1,16 +1,16 @@
 {
     "formula": "user.mandelbrot(i,j)",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "RGB",
+        "bw_scale": 100,
+        "color_model": "RGB",
         "offx": 0.5113504151498832,
         "offy": -0.0024215459320762016,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 102,
+        "rgb_scale": 256,
+        "s_value": 102,
         "sigma": 0,
-        "vValue": 230,
+        "v_value": 230,
         "zoom": 0.27671619046194956
     },
     "sliders": [],

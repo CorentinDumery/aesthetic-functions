@@ -1,16 +1,16 @@
 {
     "formula": "user.spiral((i),(j), slider.bigcoeff) + 0*(user.theta(i,j, 50*slider.bigcoeff + slider.smallcoeff) + slider.gridcoeff*user.grid(i, j)/100)",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "HSV",
+        "bw_scale": 100,
+        "color_model": "HSV",
         "offx": -0.13194711566021336,
         "offy": 0.12138621767312194,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 102,
+        "rgb_scale": 256,
+        "s_value": 102,
         "sigma": 0,
-        "vValue": 230,
+        "v_value": 230,
         "zoom": 0.7
     },
     "sliders": [

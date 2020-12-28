@@ -1,16 +1,16 @@
 {
     "formula": "user.spiral(i,j,slider.bigcoeff) ",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "HSV",
+        "bw_scale": 100,
+        "color_model": "HSV",
         "offx": 0.07749520062760018,
         "offy": 0.10224118099679416,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 143,
+        "rgb_scale": 256,
+        "s_value": 143,
         "sigma": 0,
-        "vValue": 216,
+        "v_value": 216,
         "zoom": 8.05887218929715
     },
     "sliders": [

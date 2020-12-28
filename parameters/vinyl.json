@@ -1,19 +1,19 @@
 {
     "formula": "255*np.sin( (i**2 +j**2)*slider.p1/1 )",
-    "formulaBlue": "255*(i**2+j**2)",
-    "formulaGreen": "255*(i**2+j**2)",
-    "formulaRed": "255*(i**2+j**2)",
+    "formula_blue": "255*(i**2+j**2)",
+    "formula_green": "255*(i**2+j**2)",
+    "formula_red": "255*(i**2+j**2)",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "BW",
+        "bw_scale": 100,
+        "color_model": "BW",
         "offx": -0.22226453333333343,
         "offy": -6.071532165918825e-18,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 102,
+        "rgb_scale": 256,
+        "s_value": 102,
         "sigma": 0,
-        "vValue": 230,
+        "v_value": 230,
         "zoom": 0.07976
     },
     "sliders": [

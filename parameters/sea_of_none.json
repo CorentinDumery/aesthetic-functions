@@ -1,16 +1,16 @@
 {
     "formula": "user.sierpinski(i,j,slider.sier1, slider.sier2) + user.grandma(i,j,slider.p1, slider.p2)",
     "menu_parameters": {
-        "bwScale": 111,
-        "colorMode": "HSV",
+        "bw_scale": 111,
+        "color_model": "HSV",
         "offx": 53.19277176933024,
         "offy": -50.77217925480893,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 99,
+        "rgb_scale": 256,
+        "s_value": 99,
         "sigma": 0,
-        "vValue": 231,
+        "v_value": 231,
         "zoom": 8.948286775967821
     },
     "sliders": [

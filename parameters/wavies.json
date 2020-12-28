@@ -1,16 +1,16 @@
 {
     "formula": "user.wavies(i,j,slider.p1,slider.p2)",
     "menu_parameters": {
-        "bwScale": 111,
-        "colorMode": "HSV",
+        "bw_scale": 111,
+        "color_model": "HSV",
         "offx": -11.862228256947661,
         "offy": -5.522961957175392,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 132,
+        "rgb_scale": 256,
+        "s_value": 132,
         "sigma": 0,
-        "vValue": 229,
+        "v_value": 229,
         "zoom": 0.8345137614500897
     },
     "sliders": [

@@ -1,19 +1,19 @@
 {
     "formula": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1) *41194",
-    "formulaBlue": "255*(i**2+j**2)",
-    "formulaGreen": "255*(i**2+j**2)",
-    "formulaRed": "255*(i**2+j**2)",
+    "formula_blue": "255*(i**2+j**2)",
+    "formula_green": "255*(i**2+j**2)",
+    "formula_red": "255*(i**2+j**2)",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "RGB",
+        "bw_scale": 100,
+        "color_model": "RGB",
         "offx": 0.9146658447115699,
         "offy": -1.7106150065120787,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 60,
-        "rgbScale": 256,
-        "sValue": 143,
+        "rgb_scale": 256,
+        "s_value": 143,
         "sigma": 0,
-        "vValue": 216,
+        "v_value": 216,
         "zoom": 41.7346810133745
     },
     "sliders": [

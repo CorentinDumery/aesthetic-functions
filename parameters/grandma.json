@@ -1,16 +1,16 @@
 {
     "formula": "user.grandma(i,j,slider.p1, slider.p2)",
     "menu_parameters": {
-        "bwScale": 111,
-        "colorMode": "HSV",
+        "bw_scale": 111,
+        "color_model": "HSV",
         "offx": 32.552056939431154,
         "offy": 3.5140938527291574,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 99,
+        "rgb_scale": 256,
+        "s_value": 99,
         "sigma": 77,
-        "vValue": 231,
+        "v_value": 231,
         "zoom": 27.126527044845073
     },
     "sliders": [

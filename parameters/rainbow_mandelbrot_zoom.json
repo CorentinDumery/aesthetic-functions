@@ -1,16 +1,16 @@
 {
     "formula": "user.mandelbrot(i,j) + user.spiral(i,j,slider.bigcoeff)",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "HSV",
+        "bw_scale": 100,
+        "color_model": "HSV",
         "offx": 0.5514134861303355,
         "offy": -0.014531255273603568,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 117,
+        "rgb_scale": 256,
+        "s_value": 117,
         "sigma": 0,
-        "vValue": 255,
+        "v_value": 255,
         "zoom": 0.2768091887050283
     },
     "sliders": [

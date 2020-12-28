@@ -1,19 +1,19 @@
 {
     "formula": "user.filter(user.f(i**2+j**2))*slider.turn/10 + user.spiral(i,j,slider.bigcoeff) ",
-    "formulaBlue": "user.f(i**4+j**4)",
-    "formulaGreen": "user.f(i**3+j**3)",
-    "formulaRed": "user.f(i**2+j**2)",
+    "formula_blue": "user.f(i**4+j**4)",
+    "formula_green": "user.f(i**3+j**3)",
+    "formula_red": "user.f(i**2+j**2)",
     "menu_parameters": {
-        "bwScale": 100,
-        "colorMode": "HSV",
+        "bw_scale": 100,
+        "color_model": "HSV",
         "offx": 0.03667920062760076,
         "offy": -0.02524701900320558,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 30,
-        "rgbScale": 256,
-        "sValue": 143,
+        "rgb_scale": 256,
+        "s_value": 143,
         "sigma": 0,
-        "vValue": 216,
+        "v_value": 216,
         "zoom": 0.40323
     },
     "sliders": [

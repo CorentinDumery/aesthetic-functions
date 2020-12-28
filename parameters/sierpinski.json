@@ -1,16 +1,16 @@
 {
     "formula": "user.sierpinski(i,j,slider.sier1, slider.sier2)",
     "menu_parameters": {
-        "bwScale": 200,
-        "colorMode": "BW",
+        "bw_scale": 200,
+        "color_model": "BW",
         "offx": 745.3946134812459,
         "offy": -791.7240070994203,
-        "randomModulation": 0,
+        "random_modulation": 0,
         "resolution": 29,
-        "rgbScale": 256,
-        "sValue": 102,
+        "rgb_scale": 256,
+        "s_value": 102,
         "sigma": 0,
-        "vValue": 230,
+        "v_value": 230,
         "zoom": 15.54814357949206
     },
     "sliders": [

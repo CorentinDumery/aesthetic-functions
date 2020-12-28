@@ -15,7 +15,7 @@ class Interface():
 
     def __init__(self, size):
         self.root = tk.Tk()
-        self.root.title('ColorExplorer')
+        self.root.title('Aesthetic functions')
         self.root.grid()
         self.root.configure(background=main_color)
 
@@ -468,21 +468,21 @@ class Interface():
 
         json_data = {}
         json_data['formula'] = self.formula.get()
-        json_data['formulaRed'] = self.formula_R.get()
-        json_data['formulaGreen'] = self.formula_G.get()
-        json_data['formulaBlue'] = self.formula_B.get()
+        json_data['formula_red'] = self.formula_R.get()
+        json_data['formula_green'] = self.formula_G.get()
+        json_data['formula_blue'] = self.formula_B.get()
         json_data['menu_parameters'] = {
             'offx': self.canvas.offx,
             'offy': self.canvas.offy,
             'zoom': self.zoom.get(),
             'sigma': self.sl_sigma.get(),
             'resolution': self.sl_res.get(),
-            'colorMode': self.color_mode.get(),
-            'randomModulation': self.random_modulation.get(),
-            'sValue': self.sl_s_value.get(),
-            'vValue': self.sl_v_value.get(),
-            'bwScale': self.sl_bw_scale.get(),
-            'rgbScale': self.sl_rgb_scale.get(),
+            'color_model': self.color_mode.get(),
+            'random_modulation': self.random_modulation.get(),
+            's_value': self.sl_s_value.get(),
+            'v_value': self.sl_v_value.get(),
+            'bw_scale': self.sl_bw_scale.get(),
+            'rgb_scale': self.sl_rgb_scale.get(),
         }
 
         json_data['sliders'] = []
@@ -534,18 +534,18 @@ class Interface():
             self.canvas.offy = menu_params['offy']
             self.sl_sigma.set(menu_params['sigma'])
             self.sl_res.set(menu_params['resolution'])
-            self.color_mode.set(menu_params['colorMode'])
-            self.random_modulation.set(menu_params['randomModulation'])
-            self.sl_s_value.set(menu_params['sValue'])
-            self.sl_v_value.set(menu_params['vValue'])
-            self.sl_bw_scale.set(menu_params['bwScale'])
-            self.sl_rgb_scale.set(menu_params['rgbScale'])
+            self.color_mode.set(menu_params['color_model'])
+            self.random_modulation.set(menu_params['random_modulation'])
+            self.sl_s_value.set(menu_params['s_value'])
+            self.sl_v_value.set(menu_params['v_value'])
+            self.sl_bw_scale.set(menu_params['bw_scale'])
+            self.sl_rgb_scale.set(menu_params['rgb_scale'])
 
             if 'zoom' in menu_params.keys():
                 self.zoom.set(round(menu_params['zoom'], 5))
 
-            attributes = [('formulaRed', self.formula_R), ('formulaGreen',
-                                                           self.formula_G), ('formulaBlue', self.formula_B)]
+            attributes = [('formula_red', self.formula_R), ('formula_green',
+                            self.formula_G), ('formula_blue', self.formula_B)]
 
             for attr in attributes:
                 if attr[0] in json_data.keys():
