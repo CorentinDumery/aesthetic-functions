@@ -1,10 +1,8 @@
 import numpy as np
 from PIL import Image, ImageTk
 from scipy.ndimage.filters import gaussian_filter
-import src.userdef as user
 import math
 import random
-
 
 use_global_image = False
 # functionality works, but still needs refinement
@@ -44,6 +42,7 @@ class Canvas:
         random.seed(self.random_seed)
         np.random.seed(self.random_seed)
 
+        import src.userdef as user
         image = eval(f)
         if type(image).__module__ != 'numpy':
             print("Warning: your formula leads to invalid arrays.")
@@ -63,7 +62,8 @@ class Canvas:
         xx, yy = np.meshgrid(x, y, sparse=True)
 
         if self.color_mode != "R/G/B":
-            res = self.generate_array(xx, yy, self.slider_dict, self.active_function)
+            res = self.generate_array(
+                xx, yy, self.slider_dict, self.active_function)
             res = res.transpose()
 
             res = res[:resx, :resy]
@@ -128,7 +128,7 @@ class Canvas:
                          self.function_G, self.function_B]
             for channel in range(3):
                 res = self.generate_array(xx, yy, self.slider_dict,
-                           functions[channel])
+                                          functions[channel])
                 res = res.transpose()
 
                 res = res[:resx, :resy]

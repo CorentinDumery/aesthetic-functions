@@ -5,7 +5,6 @@ from time import time
 import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 import random
-import src.userdef as user  # used to load user definitions
 import importlib
 from src.image_canvas import Canvas
 from src.style import frame_style, title_style, scale_style, base_style
@@ -19,6 +18,8 @@ class Interface():
         self.root.title('ColorExplorer')
         self.root.grid()
         self.root.configure(background=main_color)
+
+        self.init_user_module()
         self.canvas = Canvas(size[0], size[1])
 
         self.computation_time = tk.DoubleVar()
@@ -62,6 +63,13 @@ class Interface():
         self.change_color_mode()
         self.root.mainloop()
 
+    def init_user_module(self):
+        if not(os.path.exists("src/userdef.py")):
+            libfile = open("src/userdef.py", "w")
+            libfile.write("")
+        import src.userdef as user
+        global user
+
     def update_canvas(self, event=None):
         try:
             # will be replaced if no error found
@@ -91,7 +99,8 @@ class Interface():
             self.canvas_label.grid(row=1, column=2, pady=10, padx=10)
             self.computation_time.set(round(time() - time_beginning, 5))
             self.fps.set(int(1/(time() - time_beginning + 0.00001)))
-            self.max_label_text.set("Max value: "+f"{self.canvas.get_max():.2f}")
+            self.max_label_text.set(
+                "Max value: "+f"{self.canvas.get_max():.2f}")
             self.error_message.set("Formula: No Error")
 
         except:
@@ -231,10 +240,11 @@ class Interface():
             END, "# Your definitions here.\n# They will be imported in the module 'user'.")
         self.userdef_entry.grid(
             row=1, column=1, rowspan=2, columnspan=5, pady=5)
-        
-        # Formula frame will be different based on color model, so we grid 
+
+        # Formula frame will be different based on color model, so we grid
         # some of these only later in change_color_mode()
-        self.formula_entry = tk.Entry(frame, textvariable=self.formula, width=100)
+        self.formula_entry = tk.Entry(
+            frame, textvariable=self.formula, width=100)
 
         self.three_formula_frame = tk.Frame(frame, **base_style)
 
@@ -361,6 +371,7 @@ class Interface():
                 importlib.reload(user)
                 return "Userdef: no error."
             except:
+
                 e = sys.exc_info()[0].__name__
                 message = sys.exc_info()[1]
                 print("Error caught:")
@@ -486,7 +497,7 @@ class Interface():
         json_data['userdef_entry'] = self.userdef_entry.get("1.0", END)
 
         with open("parameters/"+name+".json", 'a') as outfile:
-            json.dump(json_data, outfile)
+            json.dump(json_data, outfile, sort_keys=True, indent=4)
 
     def open_random(self):
         dir = "./parameters"
@@ -535,7 +546,7 @@ class Interface():
                 self.zoom.set(round(menu_params['zoom'], 5))
 
             attributes = [('formulaRed', self.formula_R), ('formulaGreen',
-                                                            self.formula_G), ('formulaBlue', self.formula_B)]
+                                                           self.formula_G), ('formulaBlue', self.formula_B)]
 
             for attr in attributes:
                 if attr[0] in json_data.keys():
