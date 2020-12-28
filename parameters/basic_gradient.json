@@ -1,1 +1,21 @@
-{"formula": "255*(i**2+j**2)", "formulaRed": "user.red_gradient(i,j)", "formulaGreen": "user.blue_gradient(i,j)", "formulaBlue": "user.green_gradient(i,j)", "menu_parameters": {"offx": -0.466353151858866, "offy": 0.09327063037177309, "zoom": 0.9993281825547118, "sigma": 0, "resolution": 30, "colorMode": "R/G/B", "randomModulation": 0, "sValue": 102, "vValue": 230, "bwScale": 100, "rgbScale": 256}, "sliders": [], "userdef_entry": "def red_gradient(i,j):\n\treturn (i+7)*255/14\n\ndef green_gradient(i,j):\n\treturn (i+7)*255/14\n\ndef blue_gradient(i,j):\n\treturn (i+7)*255/14\n\n"}
+{
+    "formula": "255*(i**2+j**2)",
+    "formulaBlue": "user.green_gradient(i,j)",
+    "formulaGreen": "user.blue_gradient(i,j)",
+    "formulaRed": "user.red_gradient(i,j)",
+    "menu_parameters": {
+        "bwScale": 100,
+        "colorMode": "R/G/B",
+        "offx": -0.466353151858866,
+        "offy": 0.09327063037177309,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 102,
+        "sigma": 0,
+        "vValue": 230,
+        "zoom": 0.9993281825547118
+    },
+    "sliders": [],
+    "userdef_entry": "def red_gradient(i,j):\n\treturn (i+7)*255/14\n\ndef green_gradient(i,j):\n\treturn (i+7)*255/14\n\ndef blue_gradient(i,j):\n\treturn (i+7)*255/14\n\n"
+}

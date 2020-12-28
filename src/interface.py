@@ -489,7 +489,7 @@ class Interface():
             json.dump(json_data, outfile)
 
     def open_random(self):
-        dir = "../colorExplorer/parameters"
+        dir = "./parameters"
         random.seed()
         file = random.choice([dir + "/" + x for x in os.listdir(
             dir) if os.path.isfile(os.path.join(dir, x))])
@@ -499,7 +499,7 @@ class Interface():
     def load_params(self, append=False, filepath=""):
 
         if filepath == "":
-            filepath = filedialog.askopenfilename(initialdir="../colorExplorer/parameters/",
+            filepath = filedialog.askopenfilename(initialdir="./parameters/",
                                                   title="Select parameters file",
                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
 

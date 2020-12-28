@@ -1,1 +1,38 @@
-{"formula": "slider.scale*user.test(i,j,slider.p1,slider.p2, slider.p3)", "formulaRed": "user.wavies(i,j,slider.p1,slider.p2)", "formulaGreen": "100", "formulaBlue": "255", "menu_parameters": {"offx": -4.713445783232088, "offy": 7.871242851454679, "zoom": 0.1721847657629592, "sigma": 0, "resolution": 30, "colorMode": "HSV", "randomModulation": 0, "sValue": 132, "vValue": 229, "bwScale": 111, "rgbScale": 256}, "sliders": [{"name": "p1", "value": 6}, {"name": "p2", "value": 6}, {"name": "p3", "value": 194}, {"name": "scale", "value": 225}], "userdef_entry": "\nimport numpy as np\n\ndef test(i,j,p1,p2, p3):\n\treturn np.gcd( np.exp(np.fabs(np.cos(p1*i)+np.sin(p2*j))).astype(int), (0*j + 14442*p3).astype(int))\n\n"}
+{
+    "formula": "slider.scale*user.test(i,j,slider.p1,slider.p2, slider.p3)",
+    "formulaBlue": "255",
+    "formulaGreen": "100",
+    "formulaRed": "user.wavies(i,j,slider.p1,slider.p2)",
+    "menu_parameters": {
+        "bwScale": 111,
+        "colorMode": "HSV",
+        "offx": -4.713445783232088,
+        "offy": 7.871242851454679,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 132,
+        "sigma": 0,
+        "vValue": 229,
+        "zoom": 0.1721847657629592
+    },
+    "sliders": [
+        {
+            "name": "p1",
+            "value": 6
+        },
+        {
+            "name": "p2",
+            "value": 6
+        },
+        {
+            "name": "p3",
+            "value": 194
+        },
+        {
+            "name": "scale",
+            "value": 225
+        }
+    ],
+    "userdef_entry": "\nimport numpy as np\n\ndef test(i,j,p1,p2, p3):\n\treturn np.gcd( np.exp(np.fabs(np.cos(p1*i)+np.sin(p2*j))).astype(int), (0*j + 14442*p3).astype(int))\n\n"
+}

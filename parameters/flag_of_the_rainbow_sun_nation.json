@@ -1,1 +1,30 @@
-{"formula": "user.theta(i,j, 50*slider.bigcoeff + slider.smallcoeff) + slider.gridcoeff*user.grid(i, j)/100", "menu_parameters": {"offx": -0.13333333333333575, "offy": 0.11999999999999958, "sigma": 0, "resolution": 30, "colorMode": "HSV", "randomModulation": 0, "sValue": 102, "vValue": 230, "bwScale": 100, "rgbScale": 256}, "sliders": [{"name": "bigcoeff", "value": 14}, {"name": "smallcoeff", "value": 120}, {"name": "gridcoeff", "value": 76}], "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\nimport numpy as np\n\ndef theta(i,j, coeff):\n\treturn coeff*np.arctan(j/(i+0.01))\n\ndef grid(i,j):\n\treturn np.bitwise_and( (i**2 *100).astype(int), (j**2 *100).astype(int) )*1.1\n"}
+{
+    "formula": "user.theta(i,j, 50*slider.bigcoeff + slider.smallcoeff) + slider.gridcoeff*user.grid(i, j)/100",
+    "menu_parameters": {
+        "bwScale": 100,
+        "colorMode": "HSV",
+        "offx": -0.13333333333333575,
+        "offy": 0.11999999999999958,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 102,
+        "sigma": 0,
+        "vValue": 230
+    },
+    "sliders": [
+        {
+            "name": "bigcoeff",
+            "value": 14
+        },
+        {
+            "name": "smallcoeff",
+            "value": 120
+        },
+        {
+            "name": "gridcoeff",
+            "value": 76
+        }
+    ],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\nimport numpy as np\n\ndef theta(i,j, coeff):\n\treturn coeff*np.arctan(j/(i+0.01))\n\ndef grid(i,j):\n\treturn np.bitwise_and( (i**2 *100).astype(int), (j**2 *100).astype(int) )*1.1\n"
+}

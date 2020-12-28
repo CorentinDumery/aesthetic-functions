@@ -1,1 +1,34 @@
-{"formula": "user.julia(i,j, slider.real/100, slider.imag/100)", "formulaRed": "user.julia(i,j, slider.real/20, slider.imag/100)", "formulaGreen": "user.spiral(i,j, slider.smallcoeff)", "formulaBlue": "user.mandelbrot(i,j)", "menu_parameters": {"offx": 0.09563604861049253, "offy": 0.7953728578267709, "zoom": 0.08778, "sigma": 0, "resolution": 30, "colorMode": "R/G/B", "randomModulation": 0, "sValue": 102, "vValue": 230, "bwScale": 92, "rgbScale": 256}, "sliders": [{"name": "real", "value": 39}, {"name": "imag", "value": 20}, {"name": "smallcoeff", "value": 100}], "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\nimport numpy as np\n\ndef mandelbrot(i,j2):\n\tx = 0*i + 0*j2\n\tc = (i+1j*j2)\n\tz = c\n\tfor i in range(20):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n\ndef julia(i, j2, real=-0.8, imag=0.156):\n\tx = 0*i + 0*j2\n\tc = real+1j*imag\n\tz = (i+1j*j2)\n\tfor i in range(100):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff)+10*np.sin(i**2+j**2)\n\n"}
+{
+    "formula": "user.julia(i,j, slider.real/100, slider.imag/100)",
+    "formulaBlue": "user.mandelbrot(i,j)",
+    "formulaGreen": "user.spiral(i,j, slider.smallcoeff)",
+    "formulaRed": "user.julia(i,j, slider.real/20, slider.imag/100)",
+    "menu_parameters": {
+        "bwScale": 92,
+        "colorMode": "R/G/B",
+        "offx": 0.09563604861049253,
+        "offy": 0.7953728578267709,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 102,
+        "sigma": 0,
+        "vValue": 230,
+        "zoom": 0.08778
+    },
+    "sliders": [
+        {
+            "name": "real",
+            "value": 39
+        },
+        {
+            "name": "imag",
+            "value": 20
+        },
+        {
+            "name": "smallcoeff",
+            "value": 100
+        }
+    ],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\nimport numpy as np\n\ndef mandelbrot(i,j2):\n\tx = 0*i + 0*j2\n\tc = (i+1j*j2)\n\tz = c\n\tfor i in range(20):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n\ndef julia(i, j2, real=-0.8, imag=0.156):\n\tx = 0*i + 0*j2\n\tc = real+1j*imag\n\tz = (i+1j*j2)\n\tfor i in range(100):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff)+10*np.sin(i**2+j**2)\n\n"
+}

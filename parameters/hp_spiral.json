@@ -1,1 +1,30 @@
-{"formula": "255*(i**2+j**2) + (np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1) *41194", "formulaRed": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1)*235  + (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*45", "formulaGreen": "(np.exp( - (user.spiral(i-1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75", "formulaBlue": "(np.exp( - (user.spiral(i+1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75", "menu_parameters": {"offx": 0.24983841470469442, "offy": 0.3903732310402199, "zoom": 6.960168584376716, "sigma": 0, "resolution": 30, "colorMode": "R/G/B", "randomModulation": 0, "sValue": 143, "vValue": 216, "bwScale": 100, "rgbScale": 256}, "sliders": [{"name": "bigcoeff", "value": 0}, {"name": "smallcoeff", "value": 120}], "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.import numpy as np\n\nimport numpy as np\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff) +(i**2+j**2)*1\n\n\n\n\n\n"}
+{
+    "formula": "255*(i**2+j**2) + (np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1) *41194",
+    "formulaBlue": "(np.exp( - (user.spiral(i+1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75",
+    "formulaGreen": "(np.exp( - (user.spiral(i-1,j+1,slider.bigcoeff) %255) + 30) >1)*235+ (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*75",
+    "formulaRed": "(np.exp( - (user.spiral(i,j,slider.bigcoeff) %255) + 30) >1)*235  + (np.exp( - (user.spiral(-i,-j,slider.bigcoeff) %255) + 30) >1)*45",
+    "menu_parameters": {
+        "bwScale": 100,
+        "colorMode": "R/G/B",
+        "offx": 0.24983841470469442,
+        "offy": 0.3903732310402199,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 143,
+        "sigma": 0,
+        "vValue": 216,
+        "zoom": 6.960168584376716
+    },
+    "sliders": [
+        {
+            "name": "bigcoeff",
+            "value": 0
+        },
+        {
+            "name": "smallcoeff",
+            "value": 120
+        }
+    ],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.import numpy as np\n\nimport numpy as np\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff) +(i**2+j**2)*1\n\n\n\n\n\n"
+}

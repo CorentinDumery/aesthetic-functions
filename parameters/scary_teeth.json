@@ -1,1 +1,30 @@
-{"formula": "10000*np.exp(-slider.p1*j/(0.1+np.cos(i*slider.p2)))", "formulaRed": "255*(i**2+j**2)", "formulaGreen": "255*(i**2+j**2)", "formulaBlue": "255*(i**2+j**2)", "menu_parameters": {"offx": -0.028865733333333393, "offy": 0.02156720000000001, "zoom": 0.24401, "sigma": 0, "resolution": 34, "colorMode": "RGB", "randomModulation": 0, "sValue": 99, "vValue": 231, "bwScale": 113, "rgbScale": 256}, "sliders": [{"name": "p1", "value": 147}, {"name": "p2", "value": 17}], "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n"}
+{
+    "formula": "10000*np.exp(-slider.p1*j/(0.1+np.cos(i*slider.p2)))",
+    "formulaBlue": "255*(i**2+j**2)",
+    "formulaGreen": "255*(i**2+j**2)",
+    "formulaRed": "255*(i**2+j**2)",
+    "menu_parameters": {
+        "bwScale": 113,
+        "colorMode": "RGB",
+        "offx": -0.028865733333333393,
+        "offy": 0.02156720000000001,
+        "randomModulation": 0,
+        "resolution": 34,
+        "rgbScale": 256,
+        "sValue": 99,
+        "sigma": 0,
+        "vValue": 231,
+        "zoom": 0.24401
+    },
+    "sliders": [
+        {
+            "name": "p1",
+            "value": 147
+        },
+        {
+            "name": "p2",
+            "value": 17
+        }
+    ],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n"
+}

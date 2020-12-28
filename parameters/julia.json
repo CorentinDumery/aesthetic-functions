@@ -1,1 +1,27 @@
-{"formula": "user.julia(i,j, slider.real/100, slider.imag/100)", "menu_parameters": {"offx": 0.1886828486104925, "offy": 0.3880736578267708, "zoom": 0.08778247415951389, "sigma": 0, "resolution": 30, "colorMode": "BW", "randomModulation": 0, "sValue": 102, "vValue": 230, "bwScale": 92, "rgbScale": 256}, "sliders": [{"name": "real", "value": 39}, {"name": "imag", "value": 20}], "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\nimport numpy as np\n\ndef mandelbrot(i,j2):\n\tx = 0*i + 0*j2\n\tc = (i+1j*j2)\n\tz = c\n\tfor i in range(20):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n\ndef julia(i, j2, real=-0.8, imag=0.156):\n\tx = 0*i + 0*j2\n\tc = real+1j*imag\n\tz = (i+1j*j2)\n\tfor i in range(100):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n"}
+{
+    "formula": "user.julia(i,j, slider.real/100, slider.imag/100)",
+    "menu_parameters": {
+        "bwScale": 92,
+        "colorMode": "BW",
+        "offx": 0.1886828486104925,
+        "offy": 0.3880736578267708,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 102,
+        "sigma": 0,
+        "vValue": 230,
+        "zoom": 0.08778247415951389
+    },
+    "sliders": [
+        {
+            "name": "real",
+            "value": 39
+        },
+        {
+            "name": "imag",
+            "value": 20
+        }
+    ],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\nimport numpy as np\n\ndef mandelbrot(i,j2):\n\tx = 0*i + 0*j2\n\tc = (i+1j*j2)\n\tz = c\n\tfor i in range(20):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n\ndef julia(i, j2, real=-0.8, imag=0.156):\n\tx = 0*i + 0*j2\n\tc = real+1j*imag\n\tz = (i+1j*j2)\n\tfor i in range(100):\n\t\tz = np.multiply(z,z) + c\n\tx[np.where(np.abs(z)>0.00001)] = 255\n\treturn x\n"
+}

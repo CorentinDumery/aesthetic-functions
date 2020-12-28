@@ -1,1 +1,35 @@
-{"formula": "user.grandma(i,j,slider.p1, slider.p2) * user.spiral(i,j,slider.bigcoeff) /1000", "menu_parameters": {"offx": -28.42888445051707, "offy": 0.1589332110151682, "zoom": 3.8733012026328413, "sigma": 0, "resolution": 30, "colorMode": "HSV", "randomModulation": 0, "sValue": 90, "vValue": 234, "bwScale": 100, "rgbScale": 256}, "sliders": [{"name": "p1", "value": 219}, {"name": "p2", "value": 21}, {"name": "bigcoeff", "value": 0}, {"name": "smallcoeff", "value": 76}], "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\ndef grandma(i,j,p1,p2):\n\treturn p1*np.cos(np.sin(i*10/p2))+p1*np.cos(np.sin(j*10/p2))\n\nimport numpy as np\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff) +(i**2+j**2)*3\n\n\n\n"}
+{
+    "formula": "user.grandma(i,j,slider.p1, slider.p2) * user.spiral(i,j,slider.bigcoeff) /1000",
+    "menu_parameters": {
+        "bwScale": 100,
+        "colorMode": "HSV",
+        "offx": -28.42888445051707,
+        "offy": 0.1589332110151682,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 90,
+        "sigma": 0,
+        "vValue": 234,
+        "zoom": 3.8733012026328413
+    },
+    "sliders": [
+        {
+            "name": "p1",
+            "value": 219
+        },
+        {
+            "name": "p2",
+            "value": 21
+        },
+        {
+            "name": "bigcoeff",
+            "value": 0
+        },
+        {
+            "name": "smallcoeff",
+            "value": 76
+        }
+    ],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n\ndef grandma(i,j,p1,p2):\n\treturn p1*np.cos(np.sin(i*10/p2))+p1*np.cos(np.sin(j*10/p2))\n\nimport numpy as np\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff) +(i**2+j**2)*3\n\n\n\n"
+}

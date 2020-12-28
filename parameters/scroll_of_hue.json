@@ -1,1 +1,35 @@
-{"formula": "(user.spiral(i,j,slider.bigcoeff*5) +0.1*user.wavies(i,j,slider.p1/10, slider.p2/10))", "menu_parameters": {"offx": 0.07749520062760018, "offy": 0.10224118099679416, "zoom": 5.932266725551985, "sigma": 0, "resolution": 30, "colorMode": "HSV", "randomModulation": 0, "sValue": 132, "vValue": 220, "bwScale": 100, "rgbScale": 256}, "sliders": [{"name": "bigcoeff", "value": 68}, {"name": "smallcoeff", "value": 120}, {"name": "p1", "value": 126}, {"name": "p2", "value": 93}], "userdef_entry": "import numpy as np\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff) +(i**2+j**2)*1\n\ndef peano(i,j, p1, p2):\n\treturn 1000*np.bitwise_and( ((j-i)*p1).astype(int), ((i+j)*p2).astype(int))*1.1\n\ndef wavies(i,j,p1,p2):\n\treturn 255*np.sin((i+j)*p1/20+np.cos((i-j)*p2/20)*5)\n\n"}
+{
+    "formula": "(user.spiral(i,j,slider.bigcoeff*5) +0.1*user.wavies(i,j,slider.p1/10, slider.p2/10))",
+    "menu_parameters": {
+        "bwScale": 100,
+        "colorMode": "HSV",
+        "offx": 0.07749520062760018,
+        "offy": 0.10224118099679416,
+        "randomModulation": 0,
+        "resolution": 30,
+        "rgbScale": 256,
+        "sValue": 132,
+        "sigma": 0,
+        "vValue": 220,
+        "zoom": 5.932266725551985
+    },
+    "sliders": [
+        {
+            "name": "bigcoeff",
+            "value": 68
+        },
+        {
+            "name": "smallcoeff",
+            "value": 120
+        },
+        {
+            "name": "p1",
+            "value": 126
+        },
+        {
+            "name": "p2",
+            "value": 93
+        }
+    ],
+    "userdef_entry": "import numpy as np\n\npi = 3.1415\n\ndef theta2(i,j, coeff):\n\tangle = (np.arctan2(j,i) - np.arctan2(0,1)) #[-pi,pi]\n\tangle2 = (angle + pi)/(2*pi) #[0,1]\n\tangle3 = angle2 * 255\n\treturn angle3 + coeff\n\ndef spiral(i,j,coeff):\n\treturn theta2(i,j,coeff) +(i**2+j**2)*1\n\ndef peano(i,j, p1, p2):\n\treturn 1000*np.bitwise_and( ((j-i)*p1).astype(int), ((i+j)*p2).astype(int))*1.1\n\ndef wavies(i,j,p1,p2):\n\treturn 255*np.sin((i+j)*p1/20+np.cos((i-j)*p2/20)*5)\n\n"
+}
