@@ -64,9 +64,8 @@ class Interface():
         self.root.mainloop()
 
     def init_user_module(self):
-        if not(os.path.exists("src/userdef.py")):
-            libfile = open("src/userdef.py", "w")
-            libfile.write("")
+        libfile = open("src/userdef.py", "w")
+        libfile.write("")
         import src.userdef as user
         global user
 
