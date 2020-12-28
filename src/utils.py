@@ -2,7 +2,7 @@ import json
 import os
 
 def format_parameters():
-    ''' Modifies all parameter files at once '''
+    ''' Modifies all parameter files at the same time '''
     dir = "./parameters/ignore"
     files = [dir + "/" + x for x in os.listdir(dir) if os.path.isfile(os.path.join(dir, x))]
     for file in files:

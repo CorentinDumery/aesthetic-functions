@@ -7,7 +7,7 @@ from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 import random
 import importlib
 from src.image_canvas import Canvas
-from src.style import frame_style, title_style, scale_style, base_style
+from src.style import frame_style, title_style, scale_style, base_style, text_style, widget_style
 from src.style import main_color, frame_grid, button_grid
 
 
@@ -118,7 +118,7 @@ class Interface():
                                  command=self.update_canvas, **scale_style)
         self.sl_sigma.set(0)
         self.sl_sigma.grid(row=2, column=2)
-        sigma_label = tk.Label(frame, text="σ", padx=5, **base_style)
+        sigma_label = tk.Label(frame, text="σ", padx=5, **text_style)
         sigma_label.grid(row=1, column=2, sticky="E")
 
         self.sl_res = tk.Scale(frame, **scale_style,  orient=tk.VERTICAL,
@@ -126,12 +126,12 @@ class Interface():
         self.sl_res.config(from_=100, to_=1)
         self.sl_res.set(30)
         self.sl_res.grid(row=2, column=3)
-        tk.Label(frame, text="res", **base_style).grid(
+        tk.Label(frame, text="res", **text_style).grid(
             row=1, column=3, sticky="E")
 
         self.save_with_max_resolution = tk.BooleanVar(value=True)
         check_max_resolution = tk.Checkbutton(frame, text="Save with max resolution",
-                                              var=self.save_with_max_resolution, **base_style)
+                                              var=self.save_with_max_resolution, **widget_style)
         check_max_resolution.grid(row=3, column=1, columnspan=3)
 
         add_slider_frame = tk.Frame(frame, **base_style)
@@ -141,7 +141,7 @@ class Interface():
         new_slider_entry.pack(side=tk.LEFT)
 
         new_slider_button = tk.Button(
-            add_slider_frame, text="+", command=self.new_slider)
+            add_slider_frame, text="+", command=self.new_slider, **widget_style)
         new_slider_button.pack(side=tk.RIGHT)
 
         add_slider_frame.grid(row=4, column=0, columnspan=4)
@@ -151,7 +151,7 @@ class Interface():
         self.user_slider_frame.grid(row=6, column=0, columnspan=4)
 
         delete_slider_button = tk.Button(
-            frame, text="Delete sliders", command=self.delete_sliders)
+            frame, text="Delete sliders", command=self.delete_sliders, **widget_style)
         delete_slider_button.grid(row=5, column=1, columnspan=5)
 
     def setup_check_frame(self, frame):
@@ -161,19 +161,19 @@ class Interface():
 
         self.color_mode = tk.StringVar(value="RGB")
         rad_rgb = tk.Radiobutton(frame, variable=self.color_mode,
-                                 text="RGB", value="RGB", **base_style, command=self.change_color_mode)
+                                 text="RGB", value="RGB", **widget_style, command=self.change_color_mode)
         rad_rgb.grid(row=2, column=1, sticky="W")
 
         rad_bw = tk.Radiobutton(frame, variable=self.color_mode,
-                                text="BW", value="BW", **base_style, command=self.change_color_mode)
+                                text="BW", value="BW", **widget_style, command=self.change_color_mode)
         rad_bw.grid(row=2, column=2, sticky="W")
 
         rad_hsv = tk.Radiobutton(frame, variable=self.color_mode,
-                                 text="HSV", value="HSV", **base_style, command=self.change_color_mode)
+                                 text="HSV", value="HSV", **widget_style, command=self.change_color_mode)
         rad_hsv.grid(row=2, column=3, sticky="W")
 
         rad_r_g_b = tk.Radiobutton(frame, variable=self.color_mode,
-                                   text="R/G/B", value="R/G/B", **base_style, command=self.change_color_mode)
+                                   text="R/G/B", value="R/G/B", **widget_style, command=self.change_color_mode)
         rad_r_g_b.grid(row=2, column=4, sticky="W")
 
         # Display different menus for different color models
@@ -214,11 +214,11 @@ class Interface():
 
         self.random_modulation = tk.IntVar(value=0)
         check1 = tk.Checkbutton(frame, text="Random Modulation",
-                                var=self.random_modulation, **base_style, command=self.update_canvas)
+                                var=self.random_modulation, **widget_style, command=self.update_canvas)
         check1.grid(row=4, column=1, columnspan=3)
 
         new_random_button = tk.Button(frame, text="New Random Seed",
-                                      **base_style, command=self.new_random)
+                                      **widget_style, command=self.new_random)
         new_random_button.grid(row=5, column=1, columnspan=5, **button_grid)
 
     def setup_formula_frame(self, frame):
@@ -261,19 +261,19 @@ class Interface():
         formula_blue_entry.grid(row=3, column=1, columnspan=5, pady=0)
 
         bApply = tk.Button(
-            frame, text='Apply', **base_style, command=self.apply_function)
+            frame, text='Apply', **widget_style, command=self.apply_function)
         bApply.grid(row=3, column=6, **button_grid)
 
         self.error_userdef = tk.StringVar()
         self.error_userdef.set("Userdef: no error.")
         error_label_user = tk.Label(
-            frame, textvariable=self.error_userdef, **base_style)
+            frame, textvariable=self.error_userdef, **text_style)
         error_label_user.grid(row=1, column=6)
 
         self.error_message = tk.StringVar()
         self.error_message.set("Formula: no error.")
         error_label_formula = tk.Label(
-            frame, textvariable=self.error_message, **base_style)
+            frame, textvariable=self.error_message, **text_style)
         error_label_formula.grid(row=2, column=6)
 
     def setup_io_frame(self, frame):
@@ -282,23 +282,23 @@ class Interface():
                 i, weight=1, uniform="IOFrameUniform")
 
         b_save_im = tk.Button(
-            frame, text='Save Image', **base_style, command=self.save_image)
+            frame, text='Save Image', **widget_style, command=self.save_image)
         b_save_im.grid(row=7, column=1, **button_grid)
 
         b_save_params = tk.Button(
-            frame, text='Save Parameters', **base_style, command=self.save_params)
+            frame, text='Save Parameters', **widget_style, command=self.save_params)
         b_save_params.grid(row=7, column=2, **button_grid)
 
         b_load_params = tk.Button(
-            frame, text='Load Parameters', **base_style, command=self.load_params)
+            frame, text='Load Parameters', **widget_style, command=self.load_params)
         b_load_params.grid(row=7, column=3, **button_grid)
 
         b_append_params = tk.Button(
-            frame, text='Append Parameters', **base_style, command=self.append_params)
+            frame, text='Append Parameters', **widget_style, command=self.append_params)
         b_append_params.grid(row=7, column=4, **button_grid)
 
         b_open_random = tk.Button(
-            frame, text='Open Random', **base_style, command=self.open_random)
+            frame, text='Open Random', **widget_style, command=self.open_random)
         b_open_random.grid(row=7, column=5, **button_grid)
 
     def setup_info_frame(self, frame):
@@ -307,31 +307,31 @@ class Interface():
 
         self.max_label_text = tk.StringVar(value="Max value: X")
         max_label = tk.Label(
-            frame, textvariable=self.max_label_text, **base_style)
+            frame, textvariable=self.max_label_text, **text_style)
         max_label.grid(row=2, column=0, sticky="E")
 
         zoom_label_text = tk.StringVar(value="Zoom value:")
         zoom_label = tk.Label(
-            frame, textvariable=zoom_label_text, **base_style)
+            frame, textvariable=zoom_label_text, **text_style)
         zoom_label.grid(row=3, column=0, sticky="W")
         zoom_label_value = tk.Label(
-            frame, textvariable=self.zoom, anchor=tk.W, **base_style)
+            frame, textvariable=self.zoom, anchor=tk.W, **text_style)
         zoom_label_value.grid(row=3, column=1, sticky="W")
 
         time_label_text = tk.StringVar(value="Computation time:")
         time_label = tk.Label(
-            frame, textvariable=time_label_text, **base_style)
+            frame, textvariable=time_label_text, **text_style)
         time_label.grid(row=4, column=0, sticky="W")
         time_label_value = tk.Label(
-            frame, textvariable=self.computation_time, anchor=tk.W, **base_style)
+            frame, textvariable=self.computation_time, anchor=tk.W, **text_style)
         time_label_value.grid(row=4, column=1, sticky="W")
 
         fps_label_text = tk.StringVar(value="FPS:")
         fps_label = tk.Label(
-            frame, textvariable=fps_label_text, **base_style)
+            frame, textvariable=fps_label_text, **text_style)
         fps_label.grid(row=5, column=0, sticky="W")
         fps_label_value = tk.Label(
-            frame, textvariable=self.fps, anchor=tk.W, **base_style)
+            frame, textvariable=self.fps, anchor=tk.W, **text_style)
         fps_label_value.grid(row=5, column=1, sticky="W")
 
     def new_random(self):
@@ -371,7 +371,6 @@ class Interface():
                 importlib.reload(user)
                 return "Userdef: no error."
             except:
-
                 e = sys.exc_info()[0].__name__
                 message = sys.exc_info()[1]
                 print("Error caught:")
@@ -611,7 +610,7 @@ class Interface():
         new_sl.set(value)
         new_sl.grid(row=4, column=len(self.sliders))
         tk.Label(self.user_slider_frame, text="slider." + name, padx=5, pady=5,
-                 **base_style).grid(row=3, column=len(self.sliders), sticky="E")
+                 **text_style).grid(row=3, column=len(self.sliders), sticky="E")
         self.sliders[name] = new_sl
 
     def delete_sliders(self):

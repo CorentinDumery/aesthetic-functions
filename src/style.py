@@ -2,6 +2,7 @@ import tkinter as tk
 
 main_color = "#f1faee"
 secondary_color = "#e1eade"
+text_color = "#000000"
 
 # Convention:
 # "_style" is used when creating tk widget
@@ -29,15 +30,27 @@ button_grid = {
     'sticky': tk.E+tk.W+tk.N+tk.S
 }
 
-title_style = {
+text_style = {
     **base_style,
+    'fg': text_color,
+    'font': ("TkDefaultFont", 10),
+}
+
+title_style = {
+    **text_style,
     'font': ("Courier", 18, "bold"),
     'justify': 'center'
 }
 
-scale_style = {
+widget_style = {
     **base_style,
+    'fg': text_color
+}
+
+scale_style = {
+    **widget_style,
     'from_': 0,
     'to_': 255,
-    'length': 150
+    'length': 150,
+    'fg': text_color
 }
