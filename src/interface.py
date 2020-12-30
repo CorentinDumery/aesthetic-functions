@@ -13,14 +13,17 @@ from src.style import main_color, frame_grid, button_grid
 
 class Interface():
 
-    def __init__(self, size):
+    def __init__(self, scale):
         self.root = tk.Tk()
         self.root.title('Aesthetic functions')
         self.root.grid()
         self.root.configure(background=main_color)
+        self.root.tk.call('tk', 'scaling', scale)
 
         self.init_user_module()
-        self.canvas = Canvas(size[0], size[1])
+        
+        canvas_size = (int(960*scale), int(540*scale))
+        self.canvas = Canvas(canvas_size[0], canvas_size[1])
 
         self.computation_time = tk.DoubleVar()
         self.fps = tk.IntVar()

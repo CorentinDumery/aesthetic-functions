@@ -33,7 +33,7 @@ button_grid = {
 text_style = {
     **base_style,
     'fg': text_color,
-    'font': ("TkDefaultFont", 10),
+    'font': ("TkDefaultFont", 12),
 }
 
 title_style = {

@@ -1,9 +1,8 @@
 import os
 import src.interface
 
-size = (960, 540)
-if os.name == 'nt':  # smaller size for Windows
-    size = (640, 360)
+# For monitors with low resolution / high dpi scaling, reduce scale
+scale = 1.0
 
-app = src.interface.Interface(size)
+app = src.interface.Interface(scale)
 app.launch()
