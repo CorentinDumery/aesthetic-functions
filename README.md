@@ -5,7 +5,12 @@ The objective of this project is to explore the artistic aspects of two-dimensio
 
 ## Install & Run
 
-To run the project, navigate to the project's folder and run:
+To run the project, navigate to the project's directory and install the python3 dependencies:
+```
+pip install -r requirements.txt
+```
+
+Then, to start the program, run:
 ```
 python3 main.py
 ```

@@ -6,3 +6,4 @@ __pycache__/*
 .vscode/*
 legacy/*
 src/__pycache__/*
+venv_dir/*
