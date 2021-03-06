@@ -7,6 +7,7 @@ from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 import random
 import importlib
 from src.image_canvas import Canvas
+from src.utils import printable
 from src.style import (
     frame_style,
     title_style,
@@ -108,7 +109,7 @@ class Interface:
             self.canvas_label.grid(row=1, column=2, pady=10, padx=10)
             self.computation_time.set(round(time() - time_beginning, 5))
             self.fps.set(int(1 / (time() - time_beginning + 0.00001)))
-            self.max_label_text.set("Max value: " + f"{self.canvas.get_max():.2f}")
+            self.max_value.set(printable(self.canvas.get_max()))
             self.error_message.set("Formula: No Error")
 
         except:
@@ -366,9 +367,14 @@ class Interface:
         title_info = tk.Label(frame, text="STATS", **title_style)
         title_info.grid(row=1, column=0, columnspan=2)
 
-        self.max_label_text = tk.StringVar(value="Max value: X")
+        self.max_label_text = tk.StringVar(value="Max value:")
+        self.max_value = tk.StringVar(value="-1")
         max_label = tk.Label(frame, textvariable=self.max_label_text, **text_style)
-        max_label.grid(row=2, column=0, sticky="E")
+        max_label.grid(row=2, column=0, sticky="W")
+        max_label_value = tk.Label(
+            frame, textvariable=self.max_value, anchor=tk.W, **text_style
+        )
+        max_label_value.grid(row=2, column=1, sticky="W")
 
         zoom_label_text = tk.StringVar(value="Zoom value:")
         zoom_label = tk.Label(frame, textvariable=zoom_label_text, **text_style)
@@ -464,7 +470,7 @@ class Interface:
 
         def mouse_wheel(self, event):
             self.window.zoom.set(
-                round(self.window.zoom.get() * (1 - event.delta / 1200), 5)
+                round(self.window.zoom.get() * (1 - event.delta / 1200), 3)
             )
             self.window.compute_minmax()
             self.window.update_canvas()
@@ -473,12 +479,12 @@ class Interface:
             pass
 
         def b4(self, event):  # mouse wheel up X11
-            self.window.zoom.set(round(self.window.zoom.get() * 0.9, 5))
+            self.window.zoom.set(round(self.window.zoom.get() * 0.9, 3))
             self.window.compute_minmax()
             self.window.update_canvas()
 
         def b5(self, event):  # mouse wheel down X11
-            self.window.zoom.set(round(self.window.zoom.get() * 1.1, 5))
+            self.window.zoom.set(round(self.window.zoom.get() * 1.1, 3))
             self.window.compute_minmax()
             self.window.update_canvas()
 
@@ -607,7 +613,7 @@ class Interface:
             self.sl_rgb_scale.set(menu_params["rgb_scale"])
 
             if "zoom" in menu_params.keys():
-                self.zoom.set(round(menu_params["zoom"], 5))
+                self.zoom.set(round(menu_params["zoom"], 3))
 
             attributes = [
                 ("formula_red", self.formula_R),
