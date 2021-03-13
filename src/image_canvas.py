@@ -33,11 +33,14 @@ class Canvas:
         self.rgb_scale = 255
         self.bw_scale = 100
         self.sigma = 0
+        self.itime = 0
 
     def generate_array(self, x_values, y_values, slider={}, f=""):
         """Generic function that computes pixel values for canvas"""
         i = x_values - self.offx
         j = y_values - self.offy
+        time = self.itime
+        itime = time  # alias
         random.seed(self.random_seed)
         np.random.seed(self.random_seed)
 
@@ -145,7 +148,7 @@ class Canvas:
             else:  # BW
                 array = res
 
-        else:  # R/G/B
+        else:  # R/G/B mode : apply 3 different functions
             scale = self.rgb_scale
             max_value = min(scale + 1, 256)
             array = np.zeros((3, resx, resy), "uint8")
@@ -172,6 +175,8 @@ class Canvas:
                 array[2, :, :] = gaussian_filter(array[2, :, :], sigma=sigma)
             else:
                 array[:, :] = gaussian_filter(array[:, :], sigma=sigma)
+
+        # Convert arrays to Pillow images based on color mode
 
         if self.color_mode == "HSV":
             array = np.ascontiguousarray(array.transpose(2, 1, 0))
@@ -204,7 +209,8 @@ class Canvas:
         self.full_image = img0  # saving full res picture before resize
         img0 = img0.resize((self.sizex, self.sizey))
         img = ImageTk.PhotoImage(img0)
-        return img
+
+        return img, img0
 
     def save_image(self, name):
         self.full_image.convert("RGB").save("images/{}.png".format(name))

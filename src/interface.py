@@ -55,16 +55,20 @@ class Interface:
         info_frame = tk.Frame(self.root, **frame_style)
         self.setup_info_frame(info_frame)
 
+        animation_frame = tk.Frame(self.root, **frame_style)
+        self.setup_animation_frame(animation_frame)
+
         self.canvas_label = tk.Label(self.root)
 
         ## -- Frames layout -- ##
 
         slider_frame.grid(row=1, rowspan=2, column=1, **frame_grid)
         check_frame.grid(row=3, column=1, **frame_grid)
-        info_frame.grid(row=4, column=1, **frame_grid)
+        info_frame.grid(row=3, column=3, **frame_grid)
+        animation_frame.grid(row=1, column=3, rowspan=2, **frame_grid)
 
         self.canvas_label.grid(row=1, column=2, pady=10, padx=10)
-        formula_frame.grid(row=3, column=2, rowspan=2, **frame_grid)
+        formula_frame.grid(row=3, column=2, rowspan=1, **frame_grid)
         IO_frame.grid(row=2, column=2, sticky=tk.S + tk.W + tk.E)
 
     def launch(self):
@@ -78,7 +82,7 @@ class Interface:
         libfile.write("")
         import src.userdef as user
 
-        global user
+        global user  # User definitions from interface, will be reloaded when needed
 
     def update_canvas(self, event=None):
         try:
@@ -99,12 +103,12 @@ class Interface:
             self.canvas.rgb_scale = self.sl_rgb_scale.get()
             self.canvas.bw_scale = self.sl_bw_scale.get()
             self.canvas.sigma = self.sl_sigma.get()
+            self.canvas.itime = int(self.itime_sl.get())
 
             self.update_slider_parameters()
             self.canvas.set_slider_dict(self.slider_dict)
 
-            img = self.canvas.generate_image()
-            self.image = img
+            self.image, self.full_img = self.canvas.generate_image()
             self.canvas_label.configure(image=self.image)
             self.canvas_label.grid(row=1, column=2, pady=10, padx=10)
             self.computation_time.set(round(time() - time_beginning, 5))
@@ -120,8 +124,9 @@ class Interface:
             self.error_message.set("Formula: " + e)
 
     def setup_slider_frame(self, frame):
-        title_slider = tk.Label(frame, text="SLIDERS", **title_style)
-        title_slider.grid(row=0, column=0, columnspan=4)
+        tk.Label(frame, text="SLIDERS", **title_style).grid(
+            row=0, column=0, columnspan=4
+        )
 
         self.sl_sigma = tk.Scale(
             frame, orient=tk.VERTICAL, command=self.update_canvas, **scale_style
@@ -170,8 +175,9 @@ class Interface:
         delete_slider_button.grid(row=5, column=1, columnspan=5)
 
     def setup_check_frame(self, frame):
-        title_check = tk.Label(frame, text="COLOR MODEL", **title_style)
-        title_check.grid(row=0, column=0, columnspan=8)
+        tk.Label(frame, text="COLOR MODEL", **title_style).grid(
+            row=0, column=0, columnspan=8
+        )
 
         self.color_mode = tk.StringVar(value="RGB")
         rad_rgb = tk.Radiobutton(
@@ -276,8 +282,9 @@ class Interface:
         new_random_button.grid(row=5, column=1, columnspan=5, **button_grid)
 
     def setup_formula_frame(self, frame):
-        title_formula = tk.Label(frame, text="FORMULAS", **title_style)
-        title_formula.grid(row=0, column=0, columnspan=10)
+        tk.Label(frame, text="FORMULAS", **title_style).grid(
+            row=0, column=0, columnspan=10
+        )
 
         self.active_function = f"255*(i**2+j**2)"  # default formula here
         self.formula = tk.StringVar(value=self.active_function)
@@ -322,17 +329,15 @@ class Interface:
 
         self.error_userdef = tk.StringVar()
         self.error_userdef.set("Userdef: no error.")
-        error_label_user = tk.Label(
-            frame, textvariable=self.error_userdef, **text_style
+        tk.Label(frame, textvariable=self.error_userdef, **text_style).grid(
+            row=1, column=6
         )
-        error_label_user.grid(row=1, column=6)
 
         self.error_message = tk.StringVar()
         self.error_message.set("Formula: no error.")
-        error_label_formula = tk.Label(
-            frame, textvariable=self.error_message, **text_style
+        tk.Label(frame, textvariable=self.error_message, **text_style).grid(
+            row=2, column=6
         )
-        error_label_formula.grid(row=2, column=6)
 
     def setup_io_frame(self, frame):
         for i in range(1, 6):
@@ -364,8 +369,7 @@ class Interface:
         b_open_random.grid(row=7, column=5, **button_grid)
 
     def setup_info_frame(self, frame):
-        title_info = tk.Label(frame, text="STATS", **title_style)
-        title_info.grid(row=1, column=0, columnspan=2)
+        tk.Label(frame, text="STATS", **title_style).grid(row=1, column=0, columnspan=2)
 
         self.max_label_text = tk.StringVar(value="Max value:")
         self.max_value = tk.StringVar(value="-1")
@@ -400,9 +404,86 @@ class Interface:
         )
         fps_label_value.grid(row=5, column=1, sticky="W")
 
+    def setup_animation_frame(self, frame):
+        tk.Label(frame, text="ANIMATION", **title_style).grid(
+            row=1, column=0, columnspan=4
+        )
+        tk.Label(
+            frame,
+            text='Interactive time: use "time" in your formula \nto make it vary over time',
+            **base_style,
+        ).grid(row=2, column=0, columnspan=4, pady=15)
+
+        tk.Label(frame, text="itime range:", **base_style).grid(
+            row=3, column=0, sticky=tk.E
+        )
+
+        self.itime_min = tk.StringVar()
+        itime_min_entry = tk.Entry(frame, width=5, textvariable=self.itime_min)
+        itime_min_entry.grid(row=3, column=1)
+
+        tk.Label(frame, text="-", **base_style).grid(row=3, column=2)
+
+        self.itime_max = tk.StringVar()
+        itime_max_entry = tk.Entry(frame, width=5, textvariable=self.itime_max)
+        itime_max_entry.grid(row=3, column=3)
+
+        tk.Label(frame, text="Visualize frame n°:", **base_style).grid(
+            row=5, column=0, sticky=tk.E
+        )
+
+        self.itime_sl = tk.Scale(
+            frame, orient=tk.HORIZONTAL, command=self.update_canvas, **scale_style
+        )
+
+        self.itime_sl.config(from_=-1, to_=1)
+        self.itime_sl.set(0)
+
+        def apply_time_range(*args):
+            filtered = ["", "-", "+"]
+            if (
+                not self.itime_min.get() in filtered
+                and not self.itime_max.get() in filtered
+            ):
+                self.itime_sl.config(
+                    from_=int(self.itime_min.get()), to_=int(self.itime_max.get())
+                )
+                self.itime_sl.set(int(self.itime_min.get()))
+
+        # Add callback to update slider when entries are modified
+        self.itime_min.set(0)
+        self.itime_min.trace("w", apply_time_range)
+        self.itime_max.trace("w", apply_time_range)
+        self.itime_max.set(60)
+
+        self.itime_sl.grid(row=5, column=1, columnspan=10)
+
+        b_save_memory = tk.Button(
+            frame, text="Save to yourgif.gif", **widget_style, command=self.save_memory
+        )
+        b_save_memory.grid(row=6, column=0, columnspan=10, pady=15, **button_grid)
+
     def new_random(self):
         self.canvas.new_random_seed()
         self.update_canvas()
+
+    def save_memory(self):
+        image_memory = []
+        for i in range(int(self.itime_min.get()), int(self.itime_max.get()) + 1):
+            self.itime_sl.set(i)
+            self.update_canvas()
+            if self.color_mode.get() == "BW":
+                self.full_img = self.full_img.convert("P")
+            image_memory.append(self.full_img)
+
+        image_memory[0].save(
+            "yourgif.gif",
+            save_all=True,
+            append_images=image_memory[1:],
+            optimize=False,
+            duration=1000 / 30,  # duration = 1/fps, in ms
+            loop=0,
+        )
 
     def change_color_mode(self):
         """ Forget previous layout and apply new one """

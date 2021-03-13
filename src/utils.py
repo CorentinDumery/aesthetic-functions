@@ -2,20 +2,22 @@ import json
 import os
 import math
 
+
 def printable(value):
     """ Returns value approximation that fits in 6 characters """
 
     if value > 10000:
-        return "10^" + str(int(math.log(value)/math.log(10)))
+        return "10^" + str(int(math.log(value) / math.log(10)))
 
     elif value > 100:
         return str(int(value))
-    
-    elif value < 0.001:
-        return "10^-" + str(int(math.log(1/value)/math.log(10)))
+
+    elif value > 0 and value < 0.001:
+        return "10^-" + str(int(math.log(1 / value) / math.log(10)))
 
     else:
         return f"{value:.2f}"
+
 
 def format_parameters():
     """ Modifies all parameter files at the same time """
@@ -68,5 +70,3 @@ def format_parameters():
 
             with open(file, "w") as outfile:
                 json.dump(json_data, outfile, sort_keys=True, indent=4)
-
-
