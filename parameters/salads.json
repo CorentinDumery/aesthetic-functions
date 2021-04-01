@@ -1,0 +1,21 @@
+{
+    "formula": "",
+    "formula_blue": "0",
+    "formula_green": "i*j",
+    "formula_red": "0",
+    "menu_parameters": {
+        "bw_scale": 100,
+        "color_model": "R/G/B",
+        "offx": -322.23564000000067,
+        "offy": -154.79338666666663,
+        "random_modulation": 0,
+        "resolution": 30,
+        "rgb_scale": 255,
+        "s_value": 102,
+        "sigma": 0,
+        "v_value": 230,
+        "zoom": 134.805
+    },
+    "sliders": [],
+    "userdef_entry": "# Your definitions here.\n# They will be imported in the module 'user'.\n"
+}
