@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog, scrolledtext, END
 import random
 import importlib
+from PIL import Image
 from src.image_canvas import Canvas
 from src.utils import printable
 from src.style import (
@@ -154,7 +155,7 @@ class Interface:
         check_max_resolution.grid(row=3, column=1, columnspan=3)
 
         add_slider_frame = tk.Frame(frame, **base_style)
-        self.new_slider_name = tk.StringVar(value="my_param")
+        self.new_slider_name = tk.StringVar(value="my_new_slider")
         new_slider_entry = tk.Entry(add_slider_frame, textvariable=self.new_slider_name)
         new_slider_entry.pack(side=tk.LEFT)
 
@@ -458,22 +459,49 @@ class Interface:
 
         self.itime_sl.grid(row=5, column=1, columnspan=10)
 
-        b_save_memory = tk.Button(
-            frame, text="Save to yourgif.gif", **widget_style, command=self.save_memory
+        b_save_gif = tk.Button(
+            frame, text="Save to yourgif.gif", **widget_style, command=self.save_gif
         )
-        b_save_memory.grid(row=6, column=0, columnspan=10, pady=15, **button_grid)
+        b_save_gif.grid(row=6, column=0, columnspan=10, pady=15, **button_grid)
+
+        tk.Label(frame, text="Output gif FPS:", **base_style).grid(
+            row=7, column=2, sticky=tk.E
+        )
+
+        self.gif_fps = tk.StringVar()
+        self.gif_fps.set(30)
+        gif_fps_entry = tk.Entry(frame, width=5, textvariable=self.gif_fps)
+        gif_fps_entry.grid(row=7, column=3)
+
+        self.gif_quantize = tk.BooleanVar()
+        self.gif_quantize.set(True)
+        quantize_gif_check = tk.Checkbutton(
+            frame,
+            text="Quantize gif",
+            var=self.gif_quantize,
+            **widget_style,
+        )
+
+        quantize_gif_check.grid(row=7, column=0)
 
     def new_random(self):
         self.canvas.new_random_seed()
         self.update_canvas()
 
-    def save_memory(self):
+    def save_gif(self):
         image_memory = []
+        if self.save_with_max_resolution.get():
+            old_res = self.sl_res.get()
+            self.sl_res.set(100)
+            self.sl_res.set(old_res)
+
         for i in range(int(self.itime_min.get()), int(self.itime_max.get()) + 1):
             self.itime_sl.set(i)
             self.update_canvas()
             if self.color_mode.get() == "BW":
                 self.full_img = self.full_img.convert("P")
+            if self.gif_quantize.get():
+                self.full_img = self.full_img.quantize(method=Image.MEDIANCUT)
             image_memory.append(self.full_img)
 
         image_memory[0].save(
@@ -481,9 +509,12 @@ class Interface:
             save_all=True,
             append_images=image_memory[1:],
             optimize=False,
-            duration=1000 / 30,  # duration = 1/fps, in ms
+            duration=1000 / int(self.gif_fps.get()),  # duration = 1/fps, in ms
             loop=0,
         )
+
+        if self.save_with_max_resolution.get():
+            self.sl_res.set(old_res)
 
     def change_color_mode(self):
         """ Forget previous layout and apply new one """
