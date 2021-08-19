@@ -1,6 +1,7 @@
 <p align="center">
 <img src="https://github.com/CorentinDumery/aesthetic-functions/blob/master/images/aesthetic-pres.gif" />
 </p> 
+
 ### 2D visualization of functions
 
 The objective of this project is to explore the artistic aspects of two-dimensional mathematics. To put it simply, it is about visualizing a function in 2D, but with fancy colors and some extra options.
